@@ -1,22 +1,22 @@
 {
   "configurations" : [
     {
-      "id" : "E9BE4F24-4B07-4A25-890E-C25F79DE982A",
-      "name" : "Configuration 1",
+      "id" : "EC68857A-4362-4667-B9F0-B1802EFA4F54",
+      "name" : "Test Scheme Action",
       "options" : {
 
       }
     }
   ],
   "defaultOptions" : {
-    "testTimeoutsEnabled" : true
+    "codeCoverage" : false
   },
   "testTargets" : [
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "HTML Tests",
-        "name" : "HTML Tests"
+        "identifier" : "PointFreeHTML Tests",
+        "name" : "PointFreeHTML Tests"
       }
     }
   ],

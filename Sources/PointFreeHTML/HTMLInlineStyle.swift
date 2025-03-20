@@ -10,7 +10,29 @@ import Dependencies
 import Foundation
 import OrderedCollections
 
+/// Extension to add inline styling capabilities to all HTML elements.
 extension HTML {
+    /// Applies a CSS style property to an HTML element.
+    ///
+    /// This method enables a type-safe, declarative approach to styling HTML elements
+    /// directly in Swift code. It generates CSS classes and stylesheets automatically.
+    ///
+    /// Example:
+    /// ```swift
+    /// div {
+    ///     "Hello, World!"
+    /// }
+    /// .inlineStyle("color", "red")
+    /// .inlineStyle("font-weight", "bold", pseudo: .hover)
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - property: The CSS property name (e.g., "color", "margin", "font-size").
+    ///   - value: The value for the CSS property. Pass nil to omit this style.
+    ///   - mediaQuery: Optional media query to apply this style conditionally.
+    ///   - pre: Optional selector prefix for more complex CSS selectors.
+    ///   - pseudo: Optional pseudo-class or pseudo-element to apply (e.g., `:hover`, `::before`).
+    /// - Returns: An HTML element with the specified style applied.
     public func inlineStyle(
         _ property: String,
         _ value: String?,
@@ -29,12 +51,43 @@ extension HTML {
     }
 }
 
+/// A wrapper that applies CSS styles to an HTML element.
+///
+/// `HTMLInlineStyle` applies CSS styles to HTML elements by generating
+/// unique class names and collecting the associated styles in a stylesheet.
+/// This approach allows for efficient CSS generation and prevents duplication
+/// of styles across multiple elements.
+///
+/// You typically don't create this type directly but use the `inlineStyle` method
+/// on HTML elements.
+///
+/// Example:
+/// ```swift
+/// div {
+///     p { "Styled text" }
+///         .inlineStyle("color", "blue")
+///         .inlineStyle("margin", "1rem")
+/// }
+/// ```
 public struct HTMLInlineStyle<Content: HTML>: HTML {
+    /// The HTML content being styled.
     private let content: Content
+    
+    /// The collection of styles to apply.
     private var styles: [Style]
     
+    /// Generator for unique class names based on styles.
     @Dependency(ClassNameGenerator.self) fileprivate var classNameGenerator
     
+    /// Creates a new styled HTML element.
+    ///
+    /// - Parameters:
+    ///   - content: The HTML element to style.
+    ///   - property: The CSS property name.
+    ///   - value: The value for the CSS property.
+    ///   - mediaQuery: Optional media query for conditional styling.
+    ///   - pre: Optional selector prefix.
+    ///   - pseudo: Optional pseudo-class or pseudo-element.
     init(
         content: Content,
         property: String,
@@ -59,6 +112,24 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
         ?? []
     }
     
+    /// Adds an additional style to this element.
+    ///
+    /// This method allows for chaining multiple styles on a single element.
+    ///
+    /// Example:
+    /// ```swift
+    /// div { "Content" }
+    ///     .inlineStyle("color", "blue")
+    ///     .inlineStyle("font-size", "16px")
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - property: The CSS property name.
+    ///   - value: The value for the CSS property.
+    ///   - mediaQuery: Optional media query for conditional styling.
+    ///   - pre: Optional selector prefix.
+    ///   - pseudo: Optional pseudo-class or pseudo-element.
+    /// - Returns: An HTML element with both the original and new styles applied.
     public func inlineStyle(
         _ property: String,
         _ value: String?,
@@ -81,6 +152,19 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
         return copy
     }
     
+    /// Renders this styled HTML element into the provided printer.
+    ///
+    /// This method:
+    /// 1. Saves the current class attribute
+    /// 2. Generates unique class names for each style
+    /// 3. Adds the styles to the printer's stylesheet
+    /// 4. Adds the class names to the element's class attribute
+    /// 5. Renders the content
+    /// 6. Restores the original class attribute
+    ///
+    /// - Parameters:
+    ///   - html: The styled HTML element to render.
+    ///   - printer: The printer to render the HTML into.
     public static func _render(_ html: HTMLInlineStyle<Content>, into printer: inout HTMLPrinter) {
         let previousClass = printer.attributes["class"]  // TODO: should we optimize this?
         defer {
@@ -102,6 +186,8 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
                 .append(printer.attributes.keys.contains("class") ? " \(className)" : className)
         }
     }
+    
+    /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
 
@@ -148,23 +234,57 @@ private struct Style: Hashable, Sendable {
     let pseudo: Pseudo?
 }
 
+/// Represents a CSS media query for conditional styling.
+///
+/// `MediaQuery` allows you to apply styles conditionally based on
+/// device characteristics or user preferences.
+///
+/// Example:
+/// ```swift
+/// div { "Dark mode text" }
+///     .inlineStyle("color", "white", media: .dark)
+/// ```
+///
+/// You can use the predefined media queries or create custom ones.
 public struct MediaQuery: RawRepresentable, Hashable, Sendable {
+    /// Creates a media query with the specified CSS media query string.
+    ///
+    /// - Parameter rawValue: The CSS media query string.
     public init(rawValue: String) {
         self.rawValue = rawValue
     }
+    
+    /// The CSS media query string.
     public var rawValue: String
 }
 
-
-
-
+/// Predefined common media queries.
 extension MediaQuery {
+    /// Targets devices in dark mode.
     public static let dark = Self(rawValue: "(prefers-color-scheme: dark)")
+    
+    /// Targets print media (when the page is being printed).
     public static let print = Self(rawValue: "print")
 }
 
+/// Represents CSS pseudo-classes and pseudo-elements.
+///
+/// `Pseudo` allows you to apply styles to elements in specific states
+/// or to target specific parts of elements.
+///
+/// Example:
+/// ```swift
+/// button { "Hover me" }
+///     .inlineStyle("background-color", "blue")
+///     .inlineStyle("background-color", "red", pseudo: .hover)
+/// ```
 public struct Pseudo: RawRepresentable, Hashable, Sendable {
+    /// The CSS pseudo-class or pseudo-element selector.
     public var rawValue: String
+    
+    /// Creates a pseudo-selector with the specified CSS selector string.
+    ///
+    /// - Parameter rawValue: The CSS pseudo-selector string.
     public init(rawValue: String) {
         self.rawValue = rawValue
     }

@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -19,7 +19,7 @@ let package = Package(
         .tvOS(.v17),
         .watchOS(.v10),
         .macCatalyst(.v17),
-      ],
+    ],
     products: [
         .library(name: .pointfreeHtml, targets: [.pointfreeHtml]),
     ],
@@ -31,8 +31,8 @@ let package = Package(
         .target(
             name: .pointfreeHtml,
             dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "OrderedCollections", package: "swift-collections"),
-                .product(name: "Dependencies", package: "swift-dependencies")
             ]
         ),
         .testTarget(
@@ -42,7 +42,8 @@ let package = Package(
                 .product(name: "DependenciesTestSupport", package: "swift-dependencies")
             ]
         )
-    ]
+    ],
+    swiftLanguageModes: [.v6]
 )
 
 extension String {
@@ -52,8 +53,8 @@ extension String {
 }
 
 #if !os(Windows)
-  // Add the documentation compiler plugin if possible
-  package.dependencies.append(
+// Add the documentation compiler plugin if possible
+package.dependencies.append(
     .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0")
-  )
+)
 #endif
