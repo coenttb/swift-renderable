@@ -87,12 +87,12 @@ private struct Document<Head: HTML>: HTML {
         Doctype()
         
         // Create the html element with language attribute
-        html {
+        tag("html") {
             // Add the head section with metadata and styles
             tag("head") {
                 head
-                style {
-                    stylesheet
+                tag("style") {
+                    HTMLText(stylesheet)
                 }
             }
             

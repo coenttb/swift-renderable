@@ -5,10 +5,12 @@ import PackageDescription
 
 extension String {
     static let pointfreeHtml: Self = "PointFreeHTML"
+    static let pointfreeHtmlElements: Self = "PointFreeHTMLElements"
 }
 
 extension Target.Dependency {
     static var pointfreeHtml: Self { .target(name: .pointfreeHtml) }
+    static var pointfreeHtmlElements: Self { .target(name: .pointfreeHtmlElements) }
 }
 
 let package = Package(
@@ -22,6 +24,7 @@ let package = Package(
     ],
     products: [
         .library(name: .pointfreeHtml, targets: [.pointfreeHtml]),
+        .library(name: .pointfreeHtmlElements, targets: [.pointfreeHtmlElements]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.2"),
@@ -41,7 +44,20 @@ let package = Package(
                 .pointfreeHtml,
                 .product(name: "DependenciesTestSupport", package: "swift-dependencies")
             ]
-        )
+        ),
+        .target(
+            name: .pointfreeHtmlElements,
+            dependencies: [
+                .pointfreeHtml
+            ]
+        ),
+        .testTarget(
+            name: .pointfreeHtmlElements.tests,
+            dependencies: [
+                .pointfreeHtmlElements,
+                .product(name: "DependenciesTestSupport", package: "swift-dependencies")
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )
@@ -51,10 +67,3 @@ extension String {
         "\(self) Tests"
     }
 }
-
-#if !os(Windows)
-// Add the documentation compiler plugin if possible
-package.dependencies.append(
-    .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0")
-)
-#endif
