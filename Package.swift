@@ -5,10 +5,12 @@ import PackageDescription
 
 extension String {
     static let pointfreeHtml: Self = "PointFreeHTML"
+    static let pointfreeHtmlElements: Self = "PointFreeHTMLElements"
 }
 
 extension Target.Dependency {
     static var pointfreeHtml: Self { .target(name: .pointfreeHtml) }
+    static var pointfreeHtmlElements: Self { .target(name: .pointfreeHtmlElements) }
 }
 
 let package = Package(
@@ -31,8 +33,8 @@ let package = Package(
         .target(
             name: .pointfreeHtml,
             dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "OrderedCollections", package: "swift-collections"),
-                .product(name: "Dependencies", package: "swift-dependencies")
             ]
         ),
         .testTarget(
@@ -41,7 +43,20 @@ let package = Package(
                 .pointfreeHtml,
                 .product(name: "DependenciesTestSupport", package: "swift-dependencies")
             ]
-        )
+        ),
+        .target(
+            name: .pointfreeHtmlElements,
+            dependencies: [
+                .pointfreeHtml
+            ]
+        ),
+        .testTarget(
+            name: .pointfreeHtmlElements.tests,
+            dependencies: [
+                .pointfreeHtmlElements,
+                .product(name: "DependenciesTestSupport", package: "swift-dependencies")
+            ]
+        ),
     ]
 )
 
