@@ -126,7 +126,7 @@ extension HTML {
     }
 }
 
-extension HTMLDocument {
+extension HTMLDocumentProtocol {
     /// Renders this HTML document to bytes.
     ///
     /// This method creates a printer with the current configuration and

@@ -31,7 +31,7 @@ import Dependencies
 ///     }
 /// }
 /// ```
-public protocol HTMLDocument: HTML {
+public protocol HTMLDocumentProtocol: HTML {
     /// The type of HTML content for the document's head section.
     associatedtype Head: HTML
     
@@ -43,7 +43,7 @@ public protocol HTMLDocument: HTML {
     var head: Head { get }
 }
 
-extension HTMLDocument {
+extension HTMLDocumentProtocol {
     /// Renders the HTML document into the provided printer.
     ///
     /// This method orchestrates the rendering of a complete HTML document:
@@ -102,5 +102,19 @@ private struct Document<Head: HTML>: HTML {
             }
         }
         .attribute("lang", "en")
+    }
+}
+
+public struct HTMLDocument<Body: HTML, Head: HTML>: HTMLDocumentProtocol {
+    public let head: Head
+    
+    public let body: Body
+    
+    public init(
+        @HTMLBuilder head: () -> Head = { HTMLEmpty() },
+        @HTMLBuilder body: () -> Body
+    ) {
+        self.body = body()
+        self.head = head()
     }
 }

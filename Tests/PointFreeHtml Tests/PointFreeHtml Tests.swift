@@ -238,7 +238,7 @@ struct HTMLDocumentTests {
     @Test("Complete document")
     func testCompleteDocument() throws {
         // Arrange
-        struct TestDocument: HTMLDocument {
+        struct TestDocument: HTMLDocumentProtocol {
             var head: some HTML {
                 PointFreeHTML.title { "Test Page" }
                 meta().attribute("charset", "utf-8")
