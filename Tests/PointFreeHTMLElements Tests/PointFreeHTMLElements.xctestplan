@@ -1,7 +1,7 @@
 {
   "configurations" : [
     {
-      "id" : "EC68857A-4362-4667-B9F0-B1802EFA4F54",
+      "id" : "E4D0A0AA-F410-4B0F-B4F4-8CD2D86E6323",
       "name" : "Test Scheme Action",
       "options" : {
 
@@ -15,8 +15,8 @@
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "PointFreeHTML Tests",
-        "name" : "PointFreeHTML Tests"
+        "identifier" : "PointFreeHTMLElements Tests",
+        "name" : "PointFreeHTMLElements Tests"
       }
     }
   ],

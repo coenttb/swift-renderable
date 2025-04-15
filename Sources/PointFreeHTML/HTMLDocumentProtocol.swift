@@ -110,9 +110,18 @@ public struct HTMLDocument<Body: HTML, Head: HTML>: HTMLDocumentProtocol {
     
     public let body: Body
     
+    @_disfavoredOverload
     public init(
         @HTMLBuilder head: () -> Head = { HTMLEmpty() },
         @HTMLBuilder body: () -> Body
+    ) {
+        self.body = body()
+        self.head = head()
+    }
+    
+    public init(
+        @HTMLBuilder body: () -> Body,
+        @HTMLBuilder head: () -> Head = { HTMLEmpty() }
     ) {
         self.body = body()
         self.head = head()
