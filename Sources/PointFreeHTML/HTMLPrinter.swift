@@ -62,7 +62,7 @@ public struct HTMLPrinter: Sendable {
         for (mediaQuery, styles) in styles.sorted(by: { $0.key == nil ? $1.key != nil : false }) {
             var currentIndentation = ""
             if let mediaQuery {
-                sheet.append("@media \(mediaQuery.rawValue){")
+                sheet.append("\(mediaQuery.rawValue){")
                 sheet.append(configuration.newline)
                 currentIndentation.append(configuration.indentation)
             }
