@@ -6,3 +6,11 @@
 //
 
 import Foundation
+import PointFreeHTML
+import Testing
+
+@Suite("HTMLInlineStyle Stack Depth Tests")
+struct HTMLInlineStyleStackDepthTests {
+    
+    
+}

@@ -165,14 +165,44 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
     /// - Parameters:
     ///   - html: The styled HTML element to render.
     ///   - printer: The printer to render the HTML into.
+//    public static func _render(_ html: HTMLInlineStyle<Content>, into printer: inout HTMLPrinter) {
+//        let previousClass = printer.attributes["class"]  // TODO: should we optimize this?
+//        defer {
+//            Content._render(html.content, into: &printer)
+//            printer.attributes["class"] = previousClass
+//        }
+//        
+//        for style in html.styles {
+//            let className = html.classNameGenerator.generate(style)
+//            let selector = """
+//        \(style.preSelector.map { "\($0) " } ?? "").\(className)\(style.pseudo?.rawValue ?? "")
+//        """
+//            
+//            if printer.styles[style.media, default: [:]][selector] == nil {
+//                printer.styles[style.media, default: [:]][selector] = "\(style.property):\(style.value)"
+//            }
+//            printer
+//                .attributes["class", default: ""]
+//                .append(printer.attributes.keys.contains("class") ? " \(className)" : className)
+//        }
+//    }
+    // Now update the batched processing render method
     public static func _render(_ html: HTMLInlineStyle<Content>, into printer: inout HTMLPrinter) {
-        let previousClass = printer.attributes["class"]  // TODO: should we optimize this?
-        defer {
-            Content._render(html.content, into: &printer)
-            printer.attributes["class"] = previousClass
+        let previousClass = printer.attributes["class"]
+        
+        // Collect all styles from nested HTMLInlineStyle elements
+        var allStyles: [Style] = []
+        var coreContent: any HTML = html
+        
+        // Flatten the style chain iteratively using a protocol approach
+        while let styledElement = coreContent as? any HTMLInlineStyleProtocol {
+            allStyles.append(contentsOf: styledElement.extractStyles())
+            coreContent = styledElement.extractContent()
         }
         
-        for style in html.styles {
+        // Process all styles at once
+        var classNames: [String] = []
+        for style in allStyles {
             let className = html.classNameGenerator.generate(style)
             let selector = """
         \(style.preSelector.map { "\($0) " } ?? "").\(className)\(style.pseudo?.rawValue ?? "")
@@ -181,10 +211,19 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
             if printer.styles[style.media, default: [:]][selector] == nil {
                 printer.styles[style.media, default: [:]][selector] = "\(style.property):\(style.value)"
             }
-            printer
-                .attributes["class", default: ""]
-                .append(printer.attributes.keys.contains("class") ? " \(className)" : className)
+            classNames.append(className)
         }
+        
+        // Apply all class names at once
+        if !classNames.isEmpty {
+            let existingClass = printer.attributes["class"] ?? ""
+            let separator = existingClass.isEmpty ? "" : " "
+            printer.attributes["class"] = existingClass + separator + classNames.joined(separator: " ")
+        }
+        
+        // Render the core content using the instance method
+        defer { printer.attributes["class"] = previousClass }
+        coreContent.render(into: &printer)
     }
     
     /// This type uses direct rendering and doesn't have a body.
@@ -226,7 +265,7 @@ private struct ClassNameGenerator: DependencyKey {
     }
 }
 
-private struct Style: Hashable, Sendable {
+internal struct Style: Hashable, Sendable {
     let property: String
     let value: String
     let media: MediaQuery?
@@ -234,7 +273,29 @@ private struct Style: Hashable, Sendable {
     let pseudo: Pseudo?
 }
 
+// Protocol to enable type erasure for HTMLInlineStyle
+protocol HTMLInlineStyleProtocol {
+    func extractStyles() -> [Style]
+    func extractContent() -> any HTML
+}
 
+// Make HTMLInlineStyle conform to the protocol
+extension HTMLInlineStyle: HTMLInlineStyleProtocol {
+    func extractStyles() -> [Style] {
+        return styles
+    }
+    
+    func extractContent() -> any HTML {
+        return content
+    }
+}
+
+// Add this method to your HTML protocol
+extension HTML {
+    func render(into printer: inout HTMLPrinter) {
+        Self._render(self, into: &printer)
+    }
+}
 
 
 
