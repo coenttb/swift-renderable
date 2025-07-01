@@ -56,8 +56,7 @@ extension HTMLDocumentProtocol {
     ///   - html: The HTML document to render.
     ///   - printer: The printer to render the HTML into.
     public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        @Dependency(\.htmlPrinter) var htmlPrinter
-        var bodyPrinter = htmlPrinter
+        var bodyPrinter = printer
         Content._render(html.body, into: &bodyPrinter)
         Document
             ._render(

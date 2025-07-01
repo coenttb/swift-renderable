@@ -229,6 +229,67 @@ struct HTMLInlineStyleTests {
         // but we can verify the element has classes
         #expect(result.contains("class=\""))
     }
+    
+    @Test("At-rule styling using new parameter")
+    func testAtRuleStyling() throws {
+        // Arrange
+        let element = div { "Media query content" }
+            .inlineStyle("display", "none")
+            .inlineStyle("display", "block", atRule: .print)
+            
+        // Act
+        let result = String(decoding: element.render(), as: UTF8.self)
+        
+        // Assert
+        #expect(result.contains("class=\""))
+        // The print style should add an additional class
+        let classPattern = #"class="([^"]*\s[^"]*)"#
+        let regex = try? NSRegularExpression(pattern: classPattern)
+        let range = NSRange(location: 0, length: result.utf16.count)
+        let matches = regex?.matches(in: result, range: range)
+        #expect(matches?.count == 1)
+    }
+    
+    @Test("Deprecated media parameter still works")
+    func testDeprecatedMediaParameter() throws {
+        // Arrange
+        let element = div { "Media query content" }
+            .inlineStyle("display", "none")
+            .inlineStyle("display", "block", media: .print)
+            
+        // Act
+        let result = String(decoding: element.render(), as: UTF8.self)
+        
+        // Assert
+        #expect(result.contains("class=\""))
+        // The print style should add an additional class
+        let classPattern = #"class="([^"]*\s[^"]*)"#
+        let regex = try? NSRegularExpression(pattern: classPattern)
+        let range = NSRange(location: 0, length: result.utf16.count)
+        let matches = regex?.matches(in: result, range: range)
+        #expect(matches?.count == 1)
+    }
+    
+    @Test("Custom at-rule")
+    func testCustomAtRule() throws {
+        // Arrange
+        let customAtRule = AtRule(rawValue: "screen and (min-width: 768px)")
+        let element = div { "Responsive content" }
+            .inlineStyle("font-size", "14px")
+            .inlineStyle("font-size", "18px", atRule: customAtRule)
+            
+        // Act
+        let result = String(decoding: element.render(), as: UTF8.self)
+        
+        // Assert
+        #expect(result.contains("class=\""))
+        // The responsive style should add an additional class
+        let classPattern = #"class="([^"]*\s[^"]*)"#
+        let regex = try? NSRegularExpression(pattern: classPattern)
+        let range = NSRange(location: 0, length: result.utf16.count)
+        let matches = regex?.matches(in: result, range: range)
+        #expect(matches?.count == 1)
+    }
 }
 
 // MARK: - Document Tests
