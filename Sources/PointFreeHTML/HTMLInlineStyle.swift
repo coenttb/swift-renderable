@@ -29,41 +29,22 @@ extension HTML {
     /// - Parameters:
     ///   - property: The CSS property name (e.g., "color", "margin", "font-size").
     ///   - value: The value for the CSS property. Pass nil to omit this style.
-    ///   - atRule: Optional CSS at-rule (e.g., media query, keyframes) to apply this style conditionally.
+    ///   - mediaQuery: Optional media query to apply this style conditionally.
     ///   - pre: Optional selector prefix for more complex CSS selectors.
     ///   - pseudo: Optional pseudo-class or pseudo-element to apply (e.g., `:hover`, `::before`).
     /// - Returns: An HTML element with the specified style applied.
     public func inlineStyle(
         _ property: String,
         _ value: String?,
-        atRule: AtRule? = nil,
+        media mediaQuery: MediaQuery? = nil,
         pre: String? = nil,
-        pseudo: PseudoClass? = nil
+        pseudo: Pseudo? = nil
     ) -> HTMLInlineStyle<Self> {
         HTMLInlineStyle(
             content: self,
             property: property,
             value: value,
-            atRule: atRule,
-            pre: pre,
-            pseudo: pseudo
-        )
-    }
-    
-    /// Backwards compatibility method for media parameter
-    @available(*, deprecated, message: "Use atRule parameter instead")
-    @_disfavoredOverload
-    public func inlineStyle(
-        _ property: String,
-        _ value: String?,
-        media mediaQuery: AtRule? = nil,
-        pre: String? = nil,
-        pseudo: PseudoClass? = nil
-    ) -> HTMLInlineStyle<Self> {
-        inlineStyle(
-            property,
-            value,
-            atRule: mediaQuery,
+            mediaQuery: mediaQuery,
             pre: pre,
             pseudo: pseudo
         )
@@ -104,16 +85,16 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
     ///   - content: The HTML element to style.
     ///   - property: The CSS property name.
     ///   - value: The value for the CSS property.
-    ///   - atRule: Optional CSS at-rule for conditional styling.
+    ///   - mediaQuery: Optional media query for conditional styling.
     ///   - pre: Optional selector prefix.
     ///   - pseudo: Optional pseudo-class or pseudo-element.
     init(
         content: Content,
         property: String,
         value: String?,
-        atRule: AtRule?,
-        pre preSelector: String? = nil,
-        pseudo: PseudoClass?
+        mediaQuery: MediaQuery?,
+        pre: String? = nil,
+        pseudo: Pseudo?
     ) {
         self.content = content
         self.styles =
@@ -122,9 +103,9 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
                 Style(
                     property: property,
                     value: $0,
-                    atRule: atRule,
-                    preSelector: preSelector,
-                    pseudoClass: pseudo
+                    media: mediaQuery,
+                    preSelector: pre,
+                    pseudo: pseudo
                 )
             ]
         }
@@ -145,16 +126,16 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
     /// - Parameters:
     ///   - property: The CSS property name.
     ///   - value: The value for the CSS property.
-    ///   - atRule: Optional CSS at-rule for conditional styling.
+    ///   - mediaQuery: Optional media query for conditional styling.
     ///   - pre: Optional selector prefix.
     ///   - pseudo: Optional pseudo-class or pseudo-element.
     /// - Returns: An HTML element with both the original and new styles applied.
     public func inlineStyle(
         _ property: String,
         _ value: String?,
-        atRule: AtRule? = nil,
-        pre preSelector: String? = nil,
-        pseudo pseudoClass: PseudoClass? = nil
+        media mediaQuery: MediaQuery? = nil,
+        pre: String? = nil,
+        pseudo: Pseudo? = nil
     ) -> HTMLInlineStyle {
         var copy = self
         if let value {
@@ -162,32 +143,13 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
                 Style(
                     property: property,
                     value: value,
-                    atRule: atRule,
-                    preSelector: preSelector,
-                    pseudoClass: pseudoClass
+                    media: mediaQuery,
+                    preSelector: pre,
+                    pseudo: pseudo
                 )
             )
         }
         return copy
-    }
-    
-    /// Backwards compatibility method for media parameter
-    @available(*, deprecated, message: "Use atRule parameter instead")
-    @_disfavoredOverload
-    public func inlineStyle(
-        _ property: String,
-        _ value: String?,
-        media mediaQuery: AtRule? = nil,
-        pre preSelector: String? = nil,
-        pseudo pseudoClass: PseudoClass? = nil
-    ) -> HTMLInlineStyle {
-        inlineStyle(
-            property,
-            value,
-            atRule: mediaQuery,
-            pre: preSelector,
-            pseudo: pseudoClass
-        )
     }
     
     /// Renders this styled HTML element into the provided printer.
@@ -213,11 +175,11 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
         for style in html.styles {
             let className = html.classNameGenerator.generate(style)
             let selector = """
-        \(style.preSelector.map { "\($0) " } ?? "").\(className)\(style.pseudoClass?.rawValue ?? "")
+        \(style.preSelector.map { "\($0) " } ?? "").\(className)\(style.pseudo?.rawValue ?? "")
         """
             
-            if printer.styles[style.atRule, default: [:]][selector] == nil {
-                printer.styles[style.atRule, default: [:]][selector] = "\(style.property):\(style.value)"
+            if printer.styles[style.media, default: [:]][selector] == nil {
+                printer.styles[style.media, default: [:]][selector] = "\(style.property):\(style.value)"
             }
             printer
                 .attributes["class", default: ""]
@@ -255,9 +217,9 @@ private struct ClassNameGenerator: DependencyKey {
         Self { style in
             let hash = classID(
                 style.value
-                + (style.atRule?.rawValue ?? "")
+                + (style.media?.rawValue ?? "")
                 + (style.preSelector ?? "")
-                + (style.pseudoClass?.rawValue ?? "")
+                + (style.pseudo?.rawValue ?? "")
             )
             return "\(style.property)-\(hash)"
         }
@@ -267,10 +229,14 @@ private struct ClassNameGenerator: DependencyKey {
 private struct Style: Hashable, Sendable {
     let property: String
     let value: String
-    let atRule: AtRule?
+    let media: MediaQuery?
     let preSelector: String?
-    let pseudoClass: PseudoClass?
+    let pseudo: Pseudo?
 }
+
+
+
+
 
 private func classID(_ value: String) -> String {
     return encode(murmurHash(value))

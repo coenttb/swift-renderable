@@ -18,7 +18,7 @@ import Foundation
 ///     .inlineStyle("background-color", "blue")
 ///     .inlineStyle("background-color", "red", pseudo: .hover)
 /// ```
-public struct PreSelector: RawRepresentable, Hashable, Sendable {
+public struct Pseudo: RawRepresentable, Hashable, Sendable {
     /// The CSS pseudo-class or pseudo-element selector.
     public var rawValue: String
     

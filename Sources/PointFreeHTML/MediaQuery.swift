@@ -1,13 +1,11 @@
 //
-//  AtRule.swift
+//  File.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 16/04/2025.
 //
 
 import Foundation
-
-
 
 /// Represents a CSS media query for conditional styling.
 ///
@@ -17,13 +15,11 @@ import Foundation
 /// Example:
 /// ```swift
 /// div { "Dark mode text" }
-///     .inlineStyle("color", "white", atRule: .dark)
+///     .inlineStyle("color", "white", media: .dark)
 /// ```
 ///
 /// You can use the predefined media queries or create custom ones.
-/// This struct is provided for backward compatibility and should be replaced
-/// with CSSAtRuleTypes.Media in the future.
-public struct AtRule: RawRepresentable, Hashable, Sendable {
+public struct MediaQuery: RawRepresentable, Hashable, Sendable {
     /// Creates a media query with the specified CSS media query string.
     ///
     /// - Parameter rawValue: The CSS media query string.
@@ -35,17 +31,11 @@ public struct AtRule: RawRepresentable, Hashable, Sendable {
     public var rawValue: String
 }
 
-//extension AtRule: AtRule {
-//    public static var identifier: String {
-//        return "media"
-//    }
-//}
-
 /// Predefined common media queries.
-extension AtRule {
+extension MediaQuery {
     /// Targets devices in dark mode.
-    public static let dark = Self(rawValue: "@media (prefers-color-scheme: dark)")
+    public static let dark = Self(rawValue: "(prefers-color-scheme: dark)")
     
     /// Targets print media (when the page is being printed).
-    public static let print = Self(rawValue: "@media print")
+    public static let print = Self(rawValue: "print")
 }

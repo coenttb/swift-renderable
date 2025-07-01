@@ -34,7 +34,7 @@ public struct HTMLPrinter: Sendable {
     public var attributes: OrderedDictionary<String, String> = [:]
     
     /// The collected styles to be rendered in the document's stylesheet.
-    public var styles: OrderedDictionary<AtRule?, OrderedDictionary<String, String>> = [:]
+    public var styles: OrderedDictionary<MediaQuery?, OrderedDictionary<String, String>> = [:]
     
     /// Configuration for rendering, including formatting options.
     let configuration: Configuration
