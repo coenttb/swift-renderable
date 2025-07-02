@@ -209,7 +209,8 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
         """
             
             if printer.styles[style.media, default: [:]][selector] == nil {
-                printer.styles[style.media, default: [:]][selector] = "\(style.property):\(style.value)"
+//                printer.styles[style.media, default: [:]][selector] = "\(style.property):\(style.value)"
+                printer.styles[style.media, default: [:]][selector] = "\(style.property):\(style.value);"
             }
             classNames.append(className)
         }
