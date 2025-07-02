@@ -113,18 +113,7 @@ public enum HTMLBuilder {
     public static func buildFinalResult<T: HTML>(_ component: T) -> T {
         component
     }
-
-    /// Combines an array of any HTML components into a single HTML component.
-    /// This overload handles for loops where the element type cannot be inferred.
-    ///
-    /// - Parameter components: An array of any HTML components to combine.
-    /// - Returns: A single HTML component representing the array of components.
-    public static func buildArray(_ components: [any HTML]) -> _HTMLArray<AnyHTML> {
-        _HTMLArray(elements: components.map(AnyHTML.init))
-    }
 }
-
-
 
 /// A container for an array of HTML elements.
 ///
