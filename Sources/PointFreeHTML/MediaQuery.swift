@@ -31,11 +31,3 @@ public struct MediaQuery: RawRepresentable, Hashable, Sendable {
     public var rawValue: String
 }
 
-/// Predefined common media queries.
-extension MediaQuery {
-    /// Targets devices in dark mode.
-    public static let dark = Self(rawValue: "(prefers-color-scheme: dark)")
-    
-    /// Targets print media (when the page is being printed).
-    public static let print = Self(rawValue: "print")
-}
