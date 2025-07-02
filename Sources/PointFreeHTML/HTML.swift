@@ -64,3 +64,25 @@ extension Never: HTML {
     public var body: Never { fatalError() }
 }
 
+public struct AnyHTML: HTML {
+    let base: any HTML
+    public init(_ base: any HTML) {
+        self.base = base
+    }
+    public static func _render(_ html: AnyHTML, into printer: inout HTMLPrinter) {
+        func render<T: HTML>(_ html: T) {
+            T._render(html, into: &printer)
+        }
+        render(html.base)
+    }
+    public var body: Never { fatalError() }
+}
+
+extension AnyHTML {
+    public init(
+        _ closure: () -> any HTML
+    ){
+        self = .init(closure())
+    }
+}
+
