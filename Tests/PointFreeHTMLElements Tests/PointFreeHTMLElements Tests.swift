@@ -27,6 +27,15 @@ struct HTMLElementTests {
         #expect(result == "<div></div>")
     }
     
+    @Test("For _ in element rendering")
+    func testForIn() throws {
+        let _ = HTMLGroup {
+            for number in 1...5 {
+                li { "\(number)" }
+            }
+        }
+    }
+    
     @Test("Element with text content")
     func testElementWithText() throws {
         // Arrange
