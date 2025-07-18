@@ -6,11 +6,18 @@ import PackageDescription
 extension String {
     static let pointfreeHtml: Self = "PointFreeHTML"
     static let pointfreeHtmlElements: Self = "PointFreeHTMLElements"
+    static let pointfreeHtmlTestSupport: Self = "PointFreeHtmlTestSupport"
 }
 
 extension Target.Dependency {
     static var pointfreeHtml: Self { .target(name: .pointfreeHtml) }
     static var pointfreeHtmlElements: Self { .target(name: .pointfreeHtmlElements) }
+    static var pointfreeHtmlTestSupport: Self { .target(name: .pointfreeHtmlTestSupport) }
+}
+
+extension Target.Dependency {
+    static var dependenciesTestSupport: Self { .product(name: "DependenciesTestSupport", package: "swift-dependencies") }
+    static var inlineSnapshotTesting: Self { .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing") }
 }
 
 let package = Package(
@@ -25,10 +32,12 @@ let package = Package(
     products: [
         .library(name: .pointfreeHtml, targets: [.pointfreeHtml]),
         .library(name: .pointfreeHtmlElements, targets: [.pointfreeHtmlElements]),
+        .library(name: .pointfreeHtmlTestSupport, targets: [.pointfreeHtmlTestSupport]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.2"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.3.5")
+        .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.3.5"),
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.3")
     ],
     targets: [
         .target(
@@ -55,7 +64,16 @@ let package = Package(
             name: .pointfreeHtmlElements.tests,
             dependencies: [
                 .pointfreeHtmlElements,
-                .product(name: "DependenciesTestSupport", package: "swift-dependencies")
+                .dependenciesTestSupport,
+                .inlineSnapshotTesting
+            ]
+        ),
+        .target(
+            name: .pointfreeHtmlTestSupport,
+            dependencies: [
+                .pointfreeHtml,
+                .inlineSnapshotTesting,
+                .dependenciesTestSupport
             ]
         ),
     ],
