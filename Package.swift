@@ -5,7 +5,7 @@ import PackageDescription
 
 extension String {
     static let pointfreeHtml: Self = "PointFreeHTML"
-    static let pointfreeHtmlElements: Self = "PointFreeHTMLElements"
+    static let pointfreeHtmlElements: Self = "PointFreeHtmlElements"
     static let pointfreeHtmlTestSupport: Self = "PointFreeHtmlTestSupport"
 }
 
