@@ -29,14 +29,14 @@
 public struct HTMLEmpty: HTML {
     /// Creates a new empty HTML node.
     public init() {}
-    
+
     /// Renders nothing to the printer.
     ///
     /// - Parameters:
     ///   - html: The empty HTML to render.
     ///   - printer: The printer to render the HTML into.
     public static func _render(_ html: Self, into printer: inout HTMLPrinter) {}
-    
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }

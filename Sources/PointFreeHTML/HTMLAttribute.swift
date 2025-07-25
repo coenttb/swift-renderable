@@ -41,22 +41,6 @@ extension HTML {
     public func attribute(_ name: String, _ value: String? = "") -> _HTMLAttributes<Self> {
         _HTMLAttributes(content: self, attributes: value.map { [name: $0] } ?? [:])
     }
-    
-    /// Sets the alt attribute for accessibility descriptions of visual elements.
-    public func alt(_ value: String?) -> _HTMLAttributes<Self> { attribute("alt", value) }
-    
-    /// Sets the href attribute for hyperlinks and other elements that link to URLs.
-    public func href(_ value: String?) -> _HTMLAttributes<Self> { attribute("href", value) }
-    
-    /// Sets the rel attribute to specify the relationship between the current document and the linked resource.
-    public func rel(_ value: String?) -> _HTMLAttributes<Self> { attribute("rel", value) }
-    
-    /// Sets the src attribute to specify the URL of a resource to include.
-    public func src(_ value: String?) -> _HTMLAttributes<Self> { attribute("src", value) }
-    
-    /// Deprecated method that should not be used.
-    @available(*, unavailable, message: "Use 'attribute(\"title\", value)' instead")
-    public func title(_ value: String?) -> _HTMLAttributes<Self> { attribute("title", value) }
 }
 
 /// A wrapper that applies attributes to an HTML element.
@@ -77,10 +61,10 @@ extension HTML {
 public struct _HTMLAttributes<Content: HTML>: HTML {
     /// The HTML content to which attributes are being applied.
     let content: Content
-    
+
     /// The collection of attributes to apply.
     var attributes: OrderedDictionary<String, String>
-    
+
     /// Adds an additional attribute to this element.
     ///
     /// This method allows for chaining multiple attributes on a single element.
@@ -102,7 +86,7 @@ public struct _HTMLAttributes<Content: HTML>: HTML {
         copy.attributes[name] = value
         return copy
     }
-    
+
     /// Renders this HTML element with attributes into the provided printer.
     ///
     /// This method:
@@ -120,7 +104,7 @@ public struct _HTMLAttributes<Content: HTML>: HTML {
         printer.attributes.merge(html.attributes, uniquingKeysWith: { $1 })
         Content._render(html.content, into: &printer)
     }
-    
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }

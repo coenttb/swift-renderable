@@ -1,100 +1,191 @@
-# pointfree-html
+# PointFreeHTML
 
-A Swift DSL for HTML forked from [pointfreeco/swift-html](https://www.github.com/pointfreeco/swift-html) and updated to the version on [pointfreeco/pointfreeco](https://github.com/pointfreeco/pointfreeco).
-
-![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
+A cross-platform Swift package to render any Swift type as HTML.
 
 ## Overview
 
-HTML is the format of documents. Classic examples of this are web pages and work documents like Microsoft Word and PDF. 
+PointFreeHTML enables **any Swift type** to be rendered as HTML through a simple protocol conformance. Other libraries use it to render their types to HTML.
 
-You use `pointfree-html` to create HTML documents using a declarative, SwiftUI-like syntax:
+## Key features
+
+- **Universal HTML Protocol**: Any Swift type can be rendered as HTML by conforming to the `HTML` protocol
+- **Performance Focused**: Efficient rendering with HTMLPrinter printing to bytes (`ContiguousArray<UInt8>`) or string
+- **Declarative Syntax**: SwiftUI-like syntax with `@HTMLBuilder` result builder
+- **Type Safety**: Compile-time checking prevents malformed HTML
+- **Composable Components**: Build complex UIs from reusable components
+- **Minimal Dependencies**: Core library has minimal external dependencies
+
+## Usage examples
+
+### Basic Usage
 
 ```swift
-import HTML
-struct Document: HTMLDocument {
-  var head: some HTML {
-    title { "Hello World" }
-  }
-  
-  var body: some HTML {
-    h1 { "Type-safe HTML" }
-  }
+import PointFreeHTML
+
+struct Greeting: HTML {
+    let name: String
+    var body: some HTML {
+        h1 { "Hello, \(name)!" }
+    }
+}
+
+let greeting = Greeting(name: "World")
+let htmlString: String = try String(greeting)
+let htmlBytes: ContiguousArray<UInt8> = HTMLDocument.render(greeting)
+```
+
+HTML and HTMLDocument can render to bytes (`ContiguousArray<UInt8>`) via the `HTMLDocument.render` method, or to a string by passing it to `String.init(_ html: some HTML, encoding: String.Encoding = .utf8) throws`.
+
+### Complete Examples
+
+For comprehensive examples of building HTML elements and components, see [swift-html](https://github.com/coenttb/swift-html), which provides a complete developer experience built on top of PointFreeHTML.
+
+See [swift-html-css-pointfree](https://github.com/coenttb/swift-html-css-pointfree) for an example of how third-party libraries can integrate PointFreeHTML as their rendering engine.
+
+## Integration with Swift Ecosystem
+
+PointFreeHTML integrates seamlessly with the broader Swift web development ecosystem:
+
+### Swift-HTML Integration
+
+[swift-html](https://github.com/coenttb/swift-html) builds on PointFreeHTML to provide domain-accurate HTML and CSS integration and additional convenience APIs:
+
+```swift
+import HTML // This imports swift-html which includes PointFreeHTML
+
+struct StyledComponent: HTML {
+    var body: some HTML {
+        div {
+            a(href: "#") { "Styled Heading" }
+                .color(.blue)
+                .fontSize(.px(24))
+                .marginBottom(.px(16))
+        }
+    }
 }
 ```
 
-The way you generate HTML significantly impacts the quality and maintainability of your documents. Without prioritizing readability and scalability, complexity quickly becomes overwhelming:
+### Server Integration
 
-  * Generating HTML using raw strings or basic templates **provides no safeguards against syntax errors**, leaving your code vulnerable to mistakes and difficult-to-debug typos.
-  
-  * Without specialized tools, you **can't easily preview your HTML**, hindering rapid iteration and efficient design adjustments.
+PointFreeHTML works with Swift server frameworks like Vapor:
 
-These challenges strongly advocate for adopting an abstraction layer for HTML creation—precisely what **PointFreeHTML** provides.
+```swift
+import Vapor
+import PointFreeHTML
 
-But abstraction is just the start. Once you adopt a library-based approach, you face new questions:
-
-  * How can you **ergonomically generate attributes** without cumbersome raw HTML?
-
-  * How can you **efficiently handle styling**? Traditional style sheets have limitations, and ideally, styling should be intuitive and inline—much like SwiftUI.
-
-PointFreeHTML addresses these concerns comprehensively:
-
-  * It offers a **declarative, type-safe syntax**, similar to SwiftUI, enabling compile-time error checking and drastically reducing tedious formatting mistakes.
-  
-  * Components are inherently **composable and reusable**, significantly improving code maintainability and scalability.
-
-  * Styles are conveniently applied inline within components, yet are efficiently compiled into optimized CSS with automatically generated unique classes, ensuring high performance without sacrificing ease-of-use.
-
-## Documentation
-
-The latest documentation for the Dependencies APIs is available [here](https://swiftpackageindex.com/coenttb/pointfree-html/main/documentation/pointfreehtml).
-
-## Examples
-
-I built my website [coenttb.com](https://coenttb.com) using `pointfree-html`. The open source repository can be found [here](https://github.com/coenttb/coenttb-com-server).
-
-## Acknowledgements
-
-This project builds upon the foundational work by the Point-Free team, particularly Brandon Williams and Stephen Celis. This library is a fork and adaptation of their open-source projects, with the goal of making these ideas more accessible and customizable for various use cases. Thank you, Point-Free!
+app.get("hello", ":name") { req -> String in
+    let name = req.parameters.get("name") ?? "World"
+    
+    struct Greeting: HTML {
+        let name: String
+        var body: some HTML {
+            h1 { "Hello, \(name)!" }
+        }
+    }
+    
+    return try String(Greeting(name: name))
+}
+```
 
 ## Installation
 
-You can add `pointfree-html` to an Xcode project by including it as a package dependency:
+### Swift Package Manager
 
-Repository URL: https://github.com/coenttb/pointfree-html
+Add PointFreeHTML to your `Package.swift`:
 
-For a Swift Package Manager project, add the dependency in your Package.swift file:
-```
+```swift
 dependencies: [
-  .package(url: "https://github.com/coenttb/pointfree-html", branch: "main")
+    .package(url: "https://github.com/coenttb/pointfree-html", branch: "main")
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: [
+            .product(name: "PointFreeHTML", package: "pointfree-html")
+        ]
+    )
 ]
 ```
 
-## Related projects
+### Xcode Project
 
-* [swift-css](https://www.github.com/coenttb/swift-css): A Swift DSL for type-safe CSS.
-* [swift-html](https://www.github.com/coenttb/swift-html): A Swift DSL for type-safe HTML & CSS, integrating [swift-css](https://www.github.com/coenttb/swift-css) and [pointfree-html](https://www.github.com/coenttb/pointfree-html).
-* [coenttb-html](https://www.github.com/coenttb/coenttb-html): Extends [swift-html](https://www.github.com/coenttb/swift-html) with additional functionality and integrations for HTML, Markdown, Email, and printing HTML to PDF.
-* [swift-web](https://www.github.com/coenttb/swift-web): Modular tools to simplify web development in Swift forked from  [pointfreeco/swift-web](https://www.github.com/pointfreeco/swift-web), and updated for use in [coenttb-web](https://www.github.com/coenttb/coenttb-web).
-* [coenttb-web](https://www.github.com/coenttb/coenttb-web): A collection of features for your Swift server, with integrations for Vapor.
-* [coenttb-server](https://www.github.com/coenttb/coenttb-server): Build fast, modern, and safe servers that are a joy to write.
-* [coenttb-server-vapor](https://www.github.com/coenttb/coenttb-server-vapor): Vapor & Fluent integration for coenttb-server.
-* [coenttb-com-server](https://www.github.com/coenttb/coenttb-com-server): The backend server for coenttb.com, written entirely in Swift and powered by [coenttb-server-vapor](https://www.github.com/coenttb/coenttb-server-vapor).
-* [swift-languages](https://www.github.com/coenttb/swift-languages): A cross-platform translation library written in Swift.
+Add the package dependency in Xcode:
+- File → Add Package Dependencies
+- Enter: `https://github.com/coenttb/pointfree-html`
 
-## Feedback is much appreciated!
 
-If you’re working on your own Swift project, feel free to learn, fork, and contribute.
+## Testing
 
-Got thoughts? Found something you love? Something you hate? Let me know! Your feedback helps make this project better for everyone. Open an issue or start a discussion—I’m all ears.
+PointFreeHTML includes support for snapshot testing:
 
-> [Subscribe to my newsletter](http://coenttb.com/en/newsletter/subscribe)
->
-> [Follow me on X](http://x.com/coenttb)
-> 
-> [Link on Linkedin](https://www.linkedin.com/in/tenthijeboonkkamp)
+```swift
+import PointFreeHTMLTestSupport
+
+@Test
+func testMyComponent() {
+    let component = Greeting(name: "Coen ten Thije Boonkkamp")
+    assertInlineSnapshot(of: component, as: .html) {
+        """
+        <h1>Hello, Coen ten Thije Boonkkamp!</h1> 
+        """
+    }
+}
+```
+
+## Real-World Usage
+
+PointFreeHTML powers production applications:
+
+- **[coenttb.com](https://coenttb.com)**: Personal website built entirely with PointFreeHTML
+- **[coenttb-com-server](https://github.com/coenttb/coenttb-com-server)**: Open-source backend demonstrating full-stack Swift
+
+## Related Projects
+
+PointFreeHTML is part of a comprehensive Swift web development ecosystem:
+
+### Core Libraries
+- [swift-html](https://github.com/coenttb/swift-html): Type-safe HTML & CSS DSL built on PointFreeHTML -** use this for examples and full developer experience**
+- [swift-html-css-pointfree](https://github.com/coenttb/swift-html-css-pointfree): Integration layer combining PointFreeHTML with CSS types - **use this as example for third-party library integration**
+- [swift-html-types](https://github.com/coenttb/swift-html-types): Complete Swift domain model of HTML elements and attributes  
+- [swift-css-types](https://github.com/coenttb/swift-css-types): Complete Swift domain model of CSS properties and types
+
+### Extended Functionality
+- [coenttb-html](https://github.com/coenttb/coenttb-html): Extensions for HTML, Markdown, Email, and PDF generation
+- [pointfree-html-to-pdf](https://github.com/coenttb/swift-html-to-pdf): Convert HTML to PDF on iOS and macOS
+
+### Server & Web
+- [swift-web](https://github.com/coenttb/swift-web): Modular web development tools
+- [coenttb-web](https://github.com/coenttb/coenttb-web): Feature collection for Swift servers
+- [coenttb-server](https://github.com/coenttb/coenttb-server): Modern Swift server framework
+- [coenttb-server-vapor](https://github.com/coenttb/coenttb-server-vapor): Vapor integration
+
+### Utilities
+- **[swift-languages](https://github.com/coenttb/swift-languages)**: Cross-platform translation library
+
+## Documentation
+
+Comprehensive documentation is available at the [Swift Package Index](https://swiftpackageindex.com/coenttb/pointfree-html/main/documentation/pointfreehtml).
+
+## Acknowledgements
+
+This project builds upon the foundational work by Point-Free (Brandon Williams and Stephen Celis). PointFreeHTML is a fork and adaptation of their original swift-html library.
+
+## Contributing
+
+Contributions are welcome! Please feel free to:
+
+- Open issues for bugs or feature requests
+- Submit pull requests
+- Improve documentation
+- Share your projects built with PointFreeHTML
+
+## Feedback & Support
+
+- **Issues**: [GitHub Issues](https://github.com/coenttb/pointfree-html/issues)
+- **Newsletter**: [Subscribe](http://coenttb.com/en/newsletter/subscribe)
+- **Social**: [Follow @coenttb](http://x.com/coenttb)
+- **Professional**: [LinkedIn](https://www.linkedin.com/in/tenthijeboonkkamp)
 
 ## License
 
-PointFreeHtml is licensed under the MIT License. See [MIT POINTFREE LICENSE](MIT%20POINTFREE%20LICENSE) for details.
-
+PointFreeHTML is licensed under the MIT License. See [LICENSE](LICENSE) for details.

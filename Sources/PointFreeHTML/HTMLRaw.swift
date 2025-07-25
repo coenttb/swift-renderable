@@ -30,21 +30,21 @@
 public struct HTMLRaw: HTML {
     /// The raw bytes to render.
     let bytes: ContiguousArray<UInt8>
-    
+
     /// Creates a new raw HTML component from a string.
     ///
     /// - Parameter string: The string containing raw HTML content.
     public init(_ string: String) {
         self.init(string.utf8)
     }
-    
+
     /// Creates a new raw HTML component from a sequence of bytes.
     ///
     /// - Parameter bytes: The bytes containing raw HTML content.
     public init(_ bytes: some Sequence<UInt8>) {
         self.bytes = ContiguousArray(bytes)
     }
-    
+
     /// Renders the raw HTML bytes directly to the printer without any processing.
     ///
     /// - Parameters:
@@ -53,7 +53,7 @@ public struct HTMLRaw: HTML {
     public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
         printer.bytes.append(contentsOf: html.bytes)
     }
-    
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }

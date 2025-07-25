@@ -1,18 +1,11 @@
 //
-//  File.swift
-//  swift-html
-//
-//  Created by Coen ten Thije Boonkkamp on 16/09/2024.
-//
-
-import Foundation
-
-//
 //  String.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 12/03/2025.
 //
+
+import Foundation
 
 extension String {
     /// Creates a String from rendered HTML content.
@@ -42,7 +35,7 @@ extension String {
     ///
     /// - Throws: `HTMLPrinter.Error` if the rendered bytes cannot be converted to a string
     ///   using the specified encoding.
-    public init(_ html: some HTML, encoding: String.Encoding = .utf8) throws {
+    public init(_ html: some HTML, encoding: String.Encoding = .utf8) throws(HTMLPrinter.Error) {
         guard let string = String(bytes: html.render(), encoding: encoding)
         else { throw HTMLPrinter.Error(message: "Couldn't render HTML") }
         self = string
@@ -54,14 +47,9 @@ extension HTMLPrinter {
     ///
     /// This error is thrown when there's a problem rendering HTML content
     /// or when the rendered bytes cannot be converted to a string.
-    struct Error: Swift.Error {
+    public struct Error: Swift.Error {
         /// A description of what went wrong during HTML rendering.
-        let message: String
+        public let message: String
     }
 }
 
-extension CustomStringConvertible where Self: HTML {
-    public var description: String {
-        try! String(self)
-    }
-}

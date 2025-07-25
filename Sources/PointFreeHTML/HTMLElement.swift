@@ -28,13 +28,13 @@ public struct HTMLElement<Content: HTML>: HTML {
     public var body: Never {
         fatalError()
     }
-    
+
     /// The HTML tag name (e.g., "div", "span", "p").
     let tag: String
-    
+
     /// The optional content contained within this element.
     @HTMLBuilder let content: Content?
-    
+
     /// Creates a new HTML element with the specified tag and content.
     ///
     /// - Parameters:
@@ -45,7 +45,7 @@ public struct HTMLElement<Content: HTML>: HTML {
         self.tag = tag
         self.content = content()
     }
-    
+
     /// Renders this HTML element into the provided printer.
     ///
     /// This method performs the following steps:
@@ -58,20 +58,20 @@ public struct HTMLElement<Content: HTML>: HTML {
     ///   - html: The HTML element to render.
     ///   - printer: The printer to render the HTML into.
     public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        
+
         // Special handling for pre elements to preserve formatting
         let isPreElement = html.tag == "pre"
-        
+
         // Add newline and indentation for block elements
         if html.isBlock {
             printer.bytes.append(contentsOf: printer.configuration.newline.utf8)
             printer.bytes.append(contentsOf: printer.currentIndentation.utf8)
         }
-        
+
         // Write opening tag
         printer.bytes.append(UInt8(ascii: "<"))
         printer.bytes.append(contentsOf: html.tag.utf8)
-        
+
         // Add attributes
         for (name, value) in printer.attributes {
             printer.bytes.append(UInt8(ascii: " "))
@@ -98,7 +98,7 @@ public struct HTMLElement<Content: HTML>: HTML {
             }
         }
         printer.bytes.append(UInt8(ascii: ">"))
-        
+
         // Render content if present
         if let content = html.content {
             let oldAttributes = printer.attributes
@@ -113,7 +113,7 @@ public struct HTMLElement<Content: HTML>: HTML {
             }
             Content._render(content, into: &printer)
         }
-        
+
         // Add closing tag unless it's a void element
         if !HTMLVoidTag.allTags.contains(html.tag) {
             if html.isBlock && !isPreElement {
@@ -125,7 +125,7 @@ public struct HTMLElement<Content: HTML>: HTML {
             printer.bytes.append(UInt8(ascii: ">"))
         }
     }
-    
+
     /// Determines if this element is a block-level element.
     ///
     /// Block-level elements are rendered with newlines and indentation,
@@ -172,5 +172,5 @@ private let inlineTags: Set<String> = [
     "textarea",
     "time",
     "tt",
-    "var",
+    "var"
 ]

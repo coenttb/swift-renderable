@@ -5,13 +5,11 @@ import PackageDescription
 
 extension String {
     static let pointfreeHtml: Self = "PointFreeHTML"
-    static let pointfreeHtmlElements: Self = "PointFreeHtmlElements"
-    static let pointfreeHtmlTestSupport: Self = "PointFreeHtmlTestSupport"
+    static let pointfreeHtmlTestSupport: Self = "PointFreeHTMLTestSupport"
 }
 
 extension Target.Dependency {
     static var pointfreeHtml: Self { .target(name: .pointfreeHtml) }
-    static var pointfreeHtmlElements: Self { .target(name: .pointfreeHtmlElements) }
     static var pointfreeHtmlTestSupport: Self { .target(name: .pointfreeHtmlTestSupport) }
 }
 
@@ -31,7 +29,6 @@ let package = Package(
     ],
     products: [
         .library(name: .pointfreeHtml, targets: [.pointfreeHtml]),
-        .library(name: .pointfreeHtmlElements, targets: [.pointfreeHtmlElements]),
         .library(name: .pointfreeHtmlTestSupport, targets: [.pointfreeHtmlTestSupport]),
     ],
     dependencies: [
@@ -51,21 +48,7 @@ let package = Package(
             name: .pointfreeHtml.tests,
             dependencies: [
                 .pointfreeHtml,
-                .product(name: "DependenciesTestSupport", package: "swift-dependencies")
-            ]
-        ),
-        .target(
-            name: .pointfreeHtmlElements,
-            dependencies: [
-                .pointfreeHtml
-            ]
-        ),
-        .testTarget(
-            name: .pointfreeHtmlElements.tests,
-            dependencies: [
-                .pointfreeHtmlElements,
-                .dependenciesTestSupport,
-                .inlineSnapshotTesting
+                .pointfreeHtmlTestSupport
             ]
         ),
         .target(
@@ -80,8 +63,4 @@ let package = Package(
     swiftLanguageModes: [.v6]
 )
 
-extension String {
-    var tests: Self {
-        "\(self) Tests"
-    }
-}
+extension String { var tests: Self { self + " Tests" } }

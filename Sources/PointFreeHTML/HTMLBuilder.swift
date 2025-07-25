@@ -36,14 +36,14 @@ public enum HTMLBuilder {
     public static func buildArray<Element: HTML>(_ components: [Element]) -> _HTMLArray<Element> {
         _HTMLArray(elements: components)
     }
-    
+
     /// Creates an empty HTML component when no content is provided.
     ///
     /// - Returns: An empty HTML component.
     public static func buildBlock() -> HTMLEmpty {
         HTMLEmpty()
     }
-    
+
     /// Passes through a single content component unchanged.
     ///
     /// - Parameter content: The HTML component to pass through.
@@ -51,7 +51,7 @@ public enum HTMLBuilder {
     public static func buildBlock<Content: HTML>(_ content: Content) -> Content {
         content
     }
-    
+
     /// Combines multiple HTML components into a tuple of components.
     ///
     /// - Parameter content: The HTML components to combine.
@@ -61,7 +61,7 @@ public enum HTMLBuilder {
     ) -> _HTMLTuple<repeat each Content> {
         _HTMLTuple(content: repeat each content)
     }
-    
+
     /// Handles the "if" or "true" case in a conditional statement.
     ///
     /// - Parameter component: The HTML component for the "if" or "true" case.
@@ -71,7 +71,7 @@ public enum HTMLBuilder {
     ) -> _HTMLConditional<First, Second> {
         .first(component)
     }
-    
+
     /// Handles the "else" or "false" case in a conditional statement.
     ///
     /// - Parameter component: The HTML component for the "else" or "false" case.
@@ -81,7 +81,7 @@ public enum HTMLBuilder {
     ) -> _HTMLConditional<First, Second> {
         .second(component)
     }
-    
+
     /// Converts any HTML expression to itself.
     ///
     /// - Parameter expression: The HTML expression to convert.
@@ -89,7 +89,7 @@ public enum HTMLBuilder {
     public static func buildExpression<T: HTML>(_ expression: T) -> T {
         expression
     }
-    
+
     /// Converts a text expression to HTML text.
     ///
     /// - Parameter expression: The HTML text to convert.
@@ -97,7 +97,7 @@ public enum HTMLBuilder {
     public static func buildExpression(_ expression: HTMLText) -> HTMLText {
         expression
     }
-    
+
     /// Handles optional HTML components.
     ///
     /// - Parameter component: An optional HTML component.
@@ -105,7 +105,7 @@ public enum HTMLBuilder {
     public static func buildOptional<T: HTML>(_ component: T?) -> T? {
         component
     }
-    
+
     /// Finalizes the result of the builder.
     ///
     /// - Parameter component: The HTML component to finalize.
@@ -122,7 +122,7 @@ public enum HTMLBuilder {
 public struct _HTMLArray<Element: HTML>: HTML {
     /// The array of HTML elements contained in this container.
     let elements: [Element]
-    
+
     /// Renders all elements in the array into the printer.
     ///
     /// - Parameters:
@@ -133,7 +133,7 @@ public struct _HTMLArray<Element: HTML>: HTML {
             Element._render(element, into: &printer)
         }
     }
-    
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
@@ -147,7 +147,7 @@ public enum _HTMLConditional<First: HTML, Second: HTML>: HTML {
     case first(First)
     /// Represents the "else" or "false" case.
     case second(Second)
-    
+
     /// Renders either the first or second HTML component based on the case.
     ///
     /// - Parameters:
@@ -161,7 +161,7 @@ public enum _HTMLConditional<First: HTML, Second: HTML>: HTML {
             Second._render(second, into: &printer)
         }
     }
-    
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
@@ -173,14 +173,14 @@ public enum _HTMLConditional<First: HTML, Second: HTML>: HTML {
 public struct HTMLText: HTML {
     /// The raw text content.
     let text: String
-    
+
     /// Creates a new HTML text component with the given text.
     ///
     /// - Parameter text: The text content to represent.
     public init(_ text: String) {
         self.text = text
     }
-    
+
     /// Renders the text content with proper HTML escaping.
     ///
     /// This method escapes special characters (`&`, `<`, `>`) to prevent HTML injection
@@ -204,10 +204,10 @@ public struct HTMLText: HTML {
             }
         }
     }
-    
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
-    
+
     /// Concatenates two HTML text components.
     ///
     /// - Parameters:
@@ -239,14 +239,14 @@ extension HTMLText: ExpressibleByStringInterpolation {}
 public struct _HTMLTuple<each Content: HTML>: HTML {
     /// The tuple of HTML elements.
     let content: (repeat each Content)
-    
+
     /// Creates a new tuple of HTML elements.
     ///
     /// - Parameter content: The tuple of HTML elements.
     init(content: repeat each Content) {
         self.content = (repeat each content)
     }
-    
+
     /// Renders all elements in the tuple into the printer.
     ///
     /// - Parameters:
@@ -260,7 +260,7 @@ public struct _HTMLTuple<each Content: HTML>: HTML {
         }
         repeat render(each html.content)
     }
-    
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
@@ -279,7 +279,7 @@ extension Optional: HTML where Wrapped: HTML {
         guard let html else { return }
         Wrapped._render(html, into: &printer)
     }
-    
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }

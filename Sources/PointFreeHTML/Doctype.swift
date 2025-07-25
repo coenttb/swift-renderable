@@ -26,7 +26,7 @@
 public struct Doctype: HTML {
   /// Creates a new doctype declaration.
   public init() {}
-  
+
   /// The body of the doctype declaration, which renders as raw HTML.
   public var body: some HTML {
     HTMLRaw("<!doctype html>")

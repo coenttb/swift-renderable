@@ -7,8 +7,8 @@
 
 import ConcurrencyExtras
 import Dependencies
-import Foundation
 import OrderedCollections
+import Foundation
 
 /// Extension to add inline styling capabilities to all HTML elements.
 extension HTML {
@@ -29,26 +29,65 @@ extension HTML {
     /// - Parameters:
     ///   - property: The CSS property name (e.g., "color", "margin", "font-size").
     ///   - value: The value for the CSS property. Pass nil to omit this style.
-    ///   - mediaQuery: Optional media query to apply this style conditionally.
+    ///   - atRule: Optional media query to apply this style conditionally.
     ///   - pre: Optional selector prefix for more complex CSS selectors.
     ///   - pseudo: Optional pseudo-class or pseudo-element to apply (e.g., `:hover`, `::before`).
     /// - Returns: An HTML element with the specified style applied.
     public func inlineStyle(
         _ property: String,
         _ value: String?,
-        media mediaQuery: MediaQuery? = nil,
-        pre: String? = nil,
+        atRule: AtRule? = nil,
+        selector: Selector? = nil,
         pseudo: Pseudo? = nil
     ) -> HTMLInlineStyle<Self> {
         HTMLInlineStyle(
             content: self,
             property: property,
             value: value,
-            mediaQuery: mediaQuery,
-            pre: pre,
+            atRule: atRule,
+            selector: selector,
             pseudo: pseudo
         )
     }
+    
+    @_disfavoredOverload
+    public func inlineStyle(
+        _ property: String,
+        _ value: String?,
+        media: AtRule.Media? = nil,
+        selector: Selector? = nil,
+        pseudo: Pseudo? = nil
+    ) -> HTMLInlineStyle<Self> {
+        HTMLInlineStyle(
+            content: self,
+            property: property,
+            value: value,
+            atRule: media,
+            selector: selector,
+            pseudo: pseudo
+        )
+    }
+    
+    // For backwards compatibility. Also for future to transform the Media type into an AtRule.
+    @available(*, deprecated, message: "change 'pre' to 'selector'")
+    @_disfavoredOverload
+    public func inlineStyle(
+        _ property: String,
+        _ value: String?,
+        media mediaQuery: AtRule.Media? = nil,
+        pre selector: Selector? = nil,
+        pseudo: Pseudo? = nil
+    ) -> HTMLInlineStyle<Self> {
+        HTMLInlineStyle(
+            content: self,
+            property: property,
+            value: value,
+            atRule: mediaQuery,
+            selector: selector,
+            pseudo: pseudo
+        )
+    }
+
 }
 
 /// A wrapper that applies CSS styles to an HTML element.
@@ -72,13 +111,13 @@ extension HTML {
 public struct HTMLInlineStyle<Content: HTML>: HTML {
     /// The HTML content being styled.
     private let content: Content
-    
+
     /// The collection of styles to apply.
     private var styles: [Style]
-    
+
     /// Generator for unique class names based on styles.
     @Dependency(ClassNameGenerator.self) fileprivate var classNameGenerator
-    
+
     /// Creates a new styled HTML element.
     ///
     /// - Parameters:
@@ -86,14 +125,14 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
     ///   - property: The CSS property name.
     ///   - value: The value for the CSS property.
     ///   - mediaQuery: Optional media query for conditional styling.
-    ///   - pre: Optional selector prefix.
+    ///   - selector: Optional selector prefix.
     ///   - pseudo: Optional pseudo-class or pseudo-element.
     init(
         content: Content,
         property: String,
         value: String?,
-        mediaQuery: MediaQuery?,
-        pre: String? = nil,
+        atRule: AtRule?,
+        selector: Selector? = nil,
         pseudo: Pseudo?
     ) {
         self.content = content
@@ -103,15 +142,15 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
                 Style(
                     property: property,
                     value: $0,
-                    media: mediaQuery,
-                    preSelector: pre,
+                    atRule: atRule,
+                    selector: selector,
                     pseudo: pseudo
                 )
             ]
         }
         ?? []
     }
-    
+
     /// Adds an additional style to this element.
     ///
     /// This method allows for chaining multiple styles on a single element.
@@ -133,8 +172,8 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
     public func inlineStyle(
         _ property: String,
         _ value: String?,
-        media mediaQuery: MediaQuery? = nil,
-        pre: String? = nil,
+        atRule: AtRule? = nil,
+        selector: Selector? = nil,
         pseudo: Pseudo? = nil
     ) -> HTMLInlineStyle {
         var copy = self
@@ -143,133 +182,184 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
                 Style(
                     property: property,
                     value: value,
-                    media: mediaQuery,
-                    preSelector: pre,
+                    atRule: atRule,
+                    selector: selector,
                     pseudo: pseudo
                 )
             )
         }
         return copy
     }
-    
-    /// Renders this styled HTML element into the provided printer.
-    ///
-    /// This method:
-    /// 1. Saves the current class attribute
-    /// 2. Generates unique class names for each style
-    /// 3. Adds the styles to the printer's stylesheet
-    /// 4. Adds the class names to the element's class attribute
-    /// 5. Renders the content
-    /// 6. Restores the original class attribute
-    ///
-    /// - Parameters:
-    ///   - html: The styled HTML element to render.
-    ///   - printer: The printer to render the HTML into.
-//    public static func _render(_ html: HTMLInlineStyle<Content>, into printer: inout HTMLPrinter) {
-//        let previousClass = printer.attributes["class"]  // TODO: should we optimize this?
-//        defer {
-//            Content._render(html.content, into: &printer)
-//            printer.attributes["class"] = previousClass
-//        }
-//        
-//        for style in html.styles {
-//            let className = html.classNameGenerator.generate(style)
-//            let selector = """
-//        \(style.preSelector.map { "\($0) " } ?? "").\(className)\(style.pseudo?.rawValue ?? "")
-//        """
-//            
-//            if printer.styles[style.media, default: [:]][selector] == nil {
-//                printer.styles[style.media, default: [:]][selector] = "\(style.property):\(style.value)"
-//            }
-//            printer
-//                .attributes["class", default: ""]
-//                .append(printer.attributes.keys.contains("class") ? " \(className)" : className)
-//        }
-//    }
-    // Now update the batched processing render method
+
+    // Optimized rendering with simplified logic
     public static func _render(_ html: HTMLInlineStyle<Content>, into printer: inout HTMLPrinter) {
         let previousClass = printer.attributes["class"]
+        defer { printer.attributes["class"] = previousClass }
         
-        // Collect all styles from nested HTMLInlineStyle elements
+        // Collect all styles from nested elements
         var allStyles: [Style] = []
         var coreContent: any HTML = html
         
-        // Flatten the style chain iteratively using a protocol approach
+        // Flatten style chain
         while let styledElement = coreContent as? any HTMLInlineStyleProtocol {
             allStyles.append(contentsOf: styledElement.extractStyles())
             coreContent = styledElement.extractContent()
         }
         
-        // Process all styles at once
-        var classNames: [String] = []
-        for style in allStyles {
-            let className = html.classNameGenerator.generate(style)
-            let selector = """
-        \(style.preSelector.map { "\($0) " } ?? "").\(className)\(style.pseudo?.rawValue ?? "")
-        """
+        guard !allStyles.isEmpty else {
+            coreContent.render(into: &printer)
+            return
+        }
+        
+        // Generate class names and apply styles
+        let classNames = html.classNameGenerator.generateBatch(allStyles)
+        var classComponents: [String] = []
+        classComponents.reserveCapacity(classNames.count)
+        
+        for (style, className) in zip(allStyles, classNames) {
+            let selector = buildSelector(className: className, style: style)
             
-            if printer.styles[style.media, default: [:]][selector] == nil {
-                printer.styles[style.media, default: [:]][selector] = "\(style.property):\(style.value)"
+            // Add to stylesheet if not present
+            if printer.styles[style.atRule, default: [:]][selector] == nil {
+                printer.styles[style.atRule, default: [:]][selector] = "\(style.property):\(style.value)"
             }
-            classNames.append(className)
+            
+            classComponents.append(className)
         }
         
-        // Apply all class names at once
-        if !classNames.isEmpty {
-            let existingClass = printer.attributes["class"] ?? ""
-            let separator = existingClass.isEmpty ? "" : " "
-            printer.attributes["class"] = existingClass + separator + classNames.joined(separator: " ")
+        // Apply class names
+        if let existingClass = printer.attributes["class"] {
+            printer.attributes["class"] = "\(existingClass) \(classComponents.joined(separator: " "))"
+        } else {
+            printer.attributes["class"] = classComponents.joined(separator: " ")
         }
         
-        // Render the core content using the instance method
-        defer { printer.attributes["class"] = previousClass }
         coreContent.render(into: &printer)
     }
     
+    // Helper function to build CSS selector
+    private static func buildSelector(className: String, style: Style) -> String {
+        var selector = ".\(className)"
+        
+        if let pre = style.selector?.rawValue {
+            selector = "\(pre) " + selector
+        }
+        
+        if let pseudo = style.pseudo?.rawValue {
+            selector += pseudo
+        }
+        
+        return selector
+    }
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
 
-private struct ClassNameGenerator: DependencyKey {
-    var generate: @Sendable (Style) -> String
+private final class StyleManager: @unchecked Sendable {
+    static let shared = StyleManager()
     
-    static var liveValue: ClassNameGenerator {
-        let seenStyles = LockIsolated<OrderedSet<Style>>([])
-        return Self { style in
-            seenStyles.withValue { seenStyles in
-                let index =
-                seenStyles.firstIndex(of: style)
-                ?? {
-                    seenStyles.append(style)
-                    return seenStyles.count - 1
-                }()
-#if DEBUG
-                return "\(style.property)-\(index)"
-#else
-                return "c\(index)"
-#endif
+    private let state = LockIsolated<(seenStyles: OrderedSet<Style>, styleToIndex: [Style: Int])>(([], [:]))
+    
+    private init() {}
+    
+    func getClassName(for style: Style) -> String {
+        let index = state.withValue { state in
+            if let cachedIndex = state.styleToIndex[style] {
+                return cachedIndex
+            } else {
+                let index = state.seenStyles.count
+                state.seenStyles.append(style)
+                state.styleToIndex[style] = index
+                return index
             }
         }
+        
+#if DEBUG
+        return "\(style.property)-\(index)"
+#else
+        return "c\(index)"
+#endif
     }
     
-    static var testValue: ClassNameGenerator {
-        Self { style in
-            let hash = classID(
-                style.value
-                + (style.media?.rawValue ?? "")
-                + (style.preSelector ?? "")
-                + (style.pseudo?.rawValue ?? "")
-            )
-            return "\(style.property)-\(hash)"
+    func getClassNames(for styles: [Style]) -> [String] {
+        guard !styles.isEmpty else { return [] }
+        
+        let indices = state.withValue { state in
+            var results: [Int] = []
+            results.reserveCapacity(styles.count)
+            
+            for style in styles {
+                let index: Int
+                if let cachedIndex = state.styleToIndex[style] {
+                    index = cachedIndex
+                } else {
+                    index = state.seenStyles.count
+                    state.seenStyles.append(style)
+                    state.styleToIndex[style] = index
+                }
+                results.append(index)
+            }
+            
+            return results
         }
+        
+        return zip(styles, indices).map { style, index in
+#if DEBUG
+            "\(style.property)-\(index)"
+#else
+            "c\(index)"
+#endif
+        }
+    }
+}
+
+private struct ClassNameGenerator: DependencyKey {
+    var generate: @Sendable (Style) -> String
+    var generateBatch: @Sendable ([Style]) -> [String]
+
+    static var liveValue: ClassNameGenerator {
+        return Self(
+            generate: { style in
+                StyleManager.shared.getClassName(for: style)
+            },
+            generateBatch: { styles in
+                StyleManager.shared.getClassNames(for: styles)
+            }
+        )
+    }
+
+    static var testValue: ClassNameGenerator {
+        Self(
+            generate: { style in
+                let hash = classID(
+                    style.value
+                    + (style.atRule?.rawValue ?? "")
+                    + (style.selector?.rawValue ?? "")
+                    + (style.pseudo?.rawValue ?? "")
+                )
+                return "\(style.property)-\(hash)"
+            },
+            generateBatch: { styles in
+                styles.map { style in
+                    let hash = classID(
+                        style.value
+                        + (style.atRule?.rawValue ?? "")
+                        + (style.selector?.rawValue ?? "")
+                        + (style.pseudo?.rawValue ?? "")
+                    )
+                    return "\(style.property)-\(hash)"
+                }
+            }
+        )
     }
 }
 
 internal struct Style: Hashable, Sendable {
     let property: String
     let value: String
-    let media: MediaQuery?
-    let preSelector: String?
+    let atRule: AtRule?
+    let selector: Selector?
     let pseudo: Pseudo?
 }
 
@@ -284,7 +374,7 @@ extension HTMLInlineStyle: HTMLInlineStyleProtocol {
     func extractStyles() -> [Style] {
         return styles
     }
-    
+
     func extractContent() -> any HTML {
         return content
     }
@@ -297,11 +387,9 @@ extension HTML {
     }
 }
 
-
-
 private func classID(_ value: String) -> String {
     return encode(murmurHash(value))
-    
+
     func encode(_ value: UInt32) -> String {
         guard value > 0
         else { return "" }
@@ -313,7 +401,7 @@ private func classID(_ value: String) -> String {
             number /= baseCount
             encoded.append(baseChars[index])
         }
-        
+
         return encoded
     }
     func murmurHash(_ string: String) -> UInt32 {
@@ -325,32 +413,32 @@ private func classID(_ value: String) -> String {
         let r2: UInt32 = 13
         let m: UInt32 = 5
         let n: UInt32 = 0xe654_6b64
-        
+
         var hash: UInt32 = 0
-        
+
         let chunkSize = MemoryLayout<UInt32>.size
         let chunks = length / chunkSize
-        
+
         for i in 0..<chunks {
             var k: UInt32 = 0
             let offset = i * chunkSize
-            
+
             for j in 0..<chunkSize {
                 k |= UInt32(data[offset + j]) << (j * 8)
             }
-            
+
             k &*= c1
             k = (k << r1) | (k >> (32 - r1))
             k &*= c2
-            
+
             hash ^= k
             hash = (hash << r2) | (hash >> (32 - r2))
             hash = hash &* m &+ n
         }
-        
+
         var k1: UInt32 = 0
         let tailStart = chunks * chunkSize
-        
+
         switch length & 3 {
         case 3:
             k1 ^= UInt32(data[tailStart + 2]) << 16
@@ -367,18 +455,16 @@ private func classID(_ value: String) -> String {
         default:
             break
         }
-        
+
         hash ^= UInt32(length)
         hash ^= (hash >> 16)
         hash &*= 0x85eb_ca6b
         hash ^= (hash >> 13)
         hash &*= 0xc2b2_ae35
         hash ^= (hash >> 16)
-        
+
         return hash
     }
 }
 private let baseChars = Array("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 private let baseCount = UInt32(baseChars.count)
-
-

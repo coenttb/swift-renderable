@@ -29,14 +29,14 @@
 public protocol HTML {
     /// The type of HTML content that this HTML element or component contains.
     associatedtype Content: HTML
-    
+
     /// The body of this HTML element or component, defining its structure and content.
     ///
     /// This property uses the `HTMLBuilder` result builder to allow for a declarative
     /// syntax when defining HTML content, similar to how SwiftUI's ViewBuilder works.
     @HTMLBuilder
     var body: Content { get }
-    
+
     /// Renders this HTML element or component into the provided printer.
     ///
     /// This method is typically not called directly by users of the library,
@@ -81,8 +81,7 @@ public struct AnyHTML: HTML {
 extension AnyHTML {
     public init(
         _ closure: () -> any HTML
-    ){
+    ) {
         self = .init(closure())
     }
 }
-

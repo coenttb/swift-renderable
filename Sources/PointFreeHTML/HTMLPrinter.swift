@@ -26,22 +26,22 @@ import OrderedCollections
 /// Most users will not interact with `HTMLPrinter` directly, but instead
 /// use the `render()` method on HTML elements or documents.
 public struct HTMLPrinter: Sendable {
-    
+
     /// The buffer of bytes representing the rendered HTML.
     public var bytes: ContiguousArray<UInt8> = []
-    
+
     /// The current set of attributes to apply to the next HTML element.
     public var attributes: OrderedDictionary<String, String> = [:]
-    
+
     /// The collected styles to be rendered in the document's stylesheet.
-    public var styles: OrderedDictionary<MediaQuery?, OrderedDictionary<String, String>> = [:]
-    
+    public var styles: OrderedDictionary<AtRule?, OrderedDictionary<String, String>> = [:]
+
     /// Configuration for rendering, including formatting options.
     let configuration: Configuration
-    
+
     /// The current indentation level for pretty-printing.
     var currentIndentation = ""
-    
+
     /// Creates a new HTML printer with the specified configuration.
     ///
     /// - Parameter configuration: The configuration to use for rendering.
@@ -49,7 +49,7 @@ public struct HTMLPrinter: Sendable {
     public init(_ configuration: Configuration = .default) {
         self.configuration = configuration
     }
-    
+
     /// Generates a CSS stylesheet from the collected styles.
     ///
     /// This method compiles all styles collected during rendering into a
@@ -84,7 +84,7 @@ public struct HTMLPrinter: Sendable {
         }
         return sheet
     }
-    
+
     /// Configuration options for HTML rendering.
     ///
     /// This struct provides options to control how HTML is rendered,
@@ -92,20 +92,20 @@ public struct HTMLPrinter: Sendable {
     /// specific contexts like email.
     public struct Configuration: Sendable {
         /// Whether to add `!important` to all CSS rules.
-        let forceImportant: Bool
-        
+        package let forceImportant: Bool
+
         /// The string to use for indentation.
-        let indentation: String
-        
+        package let indentation: String
+
         /// The string to use for newlines.
-        let newline: String
-        
+        package let newline: String
+
         /// Default configuration with no indentation or newlines.
         public static let `default` = Self(forceImportant: false, indentation: "", newline: "")
-        
+
         /// Pretty-printing configuration with 2-space indentation and newlines.
         public static let pretty = Self(forceImportant: false, indentation: "  ", newline: "\n")
-        
+
         /// Configuration optimized for email HTML with forced important styles.
         public static let email = Self(forceImportant: true, indentation: " ", newline: "\n")
     }
@@ -156,11 +156,10 @@ extension DependencyValues {
 private enum HTMLPrinterKey: DependencyKey {
     /// Default printer for production use.
     static var liveValue: HTMLPrinter { HTMLPrinter() }
-    
+
     /// Pretty-printing printer for preview use.
     static var previewValue: HTMLPrinter { HTMLPrinter(.pretty) }
-    
+
     /// Pretty-printing printer for test use.
     static var testValue: HTMLPrinter { HTMLPrinter(.default) }
 }
-

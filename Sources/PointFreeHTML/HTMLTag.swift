@@ -1,5 +1,3 @@
-import PointFreeHTML
-
 //
 //  HTMLTag.swift
 //
@@ -29,21 +27,21 @@ import PointFreeHTML
 public struct HTMLTag: ExpressibleByStringLiteral {
     /// The name of the HTML tag.
     public let rawValue: String
-    
+
     /// Creates a new HTML tag with the specified name.
     ///
     /// - Parameter rawValue: The name of the HTML tag.
-    init(_ rawValue: String) {
+    public init(_ rawValue: String) {
         self.rawValue = rawValue
     }
-    
+
     /// Creates a new HTML tag from a string literal.
     ///
     /// - Parameter value: The string literal representing the tag name.
     public init(stringLiteral value: String) {
         self.init(value)
     }
-    
+
     /// Creates an empty HTML element with this tag.
     ///
     /// This allows using tags as functions, e.g. `div()`.
@@ -52,7 +50,7 @@ public struct HTMLTag: ExpressibleByStringLiteral {
     public func callAsFunction() -> HTMLElement<HTMLEmpty> {
         tag(self.rawValue)
     }
-    
+
     /// Creates an HTML element with this tag and the provided content.
     ///
     /// This allows using tags as functions with closures, e.g. `div { ... }`.
@@ -84,21 +82,21 @@ public struct HTMLTag: ExpressibleByStringLiteral {
 public struct HTMLTextTag: ExpressibleByStringLiteral {
     /// The name of the HTML tag.
     public let rawValue: String
-    
+
     /// Creates a new HTML text tag with the specified name.
     ///
     /// - Parameter rawValue: The name of the HTML tag.
-    init(_ rawValue: String) {
+    public init(_ rawValue: String) {
         self.rawValue = rawValue
     }
-    
+
     /// Creates a new HTML text tag from a string literal.
     ///
     /// - Parameter value: The string literal representing the tag name.
     public init(stringLiteral value: String) {
         self.init(value)
     }
-    
+
     /// Creates an HTML element with this tag and the provided text content.
     ///
     /// - Parameter content: The text content for this element.
@@ -106,7 +104,7 @@ public struct HTMLTextTag: ExpressibleByStringLiteral {
     public func callAsFunction(_ content: String = "") -> HTMLElement<HTMLText> {
         tag(self.rawValue) { HTMLText(content) }
     }
-    
+
     /// Creates an HTML element with this tag and dynamically generated text content.
     ///
     /// - Parameter content: A closure that returns the text content for this element.
@@ -147,26 +145,26 @@ public struct HTMLVoidTag: ExpressibleByStringLiteral {
         "param",
         "source",
         "track",
-        "wbr",
+        "wbr"
     ]
-    
+
     /// The name of the HTML void tag.
     public let rawValue: String
-    
+
     /// Creates a new HTML void tag with the specified name.
     ///
     /// - Parameter rawValue: The name of the HTML void tag.
-    init(_ rawValue: String) {
+    public init(_ rawValue: String) {
         self.rawValue = rawValue
     }
-    
+
     /// Creates a new HTML void tag from a string literal.
     ///
     /// - Parameter value: The string literal representing the tag name.
     public init(stringLiteral value: String) {
         self.init(value)
     }
-    
+
     /// Creates an HTML void element with this tag.
     ///
     /// - Returns: An HTML void element with this tag.
@@ -204,5 +202,3 @@ public func tag<T: HTML>(
 ) -> HTMLElement<T> {
     HTMLElement(tag: tag, content: content)
 }
-
-
