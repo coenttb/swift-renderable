@@ -6,25 +6,25 @@
 //
 
 public struct HTMLDocument<Body: HTML, Head: HTML>: HTMLDocumentProtocol {
-    public let head: Head
-    public let body: Body
+  public let head: Head
+  public let body: Body
 
-    public init(
-        @HTMLBuilder body: () -> Body,
-        @HTMLBuilder head: () -> Head = { HTMLEmpty() }
-    ) {
-        self.body = body()
-        self.head = head()
-    }
+  public init(
+    @HTMLBuilder body: () -> Body,
+    @HTMLBuilder head: () -> Head = { HTMLEmpty() }
+  ) {
+    self.body = body()
+    self.head = head()
+  }
 }
 
 extension HTMLDocument {
-    @_disfavoredOverload
-    public init(
-        @HTMLBuilder head: () -> Head = { HTMLEmpty() },
-        @HTMLBuilder body: () -> Body
-    ) {
-        self.body = body()
-        self.head = head()
-    }
+  @_disfavoredOverload
+  public init(
+    @HTMLBuilder head: () -> Head = { HTMLEmpty() },
+    @HTMLBuilder body: () -> Body
+  ) {
+    self.body = body()
+    self.head = head()
+  }
 }

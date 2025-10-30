@@ -40,18 +40,18 @@
 ///
 /// - Note: This is similar to React's Fragment concept or SwiftUI's Group.
 public struct HTMLGroup<Content: HTML>: HTML {
-    /// The grouped HTML content.
-    let content: Content
+  /// The grouped HTML content.
+  let content: Content
 
-    /// Creates a new group with the given HTML content.
-    ///
-    /// - Parameter content: A closure that returns the HTML content to group.
-    public init(@HTMLBuilder content: () -> Content) {
-        self.content = content()
-    }
+  /// Creates a new group with the given HTML content.
+  ///
+  /// - Parameter content: A closure that returns the HTML content to group.
+  public init(@HTMLBuilder content: () -> Content) {
+    self.content = content()
+  }
 
-    /// The body of this group, which is the grouped content.
-    public var body: some HTML {
-        content
-    }
+  /// The body of this group, which is the grouped content.
+  public var body: some HTML {
+    content
+  }
 }
