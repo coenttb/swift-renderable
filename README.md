@@ -1,6 +1,7 @@
 # PointFreeHTML
 
 [![CI](https://github.com/coenttb/pointfree-html/workflows/CI/badge.svg)](https://github.com/coenttb/pointfree-html/actions/workflows/ci.yml)
+![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
 A cross-platform Swift package to render any Swift type as HTML.
 
