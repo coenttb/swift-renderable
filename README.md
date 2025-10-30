@@ -1,5 +1,7 @@
 # PointFreeHTML
 
+[![CI](https://github.com/coenttb/pointfree-html/workflows/CI/badge.svg)](https://github.com/coenttb/pointfree-html/actions/workflows/ci.yml)
+
 A cross-platform Swift package to render any Swift type as HTML.
 
 ## Overview
@@ -25,16 +27,16 @@ import PointFreeHTML
 struct Greeting: HTML {
     let name: String
     var body: some HTML {
-        h1 { "Hello, \(name)!" }
+        tag("h1") { "Hello, \(name)!" }
     }
 }
 
 let greeting = Greeting(name: "World")
 let htmlString: String = try String(greeting)
-let htmlBytes: ContiguousArray<UInt8> = HTMLDocument.render(greeting)
+let htmlBytes: ContiguousArray<UInt8> = greeting.render()
 ```
 
-HTML and HTMLDocument can render to bytes (`ContiguousArray<UInt8>`) via the `HTMLDocument.render` method, or to a string by passing it to `String.init(_ html: some HTML, encoding: String.Encoding = .utf8) throws`.
+HTML and HTMLDocument can render to bytes (`ContiguousArray<UInt8>`) via the `.render()` method, or to a string by passing it to `String.init(_ html: some HTML, encoding: String.Encoding = .utf8) throws`.
 
 ### Complete Examples
 
@@ -55,11 +57,12 @@ import HTML // This imports swift-html which includes PointFreeHTML
 
 struct StyledComponent: HTML {
     var body: some HTML {
-        div {
-            a(href: "#") { "Styled Heading" }
-                .color(.blue)
-                .fontSize(.px(24))
-                .marginBottom(.px(16))
+        tag("div") {
+            tag("a") { "Styled Heading" }
+                .attribute("href", "#")
+                .inlineStyle("color", "blue")
+                .inlineStyle("font-size", "24px")
+                .inlineStyle("margin-bottom", "16px")
         }
     }
 }
@@ -75,14 +78,14 @@ import PointFreeHTML
 
 app.get("hello", ":name") { req -> String in
     let name = req.parameters.get("name") ?? "World"
-    
+
     struct Greeting: HTML {
         let name: String
         var body: some HTML {
-            h1 { "Hello, \(name)!" }
+            tag("h1") { "Hello, \(name)!" }
         }
     }
-    
+
     return try String(Greeting(name: name))
 }
 ```

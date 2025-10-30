@@ -1,0 +1,51 @@
+name: SwiftLint
+
+on:
+  pull_request:
+    paths:
+      - '**.swift'
+  workflow_dispatch:
+
+jobs:
+  swiftlint:
+    name: Check Code Quality
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Cache SwiftLint
+        id: cache-swiftlint
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/bin/swiftlint
+          key: ${{ runner.os }}-swiftlint-0.57.0
+
+      - name: Install SwiftLint
+        if: steps.cache-swiftlint.outputs.cache-hit != 'true'
+        run: |
+          brew install swiftlint
+
+      - name: Verify SwiftLint installation
+        run: |
+          if ! command -v swiftlint &> /dev/null; then
+            echo "❌ SwiftLint installation failed"
+            exit 1
+          fi
+          swiftlint version
+
+      - name: Run SwiftLint
+        run: |
+          echo "Checking Swift code quality..."
+          swiftlint lint --reporter github-actions-logging
+
+      - name: Provide fix instructions on failure
+        if: failure()
+        run: |
+          echo ""
+          echo "⚠️ SwiftLint violations found. These are warnings only."
+          echo ""
+          echo "To see violations locally, run:"
+          echo "  swiftlint lint"
+          echo ""
+          echo "To auto-fix some violations:"
+          echo "  swiftlint --fix"
