@@ -65,6 +65,7 @@ jobs:
 
       - uses: compnerd/gha-setup-swift@main
         with:
+          swift-version: "6.1"
           swift-build: "6.1-RELEASE"
 
       - name: Build
