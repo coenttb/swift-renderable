@@ -63,10 +63,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: compnerd/gha-setup-swift@main
+      - uses: SwiftyLab/setup-swift@latest
         with:
           swift-version: "6.1"
-          swift-build: "6.1-RELEASE"
 
       - name: Build
         run: swift build
