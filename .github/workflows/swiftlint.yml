@@ -9,7 +9,7 @@ on:
 jobs:
   swiftlint:
     name: Check Code Quality
-    runs-on: macos-15
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
@@ -23,7 +23,10 @@ jobs:
       - name: Install SwiftLint
         if: steps.cache-swiftlint.outputs.cache-hit != 'true'
         run: |
-          brew install swiftlint
+          curl -L https://github.com/realm/SwiftLint/releases/download/0.57.0/swiftlint_linux.zip -o swiftlint.zip
+          unzip swiftlint.zip
+          sudo mv swiftlint /usr/local/bin/
+          sudo chmod +x /usr/local/bin/swiftlint
 
       - name: Verify SwiftLint installation
         run: |
