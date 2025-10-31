@@ -1,9 +1,13 @@
-name: Format
+name: Swift Format
 
 on:
   push:
     branches:
       - main
+
+concurrency:
+  group: format-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   swift_format:
@@ -14,14 +18,32 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: '6.0'
+
+      - name: Cache swift-format
+        id: cache-swift-format
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/bin/swift-format
+          key: ${{ runner.os }}-swift-format-${{ hashFiles('.github/workflows/swift-format.yml') }}
+
       - name: Install swift-format
+        if: steps.cache-swift-format.outputs.cache-hit != 'true'
         run: |
-          brew install swift-format
+          git clone --depth 1 --branch main https://github.com/apple/swift-format.git
+          cd swift-format
+          swift build -c release
+          sudo cp .build/release/swift-format /usr/local/bin/
+          cd ..
+          rm -rf swift-format
 
       - name: Format
         run: swift-format format --recursive --in-place Sources Tests
 
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: Run swift-format
           branch: 'main'
