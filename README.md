@@ -143,6 +143,25 @@ PointFreeHTML powers production applications:
 - **[coenttb.com](https://coenttb.com)**: Personal website built entirely with PointFreeHTML
 - **[coenttb-com-server](https://github.com/coenttb/coenttb-com-server)**: Open-source backend demonstrating full-stack Swift
 
+## Related Packages
+
+### Used By
+
+- [coenttb-blog](https://github.com/coenttb/coenttb-blog): A Swift package for blog functionality with HTML generation.
+- [coenttb-web](https://github.com/coenttb/coenttb-web): A Swift package with tools for web development building on swift-web.
+- [pointfree-html-to-pdf](https://github.com/coenttb/pointfree-html-to-pdf): A Swift package integrating pointfree-html with swift-html-to-pdf.
+- [pointfree-html-translating](https://github.com/coenttb/pointfree-html-translating): A Swift package integrating pointfree-html with swift-translating.
+- [swift-html](https://github.com/coenttb/swift-html): The Swift library for domain-accurate and type-safe HTML & CSS.
+- [swift-html-css-pointfree](https://github.com/coenttb/swift-html-css-pointfree): A Swift package integrating swift-html-types and swift-css-types with pointfree-html.
+- [swift-html-prism](https://github.com/coenttb/swift-html-prism): A Swift package integrating PrismJS with swift-html.
+- [swift-web-foundation](https://github.com/coenttb/swift-web-foundation): A Swift package with tools to simplify web development.
+
+### Third-Party Dependencies
+
+- [pointfreeco/swift-dependencies](https://github.com/pointfreeco/swift-dependencies): A dependency management library for controlling dependencies in Swift.
+- [pointfreeco/swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing): Delightful snapshot testing for Swift.
+- [apple/swift-collections](https://github.com/apple/swift-collections): Commonly used data structures for Swift.
+
 ## Related Projects
 
 PointFreeHTML is part of a comprehensive Swift web development ecosystem:
