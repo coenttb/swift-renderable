@@ -18,13 +18,13 @@
 ///
 /// You can use the predefined media queries or create custom ones.
 public struct AtRule: RawRepresentable, Hashable, Sendable {
-  /// Creates a media query with the specified CSS media query string.
-  ///
-  /// - Parameter rawValue: The CSS media query string.
-  public init(rawValue: String) {
-    self.rawValue = rawValue
-  }
+    /// Creates a media query with the specified CSS media query string.
+    ///
+    /// - Parameter rawValue: The CSS media query string.
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
 
-  /// The CSS media query string.
-  public var rawValue: String
+    /// The CSS media query string.
+    public var rawValue: String
 }

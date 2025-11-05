@@ -24,11 +24,11 @@
 /// - Note: In HTML5, the doctype is simplified to `<!doctype html>` compared
 ///   to the more complex doctypes in earlier HTML versions.
 public struct Doctype: HTML {
-  /// Creates a new doctype declaration.
-  public init() {}
+    /// Creates a new doctype declaration.
+    public init() {}
 
-  /// The body of the doctype declaration, which renders as raw HTML.
-  public var body: some HTML {
-    HTMLRaw("<!doctype html>")
-  }
+    /// The body of the doctype declaration, which renders as raw HTML.
+    public var body: some HTML {
+        HTMLRaw("<!doctype html>")
+    }
 }

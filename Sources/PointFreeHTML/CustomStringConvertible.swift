@@ -8,7 +8,7 @@
 import Foundation
 
 extension CustomStringConvertible where Self: HTML {
-  public var description: String {
-    try! String(self)
-  }
+    public var description: String {
+        try! String(self)
+    }
 }

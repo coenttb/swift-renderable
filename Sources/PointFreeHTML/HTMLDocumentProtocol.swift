@@ -32,39 +32,43 @@ import Dependencies
 /// }
 /// ```
 public protocol HTMLDocumentProtocol: HTML {
-  /// The type of HTML content for the document's head section.
-  associatedtype Head: HTML
+    /// The type of HTML content for the document's head section.
+    associatedtype Head: HTML
 
-  /// The head section of the HTML document.
-  ///
-  /// This property defines metadata, title, stylesheets, scripts, and other
-  /// elements that should appear in the document's head section.
-  @HTMLBuilder
-  var head: Head { get }
+    /// The head section of the HTML document.
+    ///
+    /// This property defines metadata, title, stylesheets, scripts, and other
+    /// elements that should appear in the document's head section.
+    @HTMLBuilder
+    var head: Head { get }
 }
 
 extension HTMLDocumentProtocol {
-  /// Renders the HTML document into the provided printer.
-  ///
-  /// This method orchestrates the rendering of a complete HTML document:
-  /// 1. First renders the body content into a separate printer
-  /// 2. Extracts any collected stylesheets from the body rendering
-  /// 3. Creates a complete document with doctype, html, head, and body elements
-  /// 4. Renders the complete document into the provided printer
-  ///
-  /// - Parameters:
-  ///   - html: The HTML document to render.
-  ///   - printer: The printer to render the HTML into.
-  public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-    @Dependency(\.htmlPrinter) var htmlPrinter
-    var bodyPrinter = htmlPrinter
-    Content._render(html.body, into: &bodyPrinter)
-    Document
-      ._render(
-        Document(head: html.head, stylesheet: bodyPrinter.stylesheet, bodyBytes: bodyPrinter.bytes),
-        into: &printer
-      )
-  }
+    /// Renders the HTML document into the provided printer.
+    ///
+    /// This method orchestrates the rendering of a complete HTML document:
+    /// 1. First renders the body content into a separate printer
+    /// 2. Extracts any collected stylesheets from the body rendering
+    /// 3. Creates a complete document with doctype, html, head, and body elements
+    /// 4. Renders the complete document into the provided printer
+    ///
+    /// - Parameters:
+    ///   - html: The HTML document to render.
+    ///   - printer: The printer to render the HTML into.
+    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
+        @Dependency(\.htmlPrinter) var htmlPrinter
+        var bodyPrinter = htmlPrinter
+        Content._render(html.body, into: &bodyPrinter)
+        Document
+            ._render(
+                Document(
+                    head: html.head,
+                    stylesheet: bodyPrinter.stylesheet,
+                    bodyBytes: bodyPrinter.bytes
+                ),
+                into: &printer
+            )
+    }
 }
 
 /// A private implementation of an HTML document.
@@ -72,34 +76,34 @@ extension HTMLDocumentProtocol {
 /// This struct assembles the different parts of an HTML document (head, stylesheet, body)
 /// into a complete HTML document with proper structure.
 private struct Document<Head: HTML>: HTML {
-  /// The head content for the document.
-  let head: Head
+    /// The head content for the document.
+    let head: Head
 
-  /// Collected stylesheet content to be included in the document head.
-  let stylesheet: String
+    /// Collected stylesheet content to be included in the document head.
+    let stylesheet: String
 
-  /// Pre-rendered bytes for the document body.
-  let bodyBytes: ContiguousArray<UInt8>
+    /// Pre-rendered bytes for the document body.
+    let bodyBytes: ContiguousArray<UInt8>
 
-  /// The body content of the document, which assembles the complete HTML structure.
-  var body: some HTML {
-    // Add the doctype declaration
-    Doctype()
+    /// The body content of the document, which assembles the complete HTML structure.
+    var body: some HTML {
+        // Add the doctype declaration
+        Doctype()
 
-    // Create the html element with language attribute
-    HTMLTag("html") {
-      // Add the head section with metadata and styles
-      HTMLTag("head") {
-        head
-        HTMLTag("style") {
-          HTMLText(stylesheet)
+        // Create the html element with language attribute
+        HTMLTag("html") {
+            // Add the head section with metadata and styles
+            HTMLTag("head") {
+                head
+                HTMLTag("style") {
+                    HTMLText(stylesheet)
+                }
+            }
+
+            // Add the body section with pre-rendered content
+            HTMLTag("body") {
+                HTMLRaw(bodyBytes)
+            }
         }
-      }
-
-      // Add the body section with pre-rendered content
-      HTMLTag("body") {
-        HTMLRaw(bodyBytes)
-      }
     }
-  }
 }

@@ -6,7 +6,7 @@
 //
 
 extension AtRule {
-  public typealias Media = AtRule
+    public typealias Media = AtRule
 }
 
 //@available(*, deprecated, renamed: "AtRule", message: "Use the new AtRule")

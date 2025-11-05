@@ -27,16 +27,16 @@
 /// - Note: `HTMLEmpty` is automatically used by the `HTMLBuilder` when no
 ///   content is provided in a builder block.
 public struct HTMLEmpty: HTML {
-  /// Creates a new empty HTML node.
-  public init() {}
+    /// Creates a new empty HTML node.
+    public init() {}
 
-  /// Renders nothing to the printer.
-  ///
-  /// - Parameters:
-  ///   - html: The empty HTML to render.
-  ///   - printer: The printer to render the HTML into.
-  public static func _render(_ html: Self, into printer: inout HTMLPrinter) {}
+    /// Renders nothing to the printer.
+    ///
+    /// - Parameters:
+    ///   - html: The empty HTML to render.
+    ///   - printer: The printer to render the HTML into.
+    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {}
 
-  /// This type uses direct rendering and doesn't have a body.
-  public var body: Never { fatalError() }
+    /// This type uses direct rendering and doesn't have a body.
+    public var body: Never { fatalError() }
 }

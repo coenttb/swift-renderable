@@ -10,110 +10,110 @@ import PointFreeHTMLTestSupport
 import Testing
 
 @Suite(
-  "HTMLDocumentProtocol Tests",
-  .snapshots(record: .missing)
+    "HTMLDocumentProtocol Tests",
+    .snapshots(record: .missing)
 )
 struct HTMLDocumentProtocolTests {
 
-  @Test("Basic HTML document structure")
-  func basicDocumentStructure() throws {
-    let document = HTMLDocument {
-      tag("div") {
-        HTMLText("Body content")
-      }
-    } head: {
-      tag("title") {
-        HTMLText("Test Title")
-      }
+    @Test("Basic HTML document structure")
+    func basicDocumentStructure() throws {
+        let document = HTMLDocument {
+            tag("div") {
+                HTMLText("Body content")
+            }
+        } head: {
+            tag("title") {
+                HTMLText("Test Title")
+            }
+        }
+
+        let rendered = try String(document)
+        #expect(rendered.contains("<!doctype html>"))
+        #expect(rendered.contains("<html"))
+        #expect(rendered.contains("<head>"))
+        #expect(rendered.contains("<title>Test Title</title>"))
+        #expect(rendered.contains("</head>"))
+        #expect(rendered.contains("<body>"))
+        #expect(rendered.contains("Body content"))
+        #expect(rendered.contains("</body>"))
+        #expect(rendered.contains("</html>"))
     }
 
-    let rendered = try String(document)
-    #expect(rendered.contains("<!doctype html>"))
-    #expect(rendered.contains("<html"))
-    #expect(rendered.contains("<head>"))
-    #expect(rendered.contains("<title>Test Title</title>"))
-    #expect(rendered.contains("</head>"))
-    #expect(rendered.contains("<body>"))
-    #expect(rendered.contains("Body content"))
-    #expect(rendered.contains("</body>"))
-    #expect(rendered.contains("</html>"))
-  }
+    // MARK: - Snapshot Tests
 
-  // MARK: - Snapshot Tests
+    @Test("Complete HTML document snapshot")
+    func completeDocumentSnapshot() {
+        assertInlineSnapshot(
+            of: HTMLDocument {
+                tag("main") {
+                    tag("section") {
+                        tag("h1") {
+                            HTMLText("Welcome to Our Site")
+                        }
+                        tag("p") {
+                            HTMLText("This is a complete HTML document with proper structure.")
+                        }
+                    }
+                    tag("aside") {
+                        tag("h2") {
+                            HTMLText("Sidebar")
+                        }
+                        tag("ul") {
+                            tag("li") {
+                                HTMLText("Link 1")
+                            }
+                            tag("li") {
+                                HTMLText("Link 2")
+                            }
+                        }
+                    }
+                }
+            } head: {
+                tag("title") {
+                    HTMLText("My Website")
+                }
+                tag("meta")
+                    .attribute("charset", "utf-8")
+                tag("meta")
+                    .attribute("name", "viewport")
+                    .attribute("content", "width=device-width, initial-scale=1")
+            },
+            as: .html
+        ) {
+            """
+            <!doctype html>
+            <html>
+              <head>
+                <title>My Website
+                </title>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <style>
 
-  @Test("Complete HTML document snapshot")
-  func completeDocumentSnapshot() {
-    assertInlineSnapshot(
-      of: HTMLDocument {
-        tag("main") {
-          tag("section") {
-            tag("h1") {
-              HTMLText("Welcome to Our Site")
-            }
-            tag("p") {
-              HTMLText("This is a complete HTML document with proper structure.")
-            }
-          }
-          tag("aside") {
-            tag("h2") {
-              HTMLText("Sidebar")
-            }
-            tag("ul") {
-              tag("li") {
-                HTMLText("Link 1")
-              }
-              tag("li") {
-                HTMLText("Link 2")
-              }
-            }
-          }
+                </style>
+              </head>
+              <body>
+            <main>
+              <section>
+                <h1>Welcome to Our Site
+                </h1>
+                <p>This is a complete HTML document with proper structure.
+                </p>
+              </section>
+              <aside>
+                <h2>Sidebar
+                </h2>
+                <ul>
+                  <li>Link 1
+                  </li>
+                  <li>Link 2
+                  </li>
+                </ul>
+              </aside>
+            </main>
+              </body>
+            </html>
+            """
         }
-      } head: {
-        tag("title") {
-          HTMLText("My Website")
-        }
-        tag("meta")
-          .attribute("charset", "utf-8")
-        tag("meta")
-          .attribute("name", "viewport")
-          .attribute("content", "width=device-width, initial-scale=1")
-      },
-      as: .html
-    ) {
-      """
-      <!doctype html>
-      <html>
-        <head>
-          <title>My Website
-          </title>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <style>
-
-          </style>
-        </head>
-        <body>
-      <main>
-        <section>
-          <h1>Welcome to Our Site
-          </h1>
-          <p>This is a complete HTML document with proper structure.
-          </p>
-        </section>
-        <aside>
-          <h2>Sidebar
-          </h2>
-          <ul>
-            <li>Link 1
-            </li>
-            <li>Link 2
-            </li>
-          </ul>
-        </aside>
-      </main>
-        </body>
-      </html>
-      """
     }
-  }
 }
