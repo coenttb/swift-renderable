@@ -14,8 +14,12 @@ extension Target.Dependency {
 }
 
 extension Target.Dependency {
-    static var dependenciesTestSupport: Self { .product(name: "DependenciesTestSupport", package: "swift-dependencies") }
-    static var inlineSnapshotTesting: Self { .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing") }
+    static var dependenciesTestSupport: Self {
+        .product(name: "DependenciesTestSupport", package: "swift-dependencies")
+    }
+    static var inlineSnapshotTesting: Self {
+        .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing")
+    }
 }
 
 let package = Package(
@@ -34,7 +38,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.2"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.3.5"),
-        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.3")
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.3"),
     ],
     targets: [
         .target(
@@ -48,7 +52,7 @@ let package = Package(
             name: .pointfreeHtml.tests,
             dependencies: [
                 .pointfreeHtml,
-                .pointfreeHtmlTestSupport
+                .pointfreeHtmlTestSupport,
             ]
         ),
         .target(
@@ -56,7 +60,7 @@ let package = Package(
             dependencies: [
                 .pointfreeHtml,
                 .inlineSnapshotTesting,
-                .dependenciesTestSupport
+                .dependenciesTestSupport,
             ]
         ),
     ]

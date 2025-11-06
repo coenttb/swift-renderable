@@ -9,5 +9,5 @@ extension AtRule {
     public typealias Media = AtRule
 }
 
-//@available(*, deprecated, renamed: "AtRule", message: "Use the new AtRule")
-//public typealias MediaQuery = AtRule
+// @available(*, deprecated, renamed: "AtRule", message: "Use the new AtRule")
+// public typealias MediaQuery = AtRule
