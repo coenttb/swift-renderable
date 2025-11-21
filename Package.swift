@@ -1,4 +1,4 @@
-// swift-tools-version:6.0
+// swift-tools-version:6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -23,6 +23,9 @@ extension Target.Dependency {
     static var incits4_1986: Self {
         .product(name: "INCITS 4 1986", package: "swift-incits-4-1986")
     }
+    static var testingPerformance: Self {
+        .product(name: "TestingPerformance", package: "swift-testing-performance")
+    }
 }
 
 let package = Package(
@@ -43,6 +46,7 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.3.5"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.3"),
         .package(path: "/Users/coen/Developer/swift-standards/swift-incits-4-1986"),
+        .package(path: "/Users/coen/Developer/coenttb/swift-testing-performance"),
     ],
     targets: [
         .target(
@@ -58,6 +62,7 @@ let package = Package(
             dependencies: [
                 .pointfreeHtml,
                 .pointfreeHtmlTestSupport,
+                .testingPerformance,
             ]
         ),
         .target(
