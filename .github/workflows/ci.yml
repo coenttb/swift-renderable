@@ -31,9 +31,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build
-          key: ${{ runner.os }}-spm-${{ hashFiles('Package.swift') }}
+          key: macos-swift62-spm-${{ hashFiles('Package.swift', 'Package@*.swift') }}
           restore-keys: |
-            ${{ runner.os }}-spm-
+            macos-swift62-spm-
 
       # Note: swift test builds automatically, no separate build step needed
       - name: Test
@@ -54,19 +54,19 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build
-          key: ${{ runner.os }}-spm-${{ hashFiles('Package.swift') }}
-          restore-keys: ${{ runner.os }}-spm-
+          key: linux-swift62-spm-${{ hashFiles('Package.swift', 'Package@*.swift') }}
+          restore-keys: linux-swift62-spm-
 
       # Note: swift test builds automatically in release mode
       - name: Test (release)
         run: swift test -c release
 
-  # Compatibility check: Minimum supported Swift version (6.0)
-  # Note: Swift Testing framework requires Swift 6.0+
+  # Compatibility check: Minimum supported Swift version (6.2)
+  # Update to swift:6.3 when available
   linux-compat:
-    name: Ubuntu (Swift 6.0, compatibility)
+    name: Ubuntu (Swift 6.2, compatibility)
     runs-on: ubuntu-latest
-    container: swift:6.0
+    container: swift:6.2
     steps:
       - uses: actions/checkout@v5
 
@@ -74,9 +74,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build
-          key: ${{ runner.os }}-swift60-spm-${{ hashFiles('Package.swift') }}
-          restore-keys: ${{ runner.os }}-swift60-spm-
+          key: linux-swift62-compat-spm-${{ hashFiles('Package.swift', 'Package@*.swift') }}
+          restore-keys: linux-swift62-compat-spm-
 
       # Note: swift test builds automatically
-      - name: Test (Swift 6.0)
+      - name: Test (Swift 6.2)
         run: swift test -c release
