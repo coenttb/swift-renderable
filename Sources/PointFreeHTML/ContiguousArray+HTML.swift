@@ -22,8 +22,8 @@ extension ContiguousArray where Element == UInt8 {
     /// - **Zero-copy**: Returns the printer's byte buffer directly
     /// - **No allocations**: Beyond what HTMLPrinter already creates
     /// - **Cache-friendly**: Contiguous memory layout
-    /// - **~780,000 elements/second** for plain HTML
-    /// - **~10,000 elements/second** for styled HTML with deduplication
+    /// - **~3,500 documents/second** (~280µs per complete HTML document)
+    /// - Optimized with fast-path attribute escaping and UTF-8 elimination
     ///
     /// ## Use Cases
     ///

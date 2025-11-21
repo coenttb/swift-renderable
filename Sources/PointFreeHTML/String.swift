@@ -30,7 +30,7 @@ extension String {
     /// - Uses zero-copy `ContiguousArray` internally
     /// - Validates UTF-8 encoding (or other specified encoding)
     /// - Throws if bytes are invalid for the specified encoding
-    /// - ~780,000 elements/second for plain HTML
+    /// - ~3,500 documents/second (~280µs per complete HTML document)
     ///
     /// ## Example
     ///

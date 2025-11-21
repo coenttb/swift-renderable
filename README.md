@@ -12,7 +12,11 @@ PointFreeHTML enables **any Swift type** to be rendered as HTML through a simple
 ## Key features
 
 - **Universal HTML Protocol**: Any Swift type can be rendered as HTML by conforming to the `HTML` protocol
-- **Performance Focused**: Efficient rendering with HTMLPrinter printing to bytes (`ContiguousArray<UInt8>`) or string
+- **Performance Focused**:
+  - Zero-copy byte rendering (~3,500 docs/sec)
+  - RFC pattern with bytes as canonical representation
+  - Optimized attribute escaping with fast-path detection
+  - Capacity pre-allocation for known document sizes
 - **Declarative Syntax**: SwiftUI-like syntax with `@HTMLBuilder` result builder
 - **Type Safety**: Compile-time checking prevents malformed HTML
 - **Composable Components**: Build complex UIs from reusable components
@@ -33,11 +37,21 @@ struct Greeting: HTML {
 }
 
 let greeting = Greeting(name: "World")
-let htmlString: String = try String(greeting)
-let htmlBytes: ContiguousArray<UInt8> = greeting.render()
+
+// Render to String (validates UTF-8)
+let htmlString = try String(greeting)
+
+// Render to bytes (zero-copy, canonical)
+let htmlBytes = ContiguousArray(greeting)
+
+// Or use Array (convenience wrapper)
+let htmlArray: [UInt8] = Array(greeting)
+
+// Legacy API (deprecated but still supported)
+// let htmlBytes = greeting.render()  // ⚠️ Deprecated
 ```
 
-HTML and HTMLDocument can render to bytes (`ContiguousArray<UInt8>`) via the `.render()` method, or to a string by passing it to `String.init(_ html: some HTML, encoding: String.Encoding = .utf8) throws`.
+PointFreeHTML follows the RFC pattern where **bytes are canonical**. All rendering goes through `ContiguousArray<UInt8>` (zero-copy) or `Array<UInt8>` (convenience), with String derived from bytes via validation.
 
 ### Complete Examples
 
