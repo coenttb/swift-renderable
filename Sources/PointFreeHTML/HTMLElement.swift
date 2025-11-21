@@ -78,22 +78,38 @@ public struct HTMLElement<Content: HTML>: HTML {
             printer.bytes.append(contentsOf: name.utf8)
             if !value.isEmpty {
                 printer.bytes.append(contentsOf: "=\"".utf8)
-                for byte in value.utf8 {
-                    switch byte {
-                    case UInt8(ascii: "\""):
-                        printer.bytes.append(contentsOf: "&quot;".utf8)
-                    case UInt8(ascii: "'"):
-                        printer.bytes.append(contentsOf: "&#39;".utf8)
-                    case UInt8(ascii: "&"):
-                        printer.bytes.append(contentsOf: "&amp;".utf8)
-                    case UInt8(ascii: "<"):
-                        printer.bytes.append(contentsOf: "&lt;".utf8)
-                    case UInt8(ascii: ">"):
-                        printer.bytes.append(contentsOf: "&gt;".utf8)
-                    default:
-                        printer.bytes.append(byte)
-                    }
+
+                // Fast path: check if escaping is needed
+                let valueBytes = Array(value.utf8)
+                let needsEscaping = valueBytes.contains { byte in
+                    byte == UInt8(ascii: "\"") || byte == UInt8(ascii: "'") ||
+                    byte == UInt8(ascii: "&") || byte == UInt8(ascii: "<") ||
+                    byte == UInt8(ascii: ">")
                 }
+
+                if needsEscaping {
+                    // Slow path: byte-by-byte escaping
+                    for byte in valueBytes {
+                        switch byte {
+                        case UInt8(ascii: "\""):
+                            printer.bytes.append(contentsOf: "&quot;".utf8)
+                        case UInt8(ascii: "'"):
+                            printer.bytes.append(contentsOf: "&#39;".utf8)
+                        case UInt8(ascii: "&"):
+                            printer.bytes.append(contentsOf: "&amp;".utf8)
+                        case UInt8(ascii: "<"):
+                            printer.bytes.append(contentsOf: "&lt;".utf8)
+                        case UInt8(ascii: ">"):
+                            printer.bytes.append(contentsOf: "&gt;".utf8)
+                        default:
+                            printer.bytes.append(byte)
+                        }
+                    }
+                } else {
+                    // Fast path: bulk copy when no escaping needed
+                    printer.bytes.append(contentsOf: valueBytes)
+                }
+
                 printer.bytes.append(UInt8(ascii: "\""))
             }
         }

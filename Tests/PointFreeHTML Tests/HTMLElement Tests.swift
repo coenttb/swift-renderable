@@ -230,4 +230,144 @@ struct HTMLElementTests {
             """
         }
     }
+
+    // MARK: - Attribute Escaping Tests (Fast Path Optimization)
+
+    @Test("Attribute with no escaping needed - fast path")
+    func attributeNoEscaping() throws {
+        let element = tag("div")
+            .attribute("id", "simple-id")
+            .attribute("class", "container main")
+            .attribute("data-value", "12345")
+
+        let rendered = try String(HTMLDocument { element })
+        #expect(rendered.contains("id=\"simple-id\""))
+        #expect(rendered.contains("class=\"container main\""))
+        #expect(rendered.contains("data-value=\"12345\""))
+    }
+
+    @Test("Attribute with double quotes - requires escaping")
+    func attributeWithDoubleQuotes() throws {
+        let element = tag("div")
+            .attribute("data-message", "He said \"Hello\"")
+
+        let rendered = try String(HTMLDocument { element })
+        #expect(rendered.contains("data-message=\"He said &quot;Hello&quot;\""))
+        #expect(!rendered.contains("He said \"Hello\""))
+    }
+
+    @Test("Attribute with single quotes - requires escaping")
+    func attributeWithSingleQuotes() throws {
+        let element = tag("div")
+            .attribute("data-message", "It's working")
+
+        let rendered = try String(HTMLDocument { element })
+        #expect(rendered.contains("data-message=\"It&#39;s working\""))
+    }
+
+    @Test("Attribute with ampersand - requires escaping")
+    func attributeWithAmpersand() throws {
+        let element = tag("a")
+            .attribute("href", "/search?q=foo&bar=baz")
+
+        let rendered = try String(HTMLDocument { element })
+        #expect(rendered.contains("href=\"/search?q=foo&amp;bar=baz\""))
+        #expect(!rendered.contains("&bar="))
+    }
+
+    @Test("Attribute with less than - requires escaping")
+    func attributeWithLessThan() throws {
+        let element = tag("div")
+            .attribute("data-condition", "x<10")
+
+        let rendered = try String(HTMLDocument { element })
+        #expect(rendered.contains("data-condition=\"x&lt;10\""))
+        #expect(!rendered.contains("x<10\""))
+    }
+
+    @Test("Attribute with greater than - requires escaping")
+    func attributeWithGreaterThan() throws {
+        let element = tag("div")
+            .attribute("data-condition", "x>10")
+
+        let rendered = try String(HTMLDocument { element })
+        #expect(rendered.contains("data-condition=\"x&gt;10\""))
+        #expect(!rendered.contains("x>10\""))
+    }
+
+    @Test("Attribute with multiple special characters")
+    func attributeWithMultipleSpecialChars() throws {
+        let element = tag("div")
+            .attribute("data-complex", "<tag attr=\"value\" & 'quotes'>")
+
+        let rendered = try String(HTMLDocument { element })
+        #expect(rendered.contains("&lt;tag attr=&quot;value&quot; &amp; &#39;quotes&#39;&gt;"))
+    }
+
+    @Test("Attribute escaping snapshot - no escaping needed")
+    func attributeEscapingSnapshotNoEscape() {
+        assertInlineSnapshot(
+            of: HTMLDocument {
+                tag("input")
+                    .attribute("type", "text")
+                    .attribute("name", "username")
+                    .attribute("placeholder", "Enter your name")
+                    .attribute("id", "user-input-123")
+            },
+            as: .html
+        ) {
+            """
+            <!doctype html>
+            <html>
+              <head>
+                <style>
+
+                </style>
+              </head>
+              <body><input type="text" name="username" placeholder="Enter your name" id="user-input-123">
+              </body>
+            </html>
+            """
+        }
+    }
+
+    @Test("Attribute escaping snapshot - with escaping")
+    func attributeEscapingSnapshotWithEscape() {
+        assertInlineSnapshot(
+            of: HTMLDocument {
+                tag("div")
+                    .attribute("data-message", "Say \"Hello\" & 'Goodbye'")
+                    .attribute("data-condition", "x < 10 && y > 5")
+                    .attribute("id", "no-escape-needed")
+            },
+            as: .html
+        ) {
+            """
+            <!doctype html>
+            <html>
+              <head>
+                <style>
+
+                </style>
+              </head>
+              <body>
+            <div data-message="Say &quot;Hello&quot; &amp; &#39;Goodbye&#39;" data-condition="x &lt; 10 &amp;&amp; y &gt; 5" id="no-escape-needed">
+            </div>
+              </body>
+            </html>
+            """
+        }
+    }
+
+    @Test("Empty attribute value - boolean attributes")
+    func emptyAttributeValue() throws {
+        let element = tag("input")
+            .attribute("required", "")
+            .attribute("disabled", "")
+
+        let rendered = try String(HTMLDocument { element })
+        // Empty string attributes are rendered as boolean attributes (no value)
+        #expect(rendered.contains("required"))
+        #expect(rendered.contains("disabled"))
+    }
 }
