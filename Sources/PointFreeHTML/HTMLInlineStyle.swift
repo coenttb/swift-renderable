@@ -198,6 +198,7 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
 
         // Collect all styles from nested elements
         var allStyles: [Style] = []
+        allStyles.reserveCapacity(8)  // Reserve capacity for typical chaining depth
         var coreContent: any HTML = html
 
         // Flatten style chain
@@ -220,9 +221,9 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
             let selector = buildSelector(className: className, style: style)
 
             // Add to stylesheet if not present
-            if printer.styles[style.atRule, default: [:]][selector] == nil {
-                printer.styles[style.atRule, default: [:]][selector] =
-                    "\(style.property):\(style.value)"
+            let key = StyleKey(style.atRule, selector)
+            if printer.styles[key] == nil {
+                printer.styles[key] = "\(style.property):\(style.value)"
             }
 
             classComponents.append(className)
@@ -230,10 +231,31 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
 
         // Apply class names
         if let existingClass = printer.attributes["class"] {
-            printer.attributes["class"] =
-                "\(existingClass) \(classComponents.joined(separator: " "))"
+            // Pre-calculate capacity: existing + space + new classes + (n-1) spaces
+            let totalLength = existingClass.count + 1 + classComponents.reduce(0) { $0 + $1.count } + (classComponents.count - 1)
+            var result = ""
+            result.reserveCapacity(totalLength)
+            result.append(existingClass)
+            result.append(" ")
+            for (index, className) in classComponents.enumerated() {
+                if index > 0 {
+                    result.append(" ")
+                }
+                result.append(className)
+            }
+            printer.attributes["class"] = result
         } else {
-            printer.attributes["class"] = classComponents.joined(separator: " ")
+            // Pre-calculate capacity: total class name length + (n-1) spaces
+            let totalLength = classComponents.reduce(0) { $0 + $1.count } + (classComponents.count - 1)
+            var result = ""
+            result.reserveCapacity(totalLength)
+            for (index, className) in classComponents.enumerated() {
+                if index > 0 {
+                    result.append(" ")
+                }
+                result.append(className)
+            }
+            printer.attributes["class"] = result
         }
 
         coreContent.render(into: &printer)
@@ -241,14 +263,28 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
 
     // Helper function to build CSS selector
     private static func buildSelector(className: String, style: Style) -> String {
-        var selector = ".\(className)"
-
+        // Pre-calculate total length to avoid reallocations
+        var totalLength = 1 + className.count  // "." + className
         if let pre = style.selector?.rawValue {
-            selector = "\(pre) " + selector
+            totalLength += pre.count + 1  // prefix + space
+        }
+        if let pseudo = style.pseudo?.rawValue {
+            totalLength += pseudo.count
         }
 
+        var selector = ""
+        selector.reserveCapacity(totalLength)
+
+        if let pre = style.selector?.rawValue {
+            selector.append(pre)
+            selector.append(" ")
+        }
+
+        selector.append(".")
+        selector.append(className)
+
         if let pseudo = style.pseudo?.rawValue {
-            selector += pseudo
+            selector.append(pseudo)
         }
 
         return selector

@@ -8,6 +8,19 @@
 import Dependencies
 import OrderedCollections
 
+/// A composite key for the styles dictionary, combining at-rule and selector.
+///
+/// This flattened structure avoids nested dictionary lookups and improves performance.
+public struct StyleKey: Hashable, Sendable {
+    public let atRule: AtRule?
+    public let selector: String
+
+    public init(_ atRule: AtRule?, _ selector: String) {
+        self.atRule = atRule
+        self.selector = selector
+    }
+}
+
 /// A struct responsible for rendering HTML elements to bytes.
 ///
 /// `HTMLPrinter` is the core rendering engine of the PointFreeHTML library.
@@ -34,7 +47,11 @@ public struct HTMLPrinter: Sendable {
     public var attributes: OrderedDictionary<String, String> = [:]
 
     /// The collected styles to be rendered in the document's stylesheet.
-    public var styles: OrderedDictionary<AtRule?, OrderedDictionary<String, String>> = [:]
+    ///
+    /// Uses a flattened structure with composite keys for better performance.
+    /// Previously was `OrderedDictionary<AtRule?, OrderedDictionary<String, String>>`
+    /// which required two hash lookups per access.
+    public var styles: OrderedDictionary<StyleKey, String> = [:]
 
     /// Configuration for rendering, including formatting options.
     let configuration: Configuration
@@ -65,8 +82,14 @@ public struct HTMLPrinter: Sendable {
         let newlineStr = String(bytes: configuration.newline, encoding: .utf8) ?? ""
         let indentationStr = String(bytes: configuration.indentation, encoding: .utf8) ?? ""
 
+        // Group styles by atRule
+        var grouped: OrderedDictionary<AtRule?, [(selector: String, style: String)]> = [:]
+        for (key, style) in styles {
+            grouped[key.atRule, default: []].append((key.selector, style))
+        }
+
         var sheet = newlineStr
-        for (mediaQuery, styles) in styles.sorted(by: { $0.key == nil ? $1.key != nil : false }) {
+        for (mediaQuery, stylesForMedia) in grouped.sorted(by: { $0.key == nil ? $1.key != nil : false }) {
             var currentIndentation = ""
             if let mediaQuery {
                 sheet.append("\(mediaQuery.rawValue){")
@@ -79,12 +102,12 @@ public struct HTMLPrinter: Sendable {
                     sheet.append(newlineStr)
                 }
             }
-            for (className, style) in styles {
+            for (selector, style) in stylesForMedia {
                 sheet.append(currentIndentation)
                 if configuration.forceImportant {
-                    sheet.append("\(className){\(style) !important}")
+                    sheet.append("\(selector){\(style) !important}")
                 } else {
-                    sheet.append("\(className){\(style)}")
+                    sheet.append("\(selector){\(style)}")
                 }
                 sheet.append(newlineStr)
             }
@@ -123,22 +146,28 @@ public struct HTMLPrinter: Sendable {
         package let reservedCapacity: Int
 
         /// Default configuration with no indentation or newlines.
-        public static let `default` = Self(forceImportant: false, indentation: [], newline: [], reservedCapacity: 0)
+        ///
+        /// Pre-allocates 1KB to handle most simple documents without reallocation.
+        public static let `default` = Self(forceImportant: false, indentation: [], newline: [], reservedCapacity: 1024)
 
         /// Pretty-printing configuration with 2-space indentation and newlines.
+        ///
+        /// Pre-allocates 2KB to accommodate additional whitespace from formatting.
         public static let pretty = Self(
             forceImportant: false,
             indentation: [UInt8.ascii.space, UInt8.ascii.space],
             newline: [UInt8.ascii.lf],
-            reservedCapacity: 0
+            reservedCapacity: 2048
         )
 
         /// Configuration optimized for email HTML with forced important styles.
+        ///
+        /// Pre-allocates 2KB as email HTML tends to be verbose with inline styles.
         public static let email = Self(
             forceImportant: true,
             indentation: [UInt8.ascii.space],
             newline: [UInt8.ascii.lf],
-            reservedCapacity: 0
+            reservedCapacity: 2048
         )
 
         /// Performance-optimized configuration for typical documents (~4KB).

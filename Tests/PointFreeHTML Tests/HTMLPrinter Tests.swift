@@ -105,7 +105,7 @@ struct HTMLPrinterTests {
         var printer = HTMLPrinter(.pretty)
 
         // Add some styles to test stylesheet generation
-        printer.styles[nil] = [".test-class": "color:red;font-size:16px"]
+        printer.styles[StyleKey(nil, ".test-class")] = "color:red;font-size:16px"
 
         let stylesheet = printer.stylesheet
         #expect(stylesheet.contains(".test-class"))
