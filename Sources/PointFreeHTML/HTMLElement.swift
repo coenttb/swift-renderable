@@ -5,7 +5,56 @@
 //  Created by Point-Free, Inc
 //
 
+import INCITS_4_1986
 import OrderedCollections
+
+// MARK: - HTML Entity Constants
+
+extension [UInt8] {
+    /// &quot; - Double quotation mark HTML entity
+    fileprivate static let htmlEntityQuot: [UInt8] = [
+        UInt8.ascii.ampersand,
+        UInt8.ascii.q,
+        UInt8.ascii.u,
+        UInt8.ascii.o,
+        UInt8.ascii.t,
+        UInt8.ascii.semicolon
+    ]
+
+    /// &#39; - Apostrophe HTML entity
+    fileprivate static let htmlEntityApos: [UInt8] = [
+        UInt8.ascii.ampersand,
+        UInt8.ascii.numberSign,
+        UInt8.ascii.3,
+        UInt8.ascii.9,
+        UInt8.ascii.semicolon
+    ]
+
+    /// &amp; - Ampersand HTML entity
+    fileprivate static let htmlEntityAmp: [UInt8] = [
+        UInt8.ascii.ampersand,
+        UInt8.ascii.a,
+        UInt8.ascii.m,
+        UInt8.ascii.p,
+        UInt8.ascii.semicolon
+    ]
+
+    /// &lt; - Less-than HTML entity
+    fileprivate static let htmlEntityLt: [UInt8] = [
+        UInt8.ascii.ampersand,
+        UInt8.ascii.l,
+        UInt8.ascii.t,
+        UInt8.ascii.semicolon
+    ]
+
+    /// &gt; - Greater-than HTML entity
+    fileprivate static let htmlEntityGt: [UInt8] = [
+        UInt8.ascii.ampersand,
+        UInt8.ascii.g,
+        UInt8.ascii.t,
+        UInt8.ascii.semicolon
+    ]
+}
 
 /// Represents an HTML element with a tag, attributes, and optional content.
 ///
@@ -69,38 +118,39 @@ public struct HTMLElement<Content: HTML>: HTML {
         }
 
         // Write opening tag
-        printer.bytes.append(UInt8(ascii: "<"))
+        printer.bytes.append(UInt8.ascii.lessThanSign)
         printer.bytes.append(contentsOf: html.tag.utf8)
 
         // Add attributes
         for (name, value) in printer.attributes {
-            printer.bytes.append(UInt8(ascii: " "))
+            printer.bytes.append(UInt8.ascii.space)
             printer.bytes.append(contentsOf: name.utf8)
             if !value.isEmpty {
-                printer.bytes.append(contentsOf: "=\"".utf8)
+                printer.bytes.append(UInt8.ascii.equalsSign)
+                printer.bytes.append(UInt8.ascii.dquote)
 
                 // Fast path: check if escaping is needed
                 let valueBytes = Array(value.utf8)
                 let needsEscaping = valueBytes.contains { byte in
-                    byte == UInt8(ascii: "\"") || byte == UInt8(ascii: "'") ||
-                    byte == UInt8(ascii: "&") || byte == UInt8(ascii: "<") ||
-                    byte == UInt8(ascii: ">")
+                    byte == UInt8.ascii.dquote || byte == UInt8.ascii.apostrophe ||
+                    byte == UInt8.ascii.ampersand || byte == UInt8.ascii.lessThanSign ||
+                    byte == UInt8.ascii.greaterThanSign
                 }
 
                 if needsEscaping {
                     // Slow path: byte-by-byte escaping
                     for byte in valueBytes {
                         switch byte {
-                        case UInt8(ascii: "\""):
-                            printer.bytes.append(contentsOf: "&quot;".utf8)
-                        case UInt8(ascii: "'"):
-                            printer.bytes.append(contentsOf: "&#39;".utf8)
-                        case UInt8(ascii: "&"):
-                            printer.bytes.append(contentsOf: "&amp;".utf8)
-                        case UInt8(ascii: "<"):
-                            printer.bytes.append(contentsOf: "&lt;".utf8)
-                        case UInt8(ascii: ">"):
-                            printer.bytes.append(contentsOf: "&gt;".utf8)
+                        case UInt8.ascii.dquote:
+                            printer.bytes.append(contentsOf: [UInt8].htmlEntityQuot)
+                        case UInt8.ascii.apostrophe:
+                            printer.bytes.append(contentsOf: [UInt8].htmlEntityApos)
+                        case UInt8.ascii.ampersand:
+                            printer.bytes.append(contentsOf: [UInt8].htmlEntityAmp)
+                        case UInt8.ascii.lessThanSign:
+                            printer.bytes.append(contentsOf: [UInt8].htmlEntityLt)
+                        case UInt8.ascii.greaterThanSign:
+                            printer.bytes.append(contentsOf: [UInt8].htmlEntityGt)
                         default:
                             printer.bytes.append(byte)
                         }
@@ -110,10 +160,10 @@ public struct HTMLElement<Content: HTML>: HTML {
                     printer.bytes.append(contentsOf: valueBytes)
                 }
 
-                printer.bytes.append(UInt8(ascii: "\""))
+                printer.bytes.append(UInt8.ascii.dquote)
             }
         }
-        printer.bytes.append(UInt8(ascii: ">"))
+        printer.bytes.append(UInt8.ascii.greaterThanSign)
 
         // Render content if present
         if let content = html.content {
@@ -136,9 +186,10 @@ public struct HTMLElement<Content: HTML>: HTML {
                 printer.bytes.append(contentsOf: printer.configuration.newline.utf8)
                 printer.bytes.append(contentsOf: printer.currentIndentation.utf8)
             }
-            printer.bytes.append(contentsOf: "</".utf8)
+            printer.bytes.append(UInt8.ascii.lessThanSign)
+            printer.bytes.append(UInt8.ascii.slant)
             printer.bytes.append(contentsOf: html.tag.utf8)
-            printer.bytes.append(UInt8(ascii: ">"))
+            printer.bytes.append(UInt8.ascii.greaterThanSign)
         }
     }
 
