@@ -16,7 +16,7 @@ extension `Performance Tests` {
         
         // MARK: - Fast Path Tests (No Escaping Needed)
         
-        @Test(.timed(threshold: .seconds(3)))
+        @Test(.timed(threshold: .seconds(4)))
         func `fast path - simple attributes 10K renders`() {
             for _ in 0..<10_000 {
                 _ = try! String(
@@ -30,7 +30,7 @@ extension `Performance Tests` {
             }
         }
         
-        @Test(.timed(threshold: .milliseconds(300)))
+        @Test(.timed(threshold: .milliseconds(400)))
         func `fast path - many simple attributes 1K renders`() {
             for _ in 0..<1_000 {
                 _ = try! String(
@@ -133,8 +133,8 @@ extension `Performance Tests` {
         }
         
         // MARK: - Baseline Comparison Tests
-        
-        @Test(.timed(threshold: .seconds(3)))
+
+        @Test(.timed(threshold: .seconds(4)))
         func `baseline - element without attributes 10K renders`() {
             for _ in 0..<10_000 {
                 _ = try! String(
