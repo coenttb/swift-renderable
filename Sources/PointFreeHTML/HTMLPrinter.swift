@@ -118,6 +118,19 @@ extension HTML {
     /// renders the HTML element into it, then returns the resulting bytes.
     ///
     /// - Returns: A buffer of bytes representing the rendered HTML.
+    ///
+    /// - Warning: This method is deprecated. Use the RFC pattern initialization instead:
+    ///   ```swift
+    ///   // Old (deprecated)
+    ///   let bytes = html.render()
+    ///
+    ///   // New (RFC pattern - zero-copy)
+    ///   let bytes = ContiguousArray(html)
+    ///
+    ///   // Or for String output
+    ///   let string = try String(html)
+    ///   ```
+    @available(*, deprecated, message: "Use ContiguousArray(html) or String(html) instead. The RFC pattern makes bytes canonical and String derived.")
     public func render() -> ContiguousArray<UInt8> {
         @Dependency(\.htmlPrinter) var htmlPrinter
         var printer = htmlPrinter
@@ -133,6 +146,19 @@ extension HTMLDocumentProtocol {
     /// renders the HTML document into it, then returns the resulting bytes.
     ///
     /// - Returns: A buffer of bytes representing the rendered HTML document.
+    ///
+    /// - Warning: This method is deprecated. Use the RFC pattern initialization instead:
+    ///   ```swift
+    ///   // Old (deprecated)
+    ///   let bytes = document.render()
+    ///
+    ///   // New (RFC pattern - zero-copy)
+    ///   let bytes = ContiguousArray(document)
+    ///
+    ///   // Or for String output
+    ///   let string = try String(document)
+    ///   ```
+    @available(*, deprecated, message: "Use ContiguousArray(html) or String(html) instead. The RFC pattern makes bytes canonical and String derived.")
     public func render() -> ContiguousArray<UInt8> {
         @Dependency(\.htmlPrinter) var htmlPrinter
         var printer = htmlPrinter

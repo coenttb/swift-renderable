@@ -45,8 +45,8 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.2"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.3.5"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.3"),
-        .package(path: "/Users/coen/Developer/swift-standards/swift-incits-4-1986"),
-        .package(path: "/Users/coen/Developer/coenttb/swift-testing-performance"),
+        .package(url: "https://github.com/swift-standards/swift-incits-4-1986", from: "0.1.0"),
+        .package(url: "https://github.com/coenttb/swift-testing-performance", from: "0.1.0"),
     ],
     targets: [
         .target(

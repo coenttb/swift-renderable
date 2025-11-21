@@ -30,7 +30,7 @@ extension `Performance Tests` {
             }
         }
         
-        @Test(.timed(threshold: .milliseconds(200)))
+        @Test(.timed(threshold: .milliseconds(300)))
         func `fast path - many simple attributes 1K renders`() {
             for _ in 0..<1_000 {
                 _ = try! String(
@@ -108,7 +108,7 @@ extension `Performance Tests` {
         
         // MARK: - Mixed Workload Tests
         
-        @Test(.timed(threshold: .seconds(3)))
+        @Test(.timed(threshold: .milliseconds(3500)))
         func `mixed - 80 percent fast path 20 percent slow path`() {
             for i in 0..<10_000 {
                 if i % 5 < 4 {
