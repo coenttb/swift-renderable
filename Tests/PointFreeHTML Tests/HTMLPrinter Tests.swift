@@ -119,12 +119,12 @@ struct HTMLPrinterTests {
         let prettyConfig = HTMLPrinter.Configuration.pretty
         let emailConfig = HTMLPrinter.Configuration.email
 
-        #expect(defaultConfig.indentation == "")
-        #expect(defaultConfig.newline == "")
+        #expect(defaultConfig.indentation == [])
+        #expect(defaultConfig.newline == [])
         #expect(!defaultConfig.forceImportant)
 
-        #expect(prettyConfig.indentation == "  ")
-        #expect(prettyConfig.newline == "\n")
+        #expect(prettyConfig.indentation == [UInt8.ascii.space, UInt8.ascii.space])
+        #expect(prettyConfig.newline == [UInt8.ascii.lf])
         #expect(!prettyConfig.forceImportant)
 
         #expect(emailConfig.forceImportant)

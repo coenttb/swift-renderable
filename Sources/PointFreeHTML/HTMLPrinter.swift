@@ -40,7 +40,7 @@ public struct HTMLPrinter: Sendable {
     let configuration: Configuration
 
     /// The current indentation level for pretty-printing.
-    var currentIndentation = ""
+    var currentIndentation: [UInt8] = []
 
     /// Creates a new HTML printer with the specified configuration.
     ///
@@ -48,6 +48,9 @@ public struct HTMLPrinter: Sendable {
     ///   Default is no indentation or newlines.
     public init(_ configuration: Configuration = .default) {
         self.configuration = configuration
+        if configuration.reservedCapacity > 0 {
+            self.bytes.reserveCapacity(configuration.reservedCapacity)
+        }
     }
 
     /// Generates a CSS stylesheet from the collected styles.
@@ -58,18 +61,22 @@ public struct HTMLPrinter: Sendable {
     ///
     /// - Returns: A string containing the CSS stylesheet.
     public var stylesheet: String {
-        var sheet = configuration.newline
+        // Convert byte arrays to strings once for stylesheet generation
+        let newlineStr = String(bytes: configuration.newline, encoding: .utf8) ?? ""
+        let indentationStr = String(bytes: configuration.indentation, encoding: .utf8) ?? ""
+
+        var sheet = newlineStr
         for (mediaQuery, styles) in styles.sorted(by: { $0.key == nil ? $1.key != nil : false }) {
             var currentIndentation = ""
             if let mediaQuery {
                 sheet.append("\(mediaQuery.rawValue){")
-                sheet.append(configuration.newline)
-                currentIndentation.append(configuration.indentation)
+                sheet.append(newlineStr)
+                currentIndentation.append(indentationStr)
             }
             defer {
                 if mediaQuery != nil {
                     sheet.append("}")
-                    sheet.append(configuration.newline)
+                    sheet.append(newlineStr)
                 }
             }
             for (className, style) in styles {
@@ -79,7 +86,7 @@ public struct HTMLPrinter: Sendable {
                 } else {
                     sheet.append("\(className){\(style)}")
                 }
-                sheet.append(configuration.newline)
+                sheet.append(newlineStr)
             }
         }
         return sheet
@@ -94,20 +101,51 @@ public struct HTMLPrinter: Sendable {
         /// Whether to add `!important` to all CSS rules.
         package let forceImportant: Bool
 
-        /// The string to use for indentation.
-        package let indentation: String
+        /// The bytes to use for indentation.
+        ///
+        /// Stored as bytes to avoid UTF-8 conversion overhead during rendering.
+        package let indentation: [UInt8]
 
-        /// The string to use for newlines.
-        package let newline: String
+        /// The bytes to use for newlines.
+        ///
+        /// Stored as bytes to avoid UTF-8 conversion overhead during rendering.
+        package let newline: [UInt8]
+
+        /// Reserved capacity for the byte buffer (in bytes).
+        ///
+        /// Pre-allocating capacity avoids multiple reallocations during rendering.
+        /// Set to 0 for no reservation (default), or estimate your typical document size.
+        ///
+        /// ## Typical Sizes
+        /// - Small documents (< 1KB): 512 bytes
+        /// - Medium documents (1-10KB): 4096 bytes
+        /// - Large documents (> 10KB): 16384 bytes
+        package let reservedCapacity: Int
 
         /// Default configuration with no indentation or newlines.
-        public static let `default` = Self(forceImportant: false, indentation: "", newline: "")
+        public static let `default` = Self(forceImportant: false, indentation: [], newline: [], reservedCapacity: 0)
 
         /// Pretty-printing configuration with 2-space indentation and newlines.
-        public static let pretty = Self(forceImportant: false, indentation: "  ", newline: "\n")
+        public static let pretty = Self(
+            forceImportant: false,
+            indentation: [UInt8.ascii.space, UInt8.ascii.space],
+            newline: [UInt8.ascii.lf],
+            reservedCapacity: 0
+        )
 
         /// Configuration optimized for email HTML with forced important styles.
-        public static let email = Self(forceImportant: true, indentation: " ", newline: "\n")
+        public static let email = Self(
+            forceImportant: true,
+            indentation: [UInt8.ascii.space],
+            newline: [UInt8.ascii.lf],
+            reservedCapacity: 0
+        )
+
+        /// Performance-optimized configuration for typical documents (~4KB).
+        ///
+        /// Pre-allocates 4096 bytes to avoid reallocations for most documents.
+        /// Use this when rendering performance is critical.
+        public static let optimized = Self(forceImportant: false, indentation: [], newline: [], reservedCapacity: 4096)
     }
 }
 

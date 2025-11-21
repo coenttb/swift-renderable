@@ -113,8 +113,8 @@ public struct HTMLElement<Content: HTML>: HTML {
 
         // Add newline and indentation for block elements
         if html.isBlock {
-            printer.bytes.append(contentsOf: printer.configuration.newline.utf8)
-            printer.bytes.append(contentsOf: printer.currentIndentation.utf8)
+            printer.bytes.append(contentsOf: printer.configuration.newline)
+            printer.bytes.append(contentsOf: printer.currentIndentation)
         }
 
         // Write opening tag
@@ -183,8 +183,8 @@ public struct HTMLElement<Content: HTML>: HTML {
         // Add closing tag unless it's a void element
         if !HTMLVoidTag.allTags.contains(html.tag) {
             if html.isBlock && !isPreElement {
-                printer.bytes.append(contentsOf: printer.configuration.newline.utf8)
-                printer.bytes.append(contentsOf: printer.currentIndentation.utf8)
+                printer.bytes.append(contentsOf: printer.configuration.newline)
+                printer.bytes.append(contentsOf: printer.currentIndentation)
             }
             printer.bytes.append(UInt8.ascii.lessThanSign)
             printer.bytes.append(UInt8.ascii.slant)
