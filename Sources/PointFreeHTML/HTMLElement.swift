@@ -68,45 +68,32 @@ public struct HTMLElement<Content: HTML>: HTML {
         buffer.append(.ascii.lessThanSign)
         buffer.append(contentsOf: html.tag.utf8)
         
-        // Add attributes
+        // Add attributes - single-pass escaping without intermediate allocation
         for (name, value) in context.attributes {
             buffer.append(.ascii.space)
             buffer.append(contentsOf: name.utf8)
             if !value.isEmpty {
                 buffer.append(.ascii.equalsSign)
                 buffer.append(.ascii.dquote)
-                
-                // Fast path: check if escaping is needed
-                let valueBytes = Array(value.utf8)
-                let needsEscaping = valueBytes.contains { byte in
-                    byte == .ascii.dquote || byte == .ascii.apostrophe ||
-                    byte == .ascii.ampersand || byte == .ascii.lessThanSign ||
-                    byte == .ascii.greaterThanSign
-                }
-                
-                if needsEscaping {
-                    // Slow path: byte-by-byte escaping
-                    for byte in valueBytes {
-                        switch byte {
-                        case .ascii.dquote:
-                            buffer.append(contentsOf: [UInt8].htmlEntityQuot)
-                        case .ascii.apostrophe:
-                            buffer.append(contentsOf: [UInt8].htmlEntityApos)
-                        case .ascii.ampersand:
-                            buffer.append(contentsOf: [UInt8].htmlEntityAmp)
-                        case .ascii.lessThanSign:
-                            buffer.append(contentsOf: [UInt8].htmlEntityLt)
-                        case .ascii.greaterThanSign:
-                            buffer.append(contentsOf: [UInt8].htmlEntityGt)
-                        default:
-                            buffer.append(byte)
-                        }
+
+                // Single-pass: iterate directly over UTF-8 view, escape as needed
+                for byte in value.utf8 {
+                    switch byte {
+                    case .ascii.dquote:
+                        buffer.append(contentsOf: [UInt8].htmlEntityQuot)
+                    case .ascii.apostrophe:
+                        buffer.append(contentsOf: [UInt8].htmlEntityApos)
+                    case .ascii.ampersand:
+                        buffer.append(contentsOf: [UInt8].htmlEntityAmp)
+                    case .ascii.lessThanSign:
+                        buffer.append(contentsOf: [UInt8].htmlEntityLt)
+                    case .ascii.greaterThanSign:
+                        buffer.append(contentsOf: [UInt8].htmlEntityGt)
+                    default:
+                        buffer.append(byte)
                     }
-                } else {
-                    // Fast path: bulk copy when no escaping needed
-                    buffer.append(contentsOf: valueBytes)
                 }
-                
+
                 buffer.append(.ascii.dquote)
             }
         }

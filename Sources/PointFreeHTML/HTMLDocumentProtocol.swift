@@ -67,7 +67,7 @@ extension HTMLDocumentProtocol {
         // Phase 2: Render document structure
         let doc = Document(
             head: html.head,
-            stylesheet: bodyContext.stylesheet,
+            stylesheetBytes: bodyContext.stylesheetBytes,
             bodyBytes: ContiguousArray(bodyBuffer)
         )
         Document._render(doc, into: &buffer, context: &context)

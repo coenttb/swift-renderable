@@ -66,45 +66,11 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
             ?? []
     }
 
-    /// Adds an additional style to this element.
-    ///
-    /// This method allows for chaining multiple styles on a single element.
-    ///
-    /// Example:
-    /// ```swift
-    /// div { "Content" }
-    ///     .inlineStyle("color", "blue")
-    ///     .inlineStyle("font-size", "16px")
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - property: The CSS property name.
-    ///   - value: The value for the CSS property.
-    ///   - mediaQuery: Optional media query for conditional styling.
-    ///   - pre: Optional selector prefix.
-    ///   - pseudo: Optional pseudo-class or pseudo-element.
-    /// - Returns: An HTML element with both the original and new styles applied.
-    public func inlineStyle(
-        _ property: String,
-        _ value: String?,
-        atRule: AtRule? = nil,
-        selector: Selector? = nil,
-        pseudo: Pseudo? = nil
-    ) -> HTMLInlineStyle {
-        var copy = self
-        if let value {
-            copy.styles.append(
-                Style(
-                    property: property,
-                    value: value,
-                    atRule: atRule,
-                    selector: selector,
-                    pseudo: pseudo
-                )
-            )
-        }
-        return copy
-    }
+    // NOTE: We intentionally do NOT provide an inlineStyle method here.
+    // Chaining falls through to the HTML extension, which wraps in a new
+    // HTMLInlineStyle. This creates a linked chain that's flattened at
+    // render time in O(n), avoiding the O(n²) copy-on-write overhead
+    // that would occur if we accumulated styles in a single array.
 
     // Helper function to build CSS selector
     private static func buildSelector(className: String, style: Style) -> String {
@@ -149,11 +115,14 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
         allStyles.reserveCapacity(8)
         var coreContent: any HTML = html
 
-        // Flatten style chain
+        // Flatten style chain (traverses outer-to-inner)
         while let styledElement = coreContent as? any HTMLInlineStyleProtocol {
             allStyles.append(contentsOf: styledElement.extractStyles())
             coreContent = styledElement.extractContent()
         }
+
+        // Reverse to get original application order (inner-to-outer = first applied first)
+        allStyles.reverse()
 
         guard !allStyles.isEmpty else {
             coreContent.render(into: &buffer, context: &context)

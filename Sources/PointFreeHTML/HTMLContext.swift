@@ -6,6 +6,7 @@
 //  Holds state (attributes, styles, indentation) separate from the output buffer.
 //
 
+import INCITS_4_1986
 public import OrderedCollections
 
 /// Rendering context for HTML streaming.
@@ -80,42 +81,54 @@ public struct HTMLContext: Sendable {
         styles.map { className(for: $0) }
     }
 
-    /// Generates a CSS stylesheet from the collected styles.
-    public var stylesheet: String {
-        // Convert byte arrays to strings once for stylesheet generation
-        let newlineStr = String(decoding: configuration.newline, as: UTF8.self)
-        let indentationStr = String(decoding: configuration.indentation, as: UTF8.self)
-
+    /// Generates a CSS stylesheet from the collected styles as bytes.
+    ///
+    /// This is the canonical implementation - generates bytes directly without
+    /// intermediate String allocation.
+    public var stylesheetBytes: ContiguousArray<UInt8> {
         // Group styles by atRule
         var grouped: OrderedDictionary<AtRule?, [(selector: String, style: String)]> = [:]
         for (key, style) in styles {
             grouped[key.atRule, default: []].append((key.selector, style))
         }
 
-        var sheet = newlineStr
+        var sheet = ContiguousArray<UInt8>()
+        sheet.append(contentsOf: configuration.newline)
+
         for (mediaQuery, stylesForMedia) in grouped.sorted(by: { $0.key == nil ? $1.key != nil : false }) {
-            var currentIndentation = ""
             if let mediaQuery {
-                sheet.append("\(mediaQuery.rawValue){")
-                sheet.append(newlineStr)
-                currentIndentation.append(indentationStr)
+                sheet.append(contentsOf: mediaQuery.rawValue.utf8)
+                sheet.append(0x7B) // {
+                sheet.append(contentsOf: configuration.newline)
             }
-            defer {
-                if mediaQuery != nil {
-                    sheet.append("}")
-                    sheet.append(newlineStr)
-                }
-            }
+
             for (selector, style) in stylesForMedia {
-                sheet.append(currentIndentation)
-                if configuration.forceImportant {
-                    sheet.append("\(selector){\(style) !important}")
-                } else {
-                    sheet.append("\(selector){\(style)}")
+                if mediaQuery != nil {
+                    sheet.append(contentsOf: configuration.indentation)
                 }
-                sheet.append(newlineStr)
+                sheet.append(contentsOf: selector.utf8)
+                sheet.append(0x7B) // {
+                sheet.append(contentsOf: style.utf8)
+                if configuration.forceImportant {
+                    sheet.append(contentsOf: " !important".utf8)
+                }
+                sheet.append(0x7D) // }
+                sheet.append(contentsOf: configuration.newline)
+            }
+
+            if mediaQuery != nil {
+                sheet.append(0x7D) // }
+                sheet.append(contentsOf: configuration.newline)
             }
         }
         return sheet
+    }
+
+    /// Generates a CSS stylesheet from the collected styles.
+    ///
+    /// Convenience property that converts bytes to String.
+    /// Prefer `stylesheetBytes` for performance-critical code.
+    public var stylesheet: String {
+        String(decoding: stylesheetBytes, as: UTF8.self)
     }
 }

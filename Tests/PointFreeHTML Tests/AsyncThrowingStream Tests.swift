@@ -5,6 +5,7 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
+import Foundation
 @testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
@@ -278,6 +279,123 @@ struct AsyncThrowingStreamTests {
         // The task should complete (either by cancellation or finishing)
         _ = await task.result
         #expect(true) // Task completed without hanging
+    }
+}
+
+// MARK: - Progressive Streaming Tests
+
+@Suite("Progressive Streaming Tests")
+struct ProgressiveStreamingTests {
+
+    @Test("Progressive stream yields chunks during rendering")
+    func progressiveStreaming() async throws {
+        struct LargeHTML: HTML, Sendable {
+            var body: some HTML {
+                tag("div") {
+                    HTMLText(String(repeating: "a", count: 10_000))
+                }
+            }
+        }
+
+        var chunks: [ArraySlice<UInt8>] = []
+        for try await chunk in AsyncThrowingStream(progressive: LargeHTML(), chunkSize: 1000) {
+            chunks.append(chunk)
+        }
+
+        // Should have multiple chunks due to small chunk size
+        #expect(chunks.count > 1)
+
+        // Verify complete content
+        let result = String(decoding: chunks.flatMap { $0 }, as: UTF8.self)
+        #expect(result.contains("<div>"))
+        #expect(result.contains("</div>"))
+    }
+
+    @Test("Progressive document stream puts styles at end of body")
+    func progressiveDocumentStream() async throws {
+        let document = HTMLDocument {
+            tag("div") {
+                HTMLText("Content")
+            }
+            .inlineStyle("color", "red")
+        }
+
+        var allBytes: [UInt8] = []
+        for try await chunk in AsyncThrowingStream(progressiveDocument: document, chunkSize: 4096) {
+            allBytes.append(contentsOf: chunk)
+        }
+
+        let result = String(decoding: allBytes, as: UTF8.self)
+
+        // Should have complete document structure
+        #expect(result.contains("<!doctype html>"))
+        #expect(result.contains("<html>"))
+        #expect(result.contains("<head>"))
+        #expect(result.contains("<body>"))
+        #expect(result.contains("Content"))
+
+        // Style should be present (at end of body)
+        #expect(result.contains("<style>"))
+        #expect(result.contains("color:red"))
+
+        // Verify style comes after content (styles at end of body)
+        if let contentIndex = result.range(of: "Content"),
+           let styleIndex = result.range(of: "<style>") {
+            #expect(contentIndex.lowerBound < styleIndex.lowerBound)
+        }
+    }
+
+    @Test("Progressive fragment stream convenience method")
+    func progressiveConvenienceMethod() async throws {
+        struct SimpleHTML: HTML, Sendable {
+            var body: some HTML {
+                tag("p") { HTMLText("Hello") }
+            }
+        }
+
+        let html = SimpleHTML()
+        var allBytes: [UInt8] = []
+        for try await chunk in html.progressiveStream(chunkSize: 4096) {
+            allBytes.append(contentsOf: chunk)
+        }
+
+        let result = String(decoding: allBytes, as: UTF8.self)
+        #expect(result.contains("<p>"))
+        #expect(result.contains("Hello"))
+    }
+
+    @Test("Progressive document stream convenience method")
+    func progressiveDocumentConvenienceMethod() async throws {
+        let document = HTMLDocument {
+            tag("main") { HTMLText("Main") }
+        }
+
+        var allBytes: [UInt8] = []
+        for try await chunk in document.progressiveDocumentStream(chunkSize: 4096) {
+            allBytes.append(contentsOf: chunk)
+        }
+
+        let result = String(decoding: allBytes, as: UTF8.self)
+        #expect(result.contains("<main>"))
+        #expect(result.contains("Main"))
+    }
+
+    @Test("Non-throwing progressive stream")
+    func nonThrowingProgressiveStream() async {
+        struct SimpleHTML: HTML, Sendable {
+            var body: some HTML {
+                tag("div") { HTMLText("Test") }
+            }
+        }
+
+        var allBytes: [UInt8] = []
+        for await chunk in AsyncStream(progressive: SimpleHTML(), chunkSize: 4096) {
+            allBytes.append(contentsOf: chunk)
+        }
+
+        let result = String(decoding: allBytes, as: UTF8.self)
+        #expect(result.contains("<div>"))
+        #expect(result.contains("Test"))
     }
 }
 
