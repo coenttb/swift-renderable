@@ -122,8 +122,8 @@ struct HTMLPrinterTests {
         #expect(defaultConfig.newline == [])
         #expect(!defaultConfig.forceImportant)
 
-        #expect(prettyConfig.indentation == [UInt8.ascii.space, UInt8.ascii.space])
-        #expect(prettyConfig.newline == [UInt8.ascii.lf])
+        #expect(prettyConfig.indentation == [.ascii.space, .ascii.space])
+        #expect(prettyConfig.newline == [.ascii.lf])
         #expect(!prettyConfig.forceImportant)
 
         #expect(emailConfig.forceImportant)

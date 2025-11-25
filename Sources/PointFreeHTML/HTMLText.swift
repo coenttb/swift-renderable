@@ -30,11 +30,11 @@ public struct HTMLText: HTML {
     ) where Buffer.Element == UInt8 {
         for byte in html.text.utf8 {
             switch byte {
-            case UInt8.ascii.ampersand:
+            case .ascii.ampersand:
                 buffer.append(contentsOf: [UInt8].htmlEntityAmp)
-            case UInt8.ascii.lessThanSign:
+            case .ascii.lessThanSign:
                 buffer.append(contentsOf: [UInt8].htmlEntityLt)
-            case UInt8.ascii.greaterThanSign:
+            case .ascii.greaterThanSign:
                 buffer.append(contentsOf: [UInt8].htmlEntityGt)
             default:
                 buffer.append(byte)

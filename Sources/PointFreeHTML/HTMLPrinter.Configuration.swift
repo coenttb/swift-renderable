@@ -49,8 +49,8 @@ extension HTMLPrinter {
         /// Pre-allocates 2KB to accommodate additional whitespace from formatting.
         public static let pretty = Self(
             forceImportant: false,
-            indentation: [UInt8.ascii.space, UInt8.ascii.space],
-            newline: [UInt8.ascii.lf],
+            indentation: [.ascii.space, .ascii.space],
+            newline: [.ascii.lf],
             reservedCapacity: 2048
         )
         
@@ -59,8 +59,8 @@ extension HTMLPrinter {
         /// Pre-allocates 2KB as email HTML tends to be verbose with inline styles.
         public static let email = Self(
             forceImportant: true,
-            indentation: [UInt8.ascii.space],
-            newline: [UInt8.ascii.lf],
+            indentation: [.ascii.space],
+            newline: [.ascii.lf],
             reservedCapacity: 2048
         )
         

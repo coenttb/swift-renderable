@@ -142,45 +142,45 @@ extension Array where Element == UInt8 {
 extension [UInt8] {
     /// &quot; - Double quotation mark HTML entity
     package static let htmlEntityQuot: [UInt8] = [
-        UInt8.ascii.ampersand,
-        UInt8.ascii.q,
-        UInt8.ascii.u,
-        UInt8.ascii.o,
-        UInt8.ascii.t,
-        UInt8.ascii.semicolon
+        .ascii.ampersand,
+        .ascii.q,
+        .ascii.u,
+        .ascii.o,
+        .ascii.t,
+        .ascii.semicolon
     ]
 
     /// &#39; - Apostrophe HTML entity
     package static let htmlEntityApos: [UInt8] = [
-        UInt8.ascii.ampersand,
-        UInt8.ascii.numberSign,
-        UInt8.ascii.3,
-        UInt8.ascii.9,
-        UInt8.ascii.semicolon
+        .ascii.ampersand,
+        .ascii.numberSign,
+        .ascii.3,
+        .ascii.9,
+        .ascii.semicolon
     ]
 
     /// &amp; - Ampersand HTML entity
     package static let htmlEntityAmp: [UInt8] = [
-        UInt8.ascii.ampersand,
-        UInt8.ascii.a,
-        UInt8.ascii.m,
-        UInt8.ascii.p,
-        UInt8.ascii.semicolon
+        .ascii.ampersand,
+        .ascii.a,
+        .ascii.m,
+        .ascii.p,
+        .ascii.semicolon
     ]
 
     /// &lt; - Less-than HTML entity
     package static let htmlEntityLt: [UInt8] = [
-        UInt8.ascii.ampersand,
-        UInt8.ascii.l,
-        UInt8.ascii.t,
-        UInt8.ascii.semicolon
+        .ascii.ampersand,
+        .ascii.l,
+        .ascii.t,
+        .ascii.semicolon
     ]
 
     /// &gt; - Greater-than HTML entity
     package static let htmlEntityGt: [UInt8] = [
-        UInt8.ascii.ampersand,
-        UInt8.ascii.g,
-        UInt8.ascii.t,
-        UInt8.ascii.semicolon
+        .ascii.ampersand,
+        .ascii.g,
+        .ascii.t,
+        .ascii.semicolon
     ]
 }
