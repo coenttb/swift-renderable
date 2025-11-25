@@ -10,85 +10,6 @@ import Dependencies
 import OrderedCollections
 import ISO_9899
 
-/// Extension to add inline styling capabilities to all HTML elements.
-extension HTML {
-    /// Applies a CSS style property to an HTML element.
-    ///
-    /// This method enables a type-safe, declarative approach to styling HTML elements
-    /// directly in Swift code. It generates CSS classes and stylesheets automatically.
-    ///
-    /// Example:
-    /// ```swift
-    /// div {
-    ///     "Hello, World!"
-    /// }
-    /// .inlineStyle("color", "red")
-    /// .inlineStyle("font-weight", "bold", pseudo: .hover)
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - property: The CSS property name (e.g., "color", "margin", "font-size").
-    ///   - value: The value for the CSS property. Pass nil to omit this style.
-    ///   - atRule: Optional media query to apply this style conditionally.
-    ///   - pre: Optional selector prefix for more complex CSS selectors.
-    ///   - pseudo: Optional pseudo-class or pseudo-element to apply (e.g., `:hover`, `::before`).
-    /// - Returns: An HTML element with the specified style applied.
-    public func inlineStyle(
-        _ property: String,
-        _ value: String?,
-        atRule: AtRule? = nil,
-        selector: Selector? = nil,
-        pseudo: Pseudo? = nil
-    ) -> HTMLInlineStyle<Self> {
-        HTMLInlineStyle(
-            content: self,
-            property: property,
-            value: value,
-            atRule: atRule,
-            selector: selector,
-            pseudo: pseudo
-        )
-    }
-
-    @_disfavoredOverload
-    public func inlineStyle(
-        _ property: String,
-        _ value: String?,
-        media: AtRule.Media? = nil,
-        selector: Selector? = nil,
-        pseudo: Pseudo? = nil
-    ) -> HTMLInlineStyle<Self> {
-        HTMLInlineStyle(
-            content: self,
-            property: property,
-            value: value,
-            atRule: media,
-            selector: selector,
-            pseudo: pseudo
-        )
-    }
-
-    // For backwards compatibility. Also for future to transform the Media type into an AtRule.
-    @available(*, deprecated, message: "change 'pre' to 'selector'")
-    @_disfavoredOverload
-    public func inlineStyle(
-        _ property: String,
-        _ value: String?,
-        media mediaQuery: AtRule.Media? = nil,
-        pre selector: Selector? = nil,
-        pseudo: Pseudo? = nil
-    ) -> HTMLInlineStyle<Self> {
-        HTMLInlineStyle(
-            content: self,
-            property: property,
-            value: value,
-            atRule: mediaQuery,
-            selector: selector,
-            pseudo: pseudo
-        )
-    }
-
-}
 
 /// A wrapper that applies CSS styles to an HTML element.
 ///
@@ -366,6 +287,85 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
     public var body: Never { fatalError() }
 }
 
+/// Extension to add inline styling capabilities to all HTML elements.
+extension HTML {
+    /// Applies a CSS style property to an HTML element.
+    ///
+    /// This method enables a type-safe, declarative approach to styling HTML elements
+    /// directly in Swift code. It generates CSS classes and stylesheets automatically.
+    ///
+    /// Example:
+    /// ```swift
+    /// div {
+    ///     "Hello, World!"
+    /// }
+    /// .inlineStyle("color", "red")
+    /// .inlineStyle("font-weight", "bold", pseudo: .hover)
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - property: The CSS property name (e.g., "color", "margin", "font-size").
+    ///   - value: The value for the CSS property. Pass nil to omit this style.
+    ///   - atRule: Optional media query to apply this style conditionally.
+    ///   - pre: Optional selector prefix for more complex CSS selectors.
+    ///   - pseudo: Optional pseudo-class or pseudo-element to apply (e.g., `:hover`, `::before`).
+    /// - Returns: An HTML element with the specified style applied.
+    public func inlineStyle(
+        _ property: String,
+        _ value: String?,
+        atRule: AtRule? = nil,
+        selector: Selector? = nil,
+        pseudo: Pseudo? = nil
+    ) -> HTMLInlineStyle<Self> {
+        HTMLInlineStyle(
+            content: self,
+            property: property,
+            value: value,
+            atRule: atRule,
+            selector: selector,
+            pseudo: pseudo
+        )
+    }
+
+    @_disfavoredOverload
+    public func inlineStyle(
+        _ property: String,
+        _ value: String?,
+        media: AtRule.Media? = nil,
+        selector: Selector? = nil,
+        pseudo: Pseudo? = nil
+    ) -> HTMLInlineStyle<Self> {
+        HTMLInlineStyle(
+            content: self,
+            property: property,
+            value: value,
+            atRule: media,
+            selector: selector,
+            pseudo: pseudo
+        )
+    }
+
+    // For backwards compatibility. Also for future to transform the Media type into an AtRule.
+    @available(*, deprecated, message: "change 'pre' to 'selector'")
+    @_disfavoredOverload
+    public func inlineStyle(
+        _ property: String,
+        _ value: String?,
+        media mediaQuery: AtRule.Media? = nil,
+        pre selector: Selector? = nil,
+        pseudo: Pseudo? = nil
+    ) -> HTMLInlineStyle<Self> {
+        HTMLInlineStyle(
+            content: self,
+            property: property,
+            value: value,
+            atRule: mediaQuery,
+            selector: selector,
+            pseudo: pseudo
+        )
+    }
+}
+
 private final class StyleManager: @unchecked Sendable {
     static let shared = StyleManager()
 
@@ -475,12 +475,6 @@ internal struct Style: Hashable, Sendable {
     let pseudo: Pseudo?
 }
 
-// Protocol to enable type erasure for HTMLInlineStyle
-protocol HTMLInlineStyleProtocol {
-    func extractStyles() -> [Style]
-    func extractContent() -> any HTML
-}
-
 // Make HTMLInlineStyle conform to the protocol
 extension HTMLInlineStyle: HTMLInlineStyleProtocol {
     func extractStyles() -> [Style] {
@@ -493,20 +487,6 @@ extension HTMLInlineStyle: HTMLInlineStyleProtocol {
 }
 
 // Add this method to your HTML protocol
-extension HTML {
-    func render(into printer: inout HTMLPrinter) {
-        Self._render(self, into: &printer)
-    }
-
-    @inlinable
-    func render<Buffer: RangeReplaceableCollection>(
-        into buffer: inout Buffer,
-        context: inout HTMLContext
-    ) where Buffer.Element == UInt8 {
-        Self._render(self, into: &buffer, context: &context)
-    }
-}
-
 private func classID(_ value: String) -> String {
     return encode(murmurHash(value))
 

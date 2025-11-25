@@ -75,13 +75,68 @@ extension String {
     }
 }
 
-extension HTMLPrinter {
-    /// An error type representing HTML rendering failures.
+extension String {
+    /// Asynchronously render HTML to a String.
     ///
-    /// This error is thrown when there's a problem rendering HTML content
-    /// or when the rendered bytes cannot be converted to a string.
-    public struct Error: Swift.Error {
-        /// A description of what went wrong during HTML rendering.
-        public let message: String
+    /// This is the authoritative implementation for async HTML string rendering.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// let html = div { "Hello" }
+    /// let string = await String(html)
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - html: The HTML content to render.
+    ///   - configuration: Rendering configuration. Uses default if nil.
+    @inlinable
+    public init<T: HTML>(
+        _ html: T,
+        configuration: HTMLPrinter.Configuration? = nil
+    ) async {
+        let bytes = await [UInt8](html, configuration: configuration)
+        self = String(decoding: bytes, as: UTF8.self)
+    }
+}
+
+
+extension HTML {
+    /// Asynchronously render this HTML to a String.
+    ///
+    /// Convenience method that delegates to `String.init(_:configuration:)`.
+    ///
+    /// - Parameter configuration: Rendering configuration.
+    /// - Returns: Rendered HTML string.
+    @inlinable
+    public func asyncString(
+        configuration: HTMLPrinter.Configuration? = nil
+    ) async -> String {
+        await String(self, configuration: configuration)
+    }
+}
+
+extension String {
+    /// Asynchronously render an HTML document to a String.
+    ///
+    /// This is the authoritative implementation for async document string rendering.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// let page = MyPage()
+    /// let string = await String(document: page)
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - document: The HTML document to render.
+    ///   - configuration: Rendering configuration. Uses default if nil.
+    @inlinable
+    public init<T: HTMLDocumentProtocol>(
+        document: T,
+        configuration: HTMLPrinter.Configuration? = nil
+    ) async {
+        let bytes = await [UInt8](document: document, configuration: configuration)
+        self = String(decoding: bytes, as: UTF8.self)
     }
 }

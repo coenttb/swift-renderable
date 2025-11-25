@@ -1,47 +1,11 @@
-//
-//  HTMLAttribute.swift
-//
-//
-//  Created by Point-Free, Inc
-//
-
 import OrderedCollections
 
-/// Extension to add attribute capabilities to all HTML elements.
-extension HTML {
-    /// Adds a custom attribute to an HTML element.
-    ///
-    /// This method allows you to set any attribute on an HTML element,
-    /// providing flexibility for both standard and custom attributes.
-    ///
-    /// Example:
-    /// ```swift
-    /// div { "Content" }
-    ///     .attribute("data-testid", "main-content")
-    ///     .attribute("aria-label", "Main content section")
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - name: The name of the attribute.
-    ///   - value: The optional value of the attribute. If nil, the attribute is omitted.
-    ///            If an empty string, the attribute is included without a value.
-    /// - Returns: An HTML element with the attribute applied.
-    ///
-    /// - Note: This is the primary method for adding any HTML attribute.
-    ///   Use this for all attributes including common ones like
-    ///   `charset`, `name`, `content`, `type`, etc.
-    ///
-    /// Example:
-    /// ```swift
-    /// meta().attribute("charset", "utf-8")
-    /// meta().attribute("name", "viewport").attribute("content", "width=device-width, initial-scale=1")
-    /// input().attribute("type", "text").attribute("placeholder", "Enter your name")
-    /// div().attribute("id", "main").attribute("class", "container")
-    /// ```
-    public func attribute(_ name: String, _ value: String? = "") -> _HTMLAttributes<Self> {
-        _HTMLAttributes(content: self, attributes: value.map { [name: $0] } ?? [:])
-    }
-}
+//
+//  File.swift
+//  pointfree-html
+//
+//  Created by Coen ten Thije Boonkkamp on 25/11/2025.
+//
 
 /// A wrapper that applies attributes to an HTML element.
 ///

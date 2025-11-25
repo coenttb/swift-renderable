@@ -101,31 +101,10 @@ extension HTMLDocumentProtocol {
     }
 }
 
-// MARK: - Async Streaming for Documents
-
 extension HTMLDocumentProtocol where Self: Sendable {
-    /// Stream this HTML document as async byte chunks.
+    /// Stream this HTML document as async byte chunks (throwing).
     ///
-    /// Documents require two-phase rendering (body first to collect styles),
-    /// so the entire document is rendered before streaming begins. However,
-    /// the chunked delivery still provides benefits for HTTP responses:
-    /// - Cooperative scheduling via `Task.yield()`
-    /// - Cancellation support
-    /// - Backpressure through Swift concurrency
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// struct MyPage: HTMLDocumentProtocol {
-    ///     var head: some HTML { title { "My Page" } }
-    ///     var body: some HTML { div { "Content" } }
-    /// }
-    ///
-    /// let page = MyPage()
-    /// for try await chunk in page.asyncDocumentStream() {
-    ///     try await response.write(chunk)
-    /// }
-    /// ```
+    /// Convenience method that delegates to `AsyncThrowingStream.init(document:chunkSize:configuration:)`.
     ///
     /// - Parameters:
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
@@ -136,37 +115,30 @@ extension HTMLDocumentProtocol where Self: Sendable {
         chunkSize: Int = 4096,
         configuration: HTMLPrinter.Configuration? = nil
     ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
-        let document = self
-        let config = configuration ?? .default
-        return AsyncThrowingStream { continuation in
-            Task { @Sendable in
-                do {
-                    // Two-phase render: body first to collect styles
-                    var buffer: [UInt8] = []
-                    var context = HTMLContext(config)
-                    Self._render(document, into: &buffer, context: &context)
+        AsyncThrowingStream(document: self, chunkSize: chunkSize, configuration: configuration)
+    }
 
-                    // Stream in chunks with cooperative scheduling
-                    var offset = 0
-                    while offset < buffer.count {
-                        await Task.yield()
-                        try Task.checkCancellation()
-
-                        let end = min(offset + chunkSize, buffer.count)
-                        continuation.yield(buffer[offset..<end])
-                        offset = end
-                    }
-                    continuation.finish()
-                } catch {
-                    continuation.finish(throwing: error)
-                }
-            }
-        }
+    /// Stream this HTML document as async byte chunks (non-throwing).
+    ///
+    /// Convenience method that delegates to `AsyncStream.init(document:chunkSize:configuration:)`.
+    ///
+    /// - Parameters:
+    ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
+    ///   - configuration: Rendering configuration. Uses default if nil.
+    /// - Returns: An AsyncStream yielding byte chunks.
+    @inlinable
+    public func asyncDocumentStreamNonThrowing(
+        chunkSize: Int = 4096,
+        configuration: HTMLPrinter.Configuration? = nil
+    ) -> AsyncStream<ArraySlice<UInt8>> {
+        AsyncStream(document: self, chunkSize: chunkSize, configuration: configuration)
     }
 }
 
 extension HTMLDocumentProtocol {
     /// Asynchronously render this document to a complete byte array.
+    ///
+    /// Convenience method that delegates to `[UInt8].init(document:configuration:)`.
     ///
     /// - Parameter configuration: Rendering configuration.
     /// - Returns: Complete rendered bytes.
@@ -174,15 +146,12 @@ extension HTMLDocumentProtocol {
     public func asyncDocumentBytes(
         configuration: HTMLPrinter.Configuration? = nil
     ) async -> [UInt8] {
-        await Task.yield()
-
-        var buffer: [UInt8] = []
-        var context = HTMLContext(configuration ?? .default)
-        Self._render(self, into: &buffer, context: &context)
-        return buffer
+        await [UInt8](document: self, configuration: configuration)
     }
 
     /// Asynchronously render this document to a String.
+    ///
+    /// Convenience method that delegates to `String.init(document:configuration:)`.
     ///
     /// - Parameter configuration: Rendering configuration.
     /// - Returns: Rendered HTML document string.
@@ -190,44 +159,36 @@ extension HTMLDocumentProtocol {
     public func asyncDocumentString(
         configuration: HTMLPrinter.Configuration? = nil
     ) async -> String {
-        let bytes = await asyncDocumentBytes(configuration: configuration)
-        return String(decoding: bytes, as: UTF8.self)
+        await String(document: self, configuration: configuration)
     }
 }
 
-/// A private implementation of an HTML document.
-///
-/// This struct assembles the different parts of an HTML document (head, stylesheet, body)
-/// into a complete HTML document with proper structure.
-private struct Document<Head: HTML>: HTML {
-    /// The head content for the document.
-    let head: Head
 
-    /// Collected stylesheet content to be included in the document head.
-    let stylesheet: String
 
-    /// Pre-rendered bytes for the document body.
-    let bodyBytes: ContiguousArray<UInt8>
-
-    /// The body content of the document, which assembles the complete HTML structure.
-    var body: some HTML {
-        // Add the doctype declaration
-        Doctype()
-
-        // Create the html element with language attribute
-        HTMLTag("html") {
-            // Add the head section with metadata and styles
-            HTMLTag("head") {
-                head
-                HTMLTag("style") {
-                    HTMLText(stylesheet)
-                }
-            }
-
-            // Add the body section with pre-rendered content
-            HTMLTag("body") {
-                HTMLRaw(bodyBytes)
-            }
-        }
+extension HTMLDocumentProtocol {
+    /// Renders this HTML document to bytes.
+    ///
+    /// This method creates a printer with the current configuration and
+    /// renders the HTML document into it, then returns the resulting bytes.
+    ///
+    /// - Returns: A buffer of bytes representing the rendered HTML document.
+    ///
+    /// - Warning: This method is deprecated. Use the RFC pattern initialization instead:
+    ///   ```swift
+    ///   // Old (deprecated)
+    ///   let bytes = document.render()
+    ///
+    ///   // New (RFC pattern - zero-copy)
+    ///   let bytes = ContiguousArray(document)
+    ///
+    ///   // Or for String output
+    ///   let string = try String(document)
+    ///   ```
+    @available(*, deprecated, message: "Use ContiguousArray(html) or String(html) instead. The RFC pattern makes bytes canonical and String derived.")
+    public func render() -> ContiguousArray<UInt8> {
+        @Dependency(\.htmlPrinter) var htmlPrinter
+        var printer = htmlPrinter
+        Self._render(self, into: &printer)
+        return printer.bytes
     }
 }

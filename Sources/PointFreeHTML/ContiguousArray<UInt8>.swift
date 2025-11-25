@@ -9,7 +9,7 @@ public import Dependencies
 
 // MARK: - RFC Pattern: Bytes as Canonical Representation
 
-extension ContiguousArray where Element == UInt8 {
+extension ContiguousArray<UInt8>  {
     /// Creates a contiguous array of UTF-8 bytes from rendered HTML.
     ///
     /// This is the **canonical, zero-copy transformation** from HTML to bytes,

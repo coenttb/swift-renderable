@@ -24,7 +24,8 @@ struct AsyncStreamingTests {
         let html = TestHTML()
         var collectedBytes: [UInt8] = []
 
-        for try await chunk in html.asyncStream(chunkSize: 10) {
+        // Using the authoritative init-based API
+        for try await chunk in AsyncThrowingStream(html, chunkSize: 10) {
             collectedBytes.append(contentsOf: chunk)
         }
 
@@ -99,7 +100,7 @@ struct AsyncStreamingTests {
         }
 
         let asyncResult = await html.asyncString()
-        let syncResult = try String(html)
+        let syncResult = String(decoding: html.bytes, as: UTF8.self)
 
         #expect(asyncResult == syncResult)
     }

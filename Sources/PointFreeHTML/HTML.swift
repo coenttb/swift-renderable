@@ -5,7 +5,9 @@
 //  Created by Point-Free, Inc
 //
 
+import OrderedCollections
 import Standards
+import Dependencies
 
 /// A protocol representing an HTML element or component that can be rendered.
 ///
@@ -131,79 +133,11 @@ extension HTML {
     }
 }
 
-/// Conformance of `Never` to `HTML` to support the type system.
-///
-/// This conformance is provided to allow the use of the `HTML` protocol in
-/// contexts where no content is expected or possible.
-extension Never: HTML {
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {}
-
-    @inlinable
-    public static func _render<Buffer: RangeReplaceableCollection>(
-        _ html: Self,
-        into buffer: inout Buffer,
-        context: inout HTMLContext
-    ) where Buffer.Element == UInt8 {}
-
-    public var body: Never { fatalError() }
-}
-
-public struct AnyHTML: HTML {
-    let base: any HTML
-    public init(_ base: any HTML) {
-        self.base = base
-    }
-    public static func _render(_ html: AnyHTML, into printer: inout HTMLPrinter) {
-        func render<T: HTML>(_ html: T) {
-            T._render(html, into: &printer)
-        }
-        render(html.base)
-    }
-
-    public static func _render<Buffer: RangeReplaceableCollection>(
-        _ html: AnyHTML,
-        into buffer: inout Buffer,
-        context: inout HTMLContext
-    ) where Buffer.Element == UInt8 {
-        func render<T: HTML>(_ html: T) {
-            T._render(html, into: &buffer, context: &context)
-        }
-        render(html.base)
-    }
-
-    public var body: Never { fatalError() }
-}
-
-extension AnyHTML {
-    public init(
-        _ closure: () -> any HTML
-    ) {
-        self = .init(closure())
-    }
-}
-
-// MARK: - Async Streaming
 
 extension HTML where Self: Sendable {
-    /// Stream this HTML as async byte chunks.
+    /// Stream this HTML as async byte chunks (throwing).
     ///
-    /// This method enables HTML to be streamed chunk-by-chunk to HTTP responses,
-    /// providing cooperative scheduling and backpressure support through Swift's
-    /// structured concurrency.
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let page = div {
-    ///     h1 { "Hello" }
-    ///     p { "Streaming HTML!" }
-    /// }
-    ///
-    /// // Stream to HTTP response
-    /// for try await chunk in page.asyncStream() {
-    ///     try await response.write(chunk)
-    /// }
-    /// ```
+    /// Convenience method that delegates to `AsyncThrowingStream.init(_:chunkSize:configuration:)`.
     ///
     /// - Parameters:
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
@@ -214,111 +148,85 @@ extension HTML where Self: Sendable {
         chunkSize: Int = 4096,
         configuration: HTMLPrinter.Configuration? = nil
     ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
-        let html = self
-        let config = configuration ?? .default
-        return AsyncThrowingStream { continuation in
-            Task { @Sendable in
-                do {
-                    // Render synchronously into buffer
-                    var buffer: [UInt8] = []
-                    var context = HTMLContext(config)
-                    Self._render(html, into: &buffer, context: &context)
-
-                    // Yield in chunks with cooperative scheduling
-                    var offset = 0
-                    while offset < buffer.count {
-                        // Cooperative scheduling - allow other tasks to run
-                        await Task.yield()
-
-                        // Check for cancellation
-                        try Task.checkCancellation()
-
-                        let end = min(offset + chunkSize, buffer.count)
-                        continuation.yield(buffer[offset..<end])
-                        offset = end
-                    }
-                    continuation.finish()
-                } catch {
-                    continuation.finish(throwing: error)
-                }
-            }
-        }
+        AsyncThrowingStream(self, chunkSize: chunkSize, configuration: configuration)
     }
+}
 
-    /// Stream this HTML as async byte chunks (non-throwing variant).
+/// Extension to add attribute capabilities to all HTML elements.
+extension HTML {
+    /// Adds a custom attribute to an HTML element.
     ///
-    /// This variant ignores cancellation errors and simply finishes the stream.
-    /// Use `asyncStream()` if you need to handle cancellation explicitly.
+    /// This method allows you to set any attribute on an HTML element,
+    /// providing flexibility for both standard and custom attributes.
+    ///
+    /// Example:
+    /// ```swift
+    /// div { "Content" }
+    ///     .attribute("data-testid", "main-content")
+    ///     .attribute("aria-label", "Main content section")
+    /// ```
     ///
     /// - Parameters:
-    ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
-    ///   - configuration: Rendering configuration. Uses default if nil.
-    /// - Returns: An AsyncStream yielding byte chunks.
+    ///   - name: The name of the attribute.
+    ///   - value: The optional value of the attribute. If nil, the attribute is omitted.
+    ///            If an empty string, the attribute is included without a value.
+    /// - Returns: An HTML element with the attribute applied.
+    ///
+    /// - Note: This is the primary method for adding any HTML attribute.
+    ///   Use this for all attributes including common ones like
+    ///   `charset`, `name`, `content`, `type`, etc.
+    ///
+    /// Example:
+    /// ```swift
+    /// meta().attribute("charset", "utf-8")
+    /// meta().attribute("name", "viewport").attribute("content", "width=device-width, initial-scale=1")
+    /// input().attribute("type", "text").attribute("placeholder", "Enter your name")
+    /// div().attribute("id", "main").attribute("class", "container")
+    /// ```
+    public func attribute(_ name: String, _ value: String? = "") -> _HTMLAttributes<Self> {
+        _HTMLAttributes(content: self, attributes: value.map { [name: $0] } ?? [:])
+    }
+}
+
+
+extension HTML {
+    func render(into printer: inout HTMLPrinter) {
+        Self._render(self, into: &printer)
+    }
+
     @inlinable
-    public func asyncStreamNonThrowing(
-        chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
-    ) -> AsyncStream<ArraySlice<UInt8>> {
-        let html = self
-        let config = configuration ?? .default
-        return AsyncStream { continuation in
-            Task { @Sendable in
-                // Render synchronously into buffer
-                var buffer: [UInt8] = []
-                var context = HTMLContext(config)
-                Self._render(html, into: &buffer, context: &context)
-
-                // Yield in chunks with cooperative scheduling
-                var offset = 0
-                while offset < buffer.count {
-                    await Task.yield()
-
-                    // Check for cancellation (finish gracefully)
-                    if Task.isCancelled {
-                        continuation.finish()
-                        return
-                    }
-
-                    let end = min(offset + chunkSize, buffer.count)
-                    continuation.yield(buffer[offset..<end])
-                    offset = end
-                }
-                continuation.finish()
-            }
-        }
+    func render<Buffer: RangeReplaceableCollection>(
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        Self._render(self, into: &buffer, context: &context)
     }
 }
 
 extension HTML {
-    /// Asynchronously render this HTML to a complete byte array.
+    /// Renders this HTML element to bytes.
     ///
-    /// This method yields to the scheduler during rendering to avoid blocking,
-    /// making it suitable for use in async contexts where responsiveness matters.
+    /// This method creates a printer with the current configuration and
+    /// renders the HTML element into it, then returns the resulting bytes.
     ///
-    /// - Parameter configuration: Rendering configuration.
-    /// - Returns: Complete rendered bytes.
-    @inlinable
-    public func asyncBytes(
-        configuration: HTMLPrinter.Configuration? = nil
-    ) async -> [UInt8] {
-        // Yield to allow other tasks to run
-        await Task.yield()
-
-        var buffer: [UInt8] = []
-        var context = HTMLContext(configuration ?? .default)
-        Self._render(self, into: &buffer, context: &context)
-        return buffer
-    }
-
-    /// Asynchronously render this HTML to a String.
+    /// - Returns: A buffer of bytes representing the rendered HTML.
     ///
-    /// - Parameter configuration: Rendering configuration.
-    /// - Returns: Rendered HTML string.
-    @inlinable
-    public func asyncString(
-        configuration: HTMLPrinter.Configuration? = nil
-    ) async -> String {
-        let bytes = await asyncBytes(configuration: configuration)
-        return String(decoding: bytes, as: UTF8.self)
+    /// - Warning: This method is deprecated. Use the RFC pattern initialization instead:
+    ///   ```swift
+    ///   // Old (deprecated)
+    ///   let bytes = html.render()
+    ///
+    ///   // New (RFC pattern - zero-copy)
+    ///   let bytes = ContiguousArray(html)
+    ///
+    ///   // Or for String output
+    ///   let string = try String(html)
+    ///   ```
+    @available(*, deprecated, message: "Use ContiguousArray(html) or String(html) instead. The RFC pattern makes bytes canonical and String derived.")
+    public func render() -> ContiguousArray<UInt8> {
+        @Dependency(\.htmlPrinter) var htmlPrinter
+        var printer = htmlPrinter
+        Self._render(self, into: &printer)
+        return printer.bytes
     }
 }

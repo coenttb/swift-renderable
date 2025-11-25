@@ -17,7 +17,7 @@ struct ReadmeVerificationTests {
 
         let greeting = Greeting(name: "World")
         let htmlString: String = try String(greeting)
-        let htmlBytes: ContiguousArray<UInt8> = greeting.render()
+        let htmlBytes: ContiguousArray = .init(greeting)
 
         // Verify the rendered HTML contains expected content
         #expect(htmlString.contains("Hello, World!"))

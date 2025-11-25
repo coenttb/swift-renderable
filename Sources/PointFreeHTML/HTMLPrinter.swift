@@ -5,22 +5,11 @@
 //  Created by Point-Free, Inc
 //
 
-public import Dependencies
+import Dependencies
 import INCITS_4_1986
 public import OrderedCollections
 
-/// A composite key for the styles dictionary, combining at-rule and selector.
-///
-/// This flattened structure avoids nested dictionary lookups and improves performance.
-public struct StyleKey: Hashable, Sendable {
-    public let atRule: AtRule?
-    public let selector: String
 
-    public init(_ atRule: AtRule?, _ selector: String) {
-        self.atRule = atRule
-        self.selector = selector
-    }
-}
 
 /// A struct responsible for rendering HTML elements to bytes.
 ///
@@ -40,26 +29,26 @@ public struct StyleKey: Hashable, Sendable {
 /// Most users will not interact with `HTMLPrinter` directly, but instead
 /// use the `render()` method on HTML elements or documents.
 public struct HTMLPrinter: Sendable {
-
+    
     /// The buffer of bytes representing the rendered HTML.
     public var bytes: ContiguousArray<UInt8> = []
-
+    
     /// The current set of attributes to apply to the next HTML element.
     public var attributes: OrderedDictionary<String, String> = [:]
-
+    
     /// The collected styles to be rendered in the document's stylesheet.
     ///
     /// Uses a flattened structure with composite keys for better performance.
     /// Previously was `OrderedDictionary<AtRule?, OrderedDictionary<String, String>>`
     /// which required two hash lookups per access.
     public var styles: OrderedDictionary<StyleKey, String> = [:]
-
+    
     /// Configuration for rendering, including formatting options.
     let configuration: Configuration
-
+    
     /// The current indentation level for pretty-printing.
     var currentIndentation: [UInt8] = []
-
+    
     /// Creates a new HTML printer with the specified configuration.
     ///
     /// - Parameter configuration: The configuration to use for rendering.
@@ -70,7 +59,10 @@ public struct HTMLPrinter: Sendable {
             self.bytes.reserveCapacity(configuration.reservedCapacity)
         }
     }
+}
 
+extension HTMLPrinter {
+    
     /// Generates a CSS stylesheet from the collected styles.
     ///
     /// This method compiles all styles collected during rendering into a
@@ -82,13 +74,13 @@ public struct HTMLPrinter: Sendable {
         // Convert byte arrays to strings once for stylesheet generation
         let newlineStr = String(decoding: configuration.newline, as: UTF8.self)
         let indentationStr = String(decoding: configuration.indentation, as: UTF8.self)
-
+        
         // Group styles by atRule
         var grouped: OrderedDictionary<AtRule?, [(selector: String, style: String)]> = [:]
         for (key, style) in styles {
             grouped[key.atRule, default: []].append((key.selector, style))
         }
-
+        
         var sheet = newlineStr
         for (mediaQuery, stylesForMedia) in grouped.sorted(by: { $0.key == nil ? $1.key != nil : false }) {
             var currentIndentation = ""
@@ -115,145 +107,5 @@ public struct HTMLPrinter: Sendable {
         }
         return sheet
     }
-
-    /// Configuration options for HTML rendering.
-    ///
-    /// This struct provides options to control how HTML is rendered,
-    /// including pretty-printing options and special handling for
-    /// specific contexts like email.
-    public struct Configuration: Sendable {
-        /// Whether to add `!important` to all CSS rules.
-        package let forceImportant: Bool
-
-        /// The bytes to use for indentation.
-        ///
-        /// Stored as bytes to avoid UTF-8 conversion overhead during rendering.
-        package let indentation: [UInt8]
-
-        /// The bytes to use for newlines.
-        ///
-        /// Stored as bytes to avoid UTF-8 conversion overhead during rendering.
-        package let newline: [UInt8]
-
-        /// Reserved capacity for the byte buffer (in bytes).
-        ///
-        /// Pre-allocating capacity avoids multiple reallocations during rendering.
-        /// Set to 0 for no reservation (default), or estimate your typical document size.
-        ///
-        /// ## Typical Sizes
-        /// - Small documents (< 1KB): 512 bytes
-        /// - Medium documents (1-10KB): 4096 bytes
-        /// - Large documents (> 10KB): 16384 bytes
-        package let reservedCapacity: Int
-
-        /// Default configuration with no indentation or newlines.
-        ///
-        /// Pre-allocates 1KB to handle most simple documents without reallocation.
-        public static let `default` = Self(forceImportant: false, indentation: [], newline: [], reservedCapacity: 1024)
-
-        /// Pretty-printing configuration with 2-space indentation and newlines.
-        ///
-        /// Pre-allocates 2KB to accommodate additional whitespace from formatting.
-        public static let pretty = Self(
-            forceImportant: false,
-            indentation: [UInt8.ascii.space, UInt8.ascii.space],
-            newline: [UInt8.ascii.lf],
-            reservedCapacity: 2048
-        )
-
-        /// Configuration optimized for email HTML with forced important styles.
-        ///
-        /// Pre-allocates 2KB as email HTML tends to be verbose with inline styles.
-        public static let email = Self(
-            forceImportant: true,
-            indentation: [UInt8.ascii.space],
-            newline: [UInt8.ascii.lf],
-            reservedCapacity: 2048
-        )
-
-        /// Performance-optimized configuration for typical documents (~4KB).
-        ///
-        /// Pre-allocates 4096 bytes to avoid reallocations for most documents.
-        /// Use this when rendering performance is critical.
-        public static let optimized = Self(forceImportant: false, indentation: [], newline: [], reservedCapacity: 4096)
-    }
 }
 
-extension HTML {
-    /// Renders this HTML element to bytes.
-    ///
-    /// This method creates a printer with the current configuration and
-    /// renders the HTML element into it, then returns the resulting bytes.
-    ///
-    /// - Returns: A buffer of bytes representing the rendered HTML.
-    ///
-    /// - Warning: This method is deprecated. Use the RFC pattern initialization instead:
-    ///   ```swift
-    ///   // Old (deprecated)
-    ///   let bytes = html.render()
-    ///
-    ///   // New (RFC pattern - zero-copy)
-    ///   let bytes = ContiguousArray(html)
-    ///
-    ///   // Or for String output
-    ///   let string = try String(html)
-    ///   ```
-    @available(*, deprecated, message: "Use ContiguousArray(html) or String(html) instead. The RFC pattern makes bytes canonical and String derived.")
-    public func render() -> ContiguousArray<UInt8> {
-        @Dependency(\.htmlPrinter) var htmlPrinter
-        var printer = htmlPrinter
-        Self._render(self, into: &printer)
-        return printer.bytes
-    }
-}
-
-extension HTMLDocumentProtocol {
-    /// Renders this HTML document to bytes.
-    ///
-    /// This method creates a printer with the current configuration and
-    /// renders the HTML document into it, then returns the resulting bytes.
-    ///
-    /// - Returns: A buffer of bytes representing the rendered HTML document.
-    ///
-    /// - Warning: This method is deprecated. Use the RFC pattern initialization instead:
-    ///   ```swift
-    ///   // Old (deprecated)
-    ///   let bytes = document.render()
-    ///
-    ///   // New (RFC pattern - zero-copy)
-    ///   let bytes = ContiguousArray(document)
-    ///
-    ///   // Or for String output
-    ///   let string = try String(document)
-    ///   ```
-    @available(*, deprecated, message: "Use ContiguousArray(html) or String(html) instead. The RFC pattern makes bytes canonical and String derived.")
-    public func render() -> ContiguousArray<UInt8> {
-        @Dependency(\.htmlPrinter) var htmlPrinter
-        var printer = htmlPrinter
-        Self._render(self, into: &printer)
-        return printer.bytes
-    }
-}
-
-extension DependencyValues {
-    /// The HTML printer to use for rendering HTML.
-    ///
-    /// This dependency allows for customization of HTML rendering
-    /// without having to pass a printer explicitly.
-    public var htmlPrinter: HTMLPrinter {
-        get { self[HTMLPrinterKey.self] }
-        set { self[HTMLPrinterKey.self] = newValue }
-    }
-}
-
-/// Private key for the HTML printer dependency.
-private enum HTMLPrinterKey: DependencyKey {
-    /// Default printer for production use.
-    static var liveValue: HTMLPrinter { HTMLPrinter() }
-
-    /// Pretty-printing printer for preview use.
-    static var previewValue: HTMLPrinter { HTMLPrinter(.pretty) }
-
-    /// Pretty-printing printer for test use.
-    static var testValue: HTMLPrinter { HTMLPrinter(.default) }
-}
