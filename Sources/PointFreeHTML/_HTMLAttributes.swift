@@ -51,25 +51,7 @@ public struct _HTMLAttributes<Content: HTML>: HTML {
         return copy
     }
 
-    /// Renders this HTML element with attributes into the provided printer.
-    ///
-    /// This method:
-    /// 1. Saves the current attributes
-    /// 2. Merges the new attributes
-    /// 3. Renders the content with the merged attributes
-    /// 4. Restores the original attributes
-    ///
-    /// - Parameters:
-    ///   - html: The HTML with attributes to render.
-    ///   - printer: The printer to render the HTML into.
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        let previousValue = printer.attributes  // TODO: should we optimize this?
-        defer { printer.attributes = previousValue }
-        printer.attributes.merge(html.attributes, uniquingKeysWith: { $1 })
-        Content._render(html.content, into: &printer)
-    }
-
-    /// Streaming render - writes directly to any byte buffer.
+    /// Renders this HTML element with attributes into the provided buffer.
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,
         into buffer: inout Buffer,

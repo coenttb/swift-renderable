@@ -23,30 +23,6 @@ public struct HTMLText: HTML {
     }
 
     /// Renders the text content with proper HTML escaping.
-    ///
-    /// This method escapes special characters (`&`, `<`, `>`) to prevent HTML injection
-    /// and ensure the text renders correctly in an HTML document.
-    ///
-    /// - Parameters:
-    ///   - html: The HTML text to render.
-    ///   - printer: The printer to render the HTML into.
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        printer.bytes.reserveCapacity(printer.bytes.count + html.text.utf8.count)
-        for byte in html.text.utf8 {
-            switch byte {
-            case UInt8.ascii.ampersand:
-                printer.bytes.append(contentsOf: [UInt8].htmlEntityAmp)
-            case UInt8.ascii.lessThanSign:
-                printer.bytes.append(contentsOf: [UInt8].htmlEntityLt)
-            case UInt8.ascii.greaterThanSign:
-                printer.bytes.append(contentsOf: [UInt8].htmlEntityGt)
-            default:
-                printer.bytes.append(byte)
-            }
-        }
-    }
-
-    /// Streaming render - writes directly to any byte buffer.
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,
         into buffer: inout Buffer,

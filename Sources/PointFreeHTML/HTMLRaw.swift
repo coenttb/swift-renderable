@@ -45,16 +45,7 @@ public struct HTMLRaw: HTML {
         self.bytes = ContiguousArray(bytes)
     }
 
-    /// Renders the raw HTML bytes directly to the printer without any processing.
-    ///
-    /// - Parameters:
-    ///   - html: The raw HTML to render.
-    ///   - printer: The printer to render the HTML into.
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        printer.bytes.append(contentsOf: html.bytes)
-    }
-
-    /// Streaming render - writes directly to any byte buffer.
+    /// Renders the raw HTML bytes directly to the buffer without any processing.
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,
         into buffer: inout Buffer,

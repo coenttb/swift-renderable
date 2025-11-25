@@ -30,14 +30,7 @@ public struct HTMLEmpty: HTML {
     /// Creates a new empty HTML node.
     public init() {}
 
-    /// Renders nothing to the printer.
-    ///
-    /// - Parameters:
-    ///   - html: The empty HTML to render.
-    ///   - printer: The printer to render the HTML into.
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {}
-
-    /// Streaming render - no-op for empty content.
+    /// Renders nothing (no-op for empty content).
     @inlinable
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,

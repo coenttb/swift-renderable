@@ -11,16 +11,6 @@
 /// where `nil` values simply render nothing.
 extension Optional: HTML where Wrapped: HTML {
     /// Renders the optional HTML element if it exists.
-    ///
-    /// - Parameters:
-    ///   - html: The optional HTML to render.
-    ///   - printer: The printer to render the HTML into.
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        guard let html else { return }
-        Wrapped._render(html, into: &printer)
-    }
-
-    /// Streaming render - writes directly to any byte buffer.
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,
         into buffer: inout Buffer,

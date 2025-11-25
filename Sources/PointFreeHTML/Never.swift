@@ -10,8 +10,6 @@
 /// This conformance is provided to allow the use of the `HTML` protocol in
 /// contexts where no content is expected or possible.
 extension Never: HTML {
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {}
-
     @inlinable
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,

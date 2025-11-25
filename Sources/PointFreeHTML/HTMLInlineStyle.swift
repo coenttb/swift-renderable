@@ -112,76 +112,6 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
         return copy
     }
 
-    // Optimized rendering with simplified logic
-    public static func _render(_ html: HTMLInlineStyle<Content>, into printer: inout HTMLPrinter) {
-        let previousClass = printer.attributes["class"]
-        defer { printer.attributes["class"] = previousClass }
-
-        // Collect all styles from nested elements
-        var allStyles: [Style] = []
-        allStyles.reserveCapacity(8)  // Reserve capacity for typical chaining depth
-        var coreContent: any HTML = html
-
-        // Flatten style chain
-        while let styledElement = coreContent as? any HTMLInlineStyleProtocol {
-            allStyles.append(contentsOf: styledElement.extractStyles())
-            coreContent = styledElement.extractContent()
-        }
-
-        guard !allStyles.isEmpty else {
-            coreContent.render(into: &printer)
-            return
-        }
-
-        // Generate class names and apply styles
-        let classNames = html.classNameGenerator.generateBatch(allStyles)
-        var classComponents: [String] = []
-        classComponents.reserveCapacity(classNames.count)
-
-        for (style, className) in zip(allStyles, classNames) {
-            let selector = buildSelector(className: className, style: style)
-
-            // Add to stylesheet if not present
-            let key = StyleKey(style.atRule, selector)
-            if printer.styles[key] == nil {
-                printer.styles[key] = "\(style.property):\(style.value)"
-            }
-
-            classComponents.append(className)
-        }
-
-        // Apply class names
-        if let existingClass = printer.attributes["class"] {
-            // Pre-calculate capacity: existing + space + new classes + (n-1) spaces
-            let totalLength = existingClass.count + 1 + classComponents.reduce(0) { $0 + $1.count } + (classComponents.count - 1)
-            var result = ""
-            result.reserveCapacity(totalLength)
-            result.append(existingClass)
-            result.append(" ")
-            for (index, className) in classComponents.enumerated() {
-                if index > 0 {
-                    result.append(" ")
-                }
-                result.append(className)
-            }
-            printer.attributes["class"] = result
-        } else {
-            // Pre-calculate capacity: total class name length + (n-1) spaces
-            let totalLength = classComponents.reduce(0) { $0 + $1.count } + (classComponents.count - 1)
-            var result = ""
-            result.reserveCapacity(totalLength)
-            for (index, className) in classComponents.enumerated() {
-                if index > 0 {
-                    result.append(" ")
-                }
-                result.append(className)
-            }
-            printer.attributes["class"] = result
-        }
-
-        coreContent.render(into: &printer)
-    }
-
     // Helper function to build CSS selector
     private static func buildSelector(className: String, style: Style) -> String {
         // Pre-calculate total length to avoid reallocations
@@ -211,7 +141,7 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
         return selector
     }
 
-    /// Streaming render - writes directly to any byte buffer.
+    /// Renders this styled HTML element into the provided buffer.
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: HTMLInlineStyle<Content>,
         into buffer: inout Buffer,

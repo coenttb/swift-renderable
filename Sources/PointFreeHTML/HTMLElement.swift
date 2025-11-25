@@ -49,105 +49,7 @@ public struct HTMLElement<Content: HTML>: HTML {
         self.content = content()
     }
     
-    /// Renders this HTML element into the provided printer.
-    ///
-    /// This method performs the following steps:
-    /// 1. Adds indentation if this is a block element
-    /// 2. Writes the opening tag with attributes
-    /// 3. Renders the content if present
-    /// 4. Writes the closing tag (unless this is a void element)
-    ///
-    /// - Parameters:
-    ///   - html: The HTML element to render.
-    ///   - printer: The printer to render the HTML into.
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        
-        // Special handling for pre elements to preserve formatting
-        let isPreElement = html.tag == "pre"
-        
-        // Add newline and indentation for block elements
-        if html.isBlock {
-            printer.bytes.append(contentsOf: printer.configuration.newline)
-            printer.bytes.append(contentsOf: printer.currentIndentation)
-        }
-        
-        // Write opening tag
-        printer.bytes.append(UInt8.ascii.lessThanSign)
-        printer.bytes.append(contentsOf: html.tag.utf8)
-        
-        // Add attributes
-        for (name, value) in printer.attributes {
-            printer.bytes.append(UInt8.ascii.space)
-            printer.bytes.append(contentsOf: name.utf8)
-            if !value.isEmpty {
-                printer.bytes.append(UInt8.ascii.equalsSign)
-                printer.bytes.append(UInt8.ascii.dquote)
-                
-                // Fast path: check if escaping is needed
-                let valueBytes = Array(value.utf8)
-                let needsEscaping = valueBytes.contains { byte in
-                    byte == UInt8.ascii.dquote || byte == UInt8.ascii.apostrophe ||
-                    byte == UInt8.ascii.ampersand || byte == UInt8.ascii.lessThanSign ||
-                    byte == UInt8.ascii.greaterThanSign
-                }
-                
-                if needsEscaping {
-                    // Slow path: byte-by-byte escaping
-                    for byte in valueBytes {
-                        switch byte {
-                        case UInt8.ascii.dquote:
-                            printer.bytes.append(contentsOf: [UInt8].htmlEntityQuot)
-                        case UInt8.ascii.apostrophe:
-                            printer.bytes.append(contentsOf: [UInt8].htmlEntityApos)
-                        case UInt8.ascii.ampersand:
-                            printer.bytes.append(contentsOf: [UInt8].htmlEntityAmp)
-                        case UInt8.ascii.lessThanSign:
-                            printer.bytes.append(contentsOf: [UInt8].htmlEntityLt)
-                        case UInt8.ascii.greaterThanSign:
-                            printer.bytes.append(contentsOf: [UInt8].htmlEntityGt)
-                        default:
-                            printer.bytes.append(byte)
-                        }
-                    }
-                } else {
-                    // Fast path: bulk copy when no escaping needed
-                    printer.bytes.append(contentsOf: valueBytes)
-                }
-                
-                printer.bytes.append(UInt8.ascii.dquote)
-            }
-        }
-        printer.bytes.append(UInt8.ascii.greaterThanSign)
-        
-        // Render content if present
-        if let content = html.content {
-            let oldAttributes = printer.attributes
-            let oldIndentation = printer.currentIndentation
-            defer {
-                printer.attributes = oldAttributes
-                printer.currentIndentation = oldIndentation
-            }
-            printer.attributes.removeAll()
-            if html.isBlock && !isPreElement {
-                printer.currentIndentation += printer.configuration.indentation
-            }
-            Content._render(content, into: &printer)
-        }
-        
-        // Add closing tag unless it's a void element
-        if !HTMLVoidTag.allTags.contains(html.tag) {
-            if html.isBlock && !isPreElement {
-                printer.bytes.append(contentsOf: printer.configuration.newline)
-                printer.bytes.append(contentsOf: printer.currentIndentation)
-            }
-            printer.bytes.append(UInt8.ascii.lessThanSign)
-            printer.bytes.append(UInt8.ascii.slant)
-            printer.bytes.append(contentsOf: html.tag.utf8)
-            printer.bytes.append(UInt8.ascii.greaterThanSign)
-        }
-    }
-    
-    /// Streaming render - writes directly to any byte buffer.
+    /// Renders this HTML element into the provided buffer.
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,
         into buffer: inout Buffer,
@@ -163,38 +65,38 @@ public struct HTMLElement<Content: HTML>: HTML {
         }
         
         // Write opening tag
-        buffer.append(UInt8.ascii.lessThanSign)
+        buffer.append(.ascii.lessThanSign)
         buffer.append(contentsOf: html.tag.utf8)
         
         // Add attributes
         for (name, value) in context.attributes {
-            buffer.append(UInt8.ascii.space)
+            buffer.append(.ascii.space)
             buffer.append(contentsOf: name.utf8)
             if !value.isEmpty {
-                buffer.append(UInt8.ascii.equalsSign)
-                buffer.append(UInt8.ascii.dquote)
+                buffer.append(.ascii.equalsSign)
+                buffer.append(.ascii.dquote)
                 
                 // Fast path: check if escaping is needed
                 let valueBytes = Array(value.utf8)
                 let needsEscaping = valueBytes.contains { byte in
-                    byte == UInt8.ascii.dquote || byte == UInt8.ascii.apostrophe ||
-                    byte == UInt8.ascii.ampersand || byte == UInt8.ascii.lessThanSign ||
-                    byte == UInt8.ascii.greaterThanSign
+                    byte == .ascii.dquote || byte == .ascii.apostrophe ||
+                    byte == .ascii.ampersand || byte == .ascii.lessThanSign ||
+                    byte == .ascii.greaterThanSign
                 }
                 
                 if needsEscaping {
                     // Slow path: byte-by-byte escaping
                     for byte in valueBytes {
                         switch byte {
-                        case UInt8.ascii.dquote:
+                        case .ascii.dquote:
                             buffer.append(contentsOf: [UInt8].htmlEntityQuot)
-                        case UInt8.ascii.apostrophe:
+                        case .ascii.apostrophe:
                             buffer.append(contentsOf: [UInt8].htmlEntityApos)
-                        case UInt8.ascii.ampersand:
+                        case .ascii.ampersand:
                             buffer.append(contentsOf: [UInt8].htmlEntityAmp)
-                        case UInt8.ascii.lessThanSign:
+                        case .ascii.lessThanSign:
                             buffer.append(contentsOf: [UInt8].htmlEntityLt)
-                        case UInt8.ascii.greaterThanSign:
+                        case .ascii.greaterThanSign:
                             buffer.append(contentsOf: [UInt8].htmlEntityGt)
                         default:
                             buffer.append(byte)
@@ -205,10 +107,10 @@ public struct HTMLElement<Content: HTML>: HTML {
                     buffer.append(contentsOf: valueBytes)
                 }
                 
-                buffer.append(UInt8.ascii.dquote)
+                buffer.append(.ascii.dquote)
             }
         }
-        buffer.append(UInt8.ascii.greaterThanSign)
+        buffer.append(.ascii.greaterThanSign)
         
         // Render content if present
         if let content = html.content {
@@ -231,10 +133,10 @@ public struct HTMLElement<Content: HTML>: HTML {
                 buffer.append(contentsOf: context.configuration.newline)
                 buffer.append(contentsOf: context.currentIndentation)
             }
-            buffer.append(UInt8.ascii.lessThanSign)
-            buffer.append(UInt8.ascii.slant)
+            buffer.append(.ascii.lessThanSign)
+            buffer.append(.ascii.slant)
             buffer.append(contentsOf: html.tag.utf8)
-            buffer.append(UInt8.ascii.greaterThanSign)
+            buffer.append(.ascii.greaterThanSign)
         }
     }
     

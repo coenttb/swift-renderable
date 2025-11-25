@@ -13,18 +13,7 @@ public struct _HTMLArray<Element: HTML>: HTML {
     /// The array of HTML elements contained in this container.
     let elements: [Element]
 
-    /// Renders all elements in the array into the printer.
-    ///
-    /// - Parameters:
-    ///   - html: The HTML array to render.
-    ///   - printer: The printer to render the HTML into.
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        for element in html.elements {
-            Element._render(element, into: &printer)
-        }
-    }
-
-    /// Streaming render - writes directly to any byte buffer.
+    /// Renders all elements in the array into the buffer.
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,
         into buffer: inout Buffer,

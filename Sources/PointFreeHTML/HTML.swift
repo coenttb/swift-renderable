@@ -41,19 +41,9 @@ public protocol HTML {
     @HTMLBuilder
     var body: Content { get }
 
-    /// Renders this HTML element or component into the provided printer.
+    /// The canonical render method - writes directly to any byte buffer.
     ///
-    /// This method is typically not called directly by users of the library,
-    /// but is used internally to convert the HTML tree into rendered output.
-    ///
-    /// - Parameters:
-    ///   - html: The HTML element or component to render.
-    ///   - printer: The printer to render the HTML into.
-    static func _render(_ html: Self, into printer: inout HTMLPrinter)
-
-    /// Streaming render method - writes directly to any byte buffer.
-    ///
-    /// This is the generic, streaming-capable rendering method. The buffer can be
+    /// This is the single, canonical rendering method. The buffer can be
     /// any `RangeReplaceableCollection` of `UInt8`, enabling zero-copy streaming
     /// to various destinations.
     ///
@@ -69,21 +59,7 @@ public protocol HTML {
 }
 
 extension HTML {
-    /// Default implementation of the render method that delegates to the body's render method.
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        Content._render(html.body, into: &printer)
-    }
-
-    /// Streaming render method - writes directly to any byte buffer.
-    ///
-    /// This is the generic, streaming-capable rendering method. The buffer can be
-    /// any `RangeReplaceableCollection` of `UInt8`, enabling zero-copy streaming
-    /// to various destinations.
-    ///
-    /// - Parameters:
-    ///   - html: The HTML element to render.
-    ///   - buffer: The buffer to write bytes into.
-    ///   - context: The rendering context (attributes, styles, configuration).
+    /// Default implementation that delegates to the body's render method.
     @inlinable
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,
@@ -91,6 +67,26 @@ extension HTML {
         context: inout HTMLContext
     ) where Buffer.Element == UInt8 {
         Content._render(html.body, into: &buffer, context: &context)
+    }
+
+    /// Convenience method to render into HTMLPrinter.
+    ///
+    /// This bridges HTMLPrinter to the canonical generic render method,
+    /// allowing backward compatibility with code that uses HTMLPrinter directly.
+    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
+        // Bridge HTMLPrinter state to HTMLContext
+        var context = HTMLContext(printer.configuration)
+        context.attributes = printer.attributes
+        context.styles = printer.styles
+        context.currentIndentation = printer.currentIndentation
+
+        // Use the canonical render method
+        Self._render(html, into: &printer.bytes, context: &context)
+
+        // Sync state back to printer
+        printer.attributes = context.attributes
+        printer.styles = context.styles
+        printer.currentIndentation = context.currentIndentation
     }
 }
 

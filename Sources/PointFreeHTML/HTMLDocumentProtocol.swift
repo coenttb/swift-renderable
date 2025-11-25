@@ -45,32 +45,6 @@ public protocol HTMLDocumentProtocol: HTML {
 }
 
 extension HTMLDocumentProtocol {
-    /// Renders the HTML document into the provided printer.
-    ///
-    /// This method orchestrates the rendering of a complete HTML document:
-    /// 1. First renders the body content into a separate printer
-    /// 2. Extracts any collected stylesheets from the body rendering
-    /// 3. Creates a complete document with doctype, html, head, and body elements
-    /// 4. Renders the complete document into the provided printer
-    ///
-    /// - Parameters:
-    ///   - html: The HTML document to render.
-    ///   - printer: The printer to render the HTML into.
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        @Dependency(\.htmlPrinter) var htmlPrinter
-        var bodyPrinter = htmlPrinter
-        Content._render(html.body, into: &bodyPrinter)
-        Document
-            ._render(
-                Document(
-                    head: html.head,
-                    stylesheet: bodyPrinter.stylesheet,
-                    bodyBytes: bodyPrinter.bytes
-                ),
-                into: &printer
-            )
-    }
-
     /// Streaming render for HTML documents.
     ///
     /// Documents require two-phase rendering:
