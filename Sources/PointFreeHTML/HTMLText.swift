@@ -1,9 +1,11 @@
 //
-//  File.swift
+//  HTMLText.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
+
+import INCITS_4_1986
 
 /// Represents plain text content in HTML, with proper escaping.
 ///
@@ -32,12 +34,12 @@ public struct HTMLText: HTML {
         printer.bytes.reserveCapacity(printer.bytes.count + html.text.utf8.count)
         for byte in html.text.utf8 {
             switch byte {
-            case UInt8(ascii: "&"):
-                printer.bytes.append(contentsOf: "&amp;".utf8)
-            case UInt8(ascii: "<"):
-                printer.bytes.append(contentsOf: "&lt;".utf8)
-            case UInt8(ascii: ">"):
-                printer.bytes.append(contentsOf: "&gt;".utf8)
+            case UInt8.ascii.ampersand:
+                printer.bytes.append(contentsOf: [UInt8].htmlEntityAmp)
+            case UInt8.ascii.lessThanSign:
+                printer.bytes.append(contentsOf: [UInt8].htmlEntityLt)
+            case UInt8.ascii.greaterThanSign:
+                printer.bytes.append(contentsOf: [UInt8].htmlEntityGt)
             default:
                 printer.bytes.append(byte)
             }
@@ -52,12 +54,12 @@ public struct HTMLText: HTML {
     ) where Buffer.Element == UInt8 {
         for byte in html.text.utf8 {
             switch byte {
-            case UInt8(ascii: "&"):
-                buffer.append(contentsOf: "&amp;".utf8)
-            case UInt8(ascii: "<"):
-                buffer.append(contentsOf: "&lt;".utf8)
-            case UInt8(ascii: ">"):
-                buffer.append(contentsOf: "&gt;".utf8)
+            case UInt8.ascii.ampersand:
+                buffer.append(contentsOf: [UInt8].htmlEntityAmp)
+            case UInt8.ascii.lessThanSign:
+                buffer.append(contentsOf: [UInt8].htmlEntityLt)
+            case UInt8.ascii.greaterThanSign:
+                buffer.append(contentsOf: [UInt8].htmlEntityGt)
             default:
                 buffer.append(byte)
             }

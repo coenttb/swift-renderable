@@ -94,7 +94,11 @@ extension HTML {
     }
 }
 
-// MARK: - UInt8.Streaming Conformance
+// MARK: - UInt8.Streaming Compatible
+
+// Note: HTML provides the same `serialize(into:)` method signature as `UInt8.Streaming`
+// from swift-standards, enabling interoperability. Concrete HTML types that are Sendable
+// can add `UInt8.Streaming` conformance if needed for composition with other streaming types.
 
 extension HTML {
     /// Serialize this HTML to bytes using the streaming protocol.
