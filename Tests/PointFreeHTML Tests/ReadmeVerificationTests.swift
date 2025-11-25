@@ -115,12 +115,12 @@ struct ReadmeVerificationTests {
             }
         }
 
-        let bytes = Simple().render()
+        let bytes = ContiguousArray(Simple())
         #expect(!bytes.isEmpty)
 
         // Verify we can convert back to string
-        let string = String(bytes: bytes, encoding: .utf8)
-        #expect(string?.contains("Test") == true)
+        let string = String(decoding: bytes, as: UTF8.self)
+        #expect(string.contains("Test") == true)
     }
 
     @Test("README Core: Nested components")

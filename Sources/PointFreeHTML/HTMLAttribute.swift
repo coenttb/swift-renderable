@@ -105,6 +105,18 @@ public struct _HTMLAttributes<Content: HTML>: HTML {
         Content._render(html.content, into: &printer)
     }
 
+    /// Streaming render - writes directly to any byte buffer.
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ html: Self,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        let previousValue = context.attributes
+        defer { context.attributes = previousValue }
+        context.attributes.merge(html.attributes, uniquingKeysWith: { $1 })
+        Content._render(html.content, into: &buffer, context: &context)
+    }
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }

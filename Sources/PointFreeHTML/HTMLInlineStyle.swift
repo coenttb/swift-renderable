@@ -7,8 +7,8 @@
 
 import ConcurrencyExtras
 import Dependencies
-import Foundation
 import OrderedCollections
+import ISO_9899
 
 /// Extension to add inline styling capabilities to all HTML elements.
 extension HTML {
@@ -290,6 +290,78 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
         return selector
     }
 
+    /// Streaming render - writes directly to any byte buffer.
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ html: HTMLInlineStyle<Content>,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        let previousClass = context.attributes["class"]
+        defer { context.attributes["class"] = previousClass }
+
+        // Collect all styles from nested elements
+        var allStyles: [Style] = []
+        allStyles.reserveCapacity(8)
+        var coreContent: any HTML = html
+
+        // Flatten style chain
+        while let styledElement = coreContent as? any HTMLInlineStyleProtocol {
+            allStyles.append(contentsOf: styledElement.extractStyles())
+            coreContent = styledElement.extractContent()
+        }
+
+        guard !allStyles.isEmpty else {
+            coreContent.render(into: &buffer, context: &context)
+            return
+        }
+
+        // Generate class names and apply styles
+        let classNames = html.classNameGenerator.generateBatch(allStyles)
+        var classComponents: [String] = []
+        classComponents.reserveCapacity(classNames.count)
+
+        for (style, className) in zip(allStyles, classNames) {
+            let selector = buildSelector(className: className, style: style)
+
+            // Add to stylesheet if not present
+            let key = StyleKey(style.atRule, selector)
+            if context.styles[key] == nil {
+                context.styles[key] = "\(style.property):\(style.value)"
+            }
+
+            classComponents.append(className)
+        }
+
+        // Apply class names
+        if let existingClass = context.attributes["class"] {
+            let totalLength = existingClass.count + 1 + classComponents.reduce(0) { $0 + $1.count } + (classComponents.count - 1)
+            var result = ""
+            result.reserveCapacity(totalLength)
+            result.append(existingClass)
+            result.append(" ")
+            for (index, className) in classComponents.enumerated() {
+                if index > 0 {
+                    result.append(" ")
+                }
+                result.append(className)
+            }
+            context.attributes["class"] = result
+        } else {
+            let totalLength = classComponents.reduce(0) { $0 + $1.count } + (classComponents.count - 1)
+            var result = ""
+            result.reserveCapacity(totalLength)
+            for (index, className) in classComponents.enumerated() {
+                if index > 0 {
+                    result.append(" ")
+                }
+                result.append(className)
+            }
+            context.attributes["class"] = result
+        }
+
+        coreContent.render(into: &buffer, context: &context)
+    }
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
@@ -425,6 +497,14 @@ extension HTML {
     func render(into printer: inout HTMLPrinter) {
         Self._render(self, into: &printer)
     }
+
+    @inlinable
+    func render<Buffer: RangeReplaceableCollection>(
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        Self._render(self, into: &buffer, context: &context)
+    }
 }
 
 private func classID(_ value: String) -> String {
@@ -435,7 +515,7 @@ private func classID(_ value: String) -> String {
         else { return "" }
         var number = value
         var encoded = ""
-        encoded.reserveCapacity(Int(log(Double(number)) / log(64)) + 1)
+        encoded.reserveCapacity(Int((Double(number)).c.log / (64).c.log) + 1)
         while number > 0 {
             let index = Int(number % baseCount)
             number /= baseCount

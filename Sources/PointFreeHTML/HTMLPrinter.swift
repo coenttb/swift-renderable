@@ -5,8 +5,9 @@
 //  Created by Point-Free, Inc
 //
 
-import Dependencies
-import OrderedCollections
+public import Dependencies
+import INCITS_4_1986
+public import OrderedCollections
 
 /// A composite key for the styles dictionary, combining at-rule and selector.
 ///
@@ -79,8 +80,8 @@ public struct HTMLPrinter: Sendable {
     /// - Returns: A string containing the CSS stylesheet.
     public var stylesheet: String {
         // Convert byte arrays to strings once for stylesheet generation
-        let newlineStr = String(bytes: configuration.newline, encoding: .utf8) ?? ""
-        let indentationStr = String(bytes: configuration.indentation, encoding: .utf8) ?? ""
+        let newlineStr = String(decoding: configuration.newline, as: UTF8.self)
+        let indentationStr = String(decoding: configuration.indentation, as: UTF8.self)
 
         // Group styles by atRule
         var grouped: OrderedDictionary<AtRule?, [(selector: String, style: String)]> = [:]

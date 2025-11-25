@@ -5,7 +5,7 @@
 //  RFC pattern implementation: ContiguousArray<UInt8> as canonical byte representation.
 //
 
-import Dependencies
+public import Dependencies
 
 // MARK: - RFC Pattern: Bytes as Canonical Representation
 

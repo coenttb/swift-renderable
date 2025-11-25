@@ -32,7 +32,7 @@ Let's see this in action.
 When you're integrating libraries, test just the glue code. Here's a real example from the `swift-html-css-pointfree` library that adds HTML elements to PointFreeHTML:
 
 ```swift
-extension HTMLElementTypes.Anchor {
+extension HTML_Standard_Elements.Anchor {
     public func callAsFunction(
         @HTMLBuilder _ content: () -> some HTML
     ) -> some HTML {
@@ -50,8 +50,8 @@ And here's how CSS styling gets added:
 ```swift
 extension HTML {
     public func color(
-        _ color: CSSPropertyTypes.Color?,
-        media: CSSAtRuleTypes.Media? = nil,
+        _ color: W3C_CSS_Color.Color?,
+        media: W3C_CSS_MediaQueries.Media? = nil,
         pre: String? = nil,
         pseudo: Pseudo? = nil
     ) -> HTMLInlineStyle<Self> {

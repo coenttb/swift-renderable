@@ -54,6 +54,15 @@ public struct HTMLRaw: HTML {
         printer.bytes.append(contentsOf: html.bytes)
     }
 
+    /// Streaming render - writes directly to any byte buffer.
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ html: Self,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        buffer.append(contentsOf: html.bytes)
+    }
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }

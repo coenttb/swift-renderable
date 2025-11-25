@@ -134,6 +134,17 @@ public struct _HTMLArray<Element: HTML>: HTML {
         }
     }
 
+    /// Streaming render - writes directly to any byte buffer.
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ html: Self,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        for element in html.elements {
+            Element._render(element, into: &buffer, context: &context)
+        }
+    }
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
@@ -159,6 +170,20 @@ public enum _HTMLConditional<First: HTML, Second: HTML>: HTML {
             First._render(first, into: &printer)
         case .second(let second):
             Second._render(second, into: &printer)
+        }
+    }
+
+    /// Streaming render - writes directly to any byte buffer.
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ html: Self,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        switch html {
+        case .first(let first):
+            First._render(first, into: &buffer, context: &context)
+        case .second(let second):
+            Second._render(second, into: &buffer, context: &context)
         }
     }
 
@@ -201,6 +226,26 @@ public struct HTMLText: HTML {
                 printer.bytes.append(contentsOf: "&gt;".utf8)
             default:
                 printer.bytes.append(byte)
+            }
+        }
+    }
+
+    /// Streaming render - writes directly to any byte buffer.
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ html: Self,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        for byte in html.text.utf8 {
+            switch byte {
+            case UInt8(ascii: "&"):
+                buffer.append(contentsOf: "&amp;".utf8)
+            case UInt8(ascii: "<"):
+                buffer.append(contentsOf: "&lt;".utf8)
+            case UInt8(ascii: ">"):
+                buffer.append(contentsOf: "&gt;".utf8)
+            default:
+                buffer.append(byte)
             }
         }
     }
@@ -261,6 +306,20 @@ public struct _HTMLTuple<each Content: HTML>: HTML {
         repeat render(each html.content)
     }
 
+    /// Streaming render - writes directly to any byte buffer.
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ html: Self,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        func render<T: HTML>(_ html: T) {
+            let oldAttributes = context.attributes
+            defer { context.attributes = oldAttributes }
+            T._render(html, into: &buffer, context: &context)
+        }
+        repeat render(each html.content)
+    }
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
@@ -278,6 +337,16 @@ extension Optional: HTML where Wrapped: HTML {
     public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
         guard let html else { return }
         Wrapped._render(html, into: &printer)
+    }
+
+    /// Streaming render - writes directly to any byte buffer.
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ html: Self,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        guard let html else { return }
+        Wrapped._render(html, into: &buffer, context: &context)
     }
 
     /// This type uses direct rendering and doesn't have a body.

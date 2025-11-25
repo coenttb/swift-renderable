@@ -5,8 +5,6 @@
 //  Created by Coen ten Thije Boonkkamp on 12/03/2025.
 //
 
-import Foundation
-
 // MARK: - RFC Pattern: String Derived from Bytes
 
 extension String {
@@ -61,11 +59,19 @@ extension String {
     ///
     /// - ``ContiguousArray/init(_:)-swift.method``: Canonical byte transformation
     /// - ``Array/init(_:)-swift.method``: Array convenience wrapper
-    public init(_ html: some HTML, encoding: String.Encoding = .utf8) throws(HTMLPrinter.Error) {
+    public init<Encoding>(
+        html: some HTML,
+        as encoding: Encoding.Type = UTF8.self
+    ) throws(HTMLPrinter.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
         let bytes = ContiguousArray(html)
-        guard let string = String(bytes: bytes, encoding: encoding)
-        else { throw HTMLPrinter.Error(message: "Couldn't render HTML to \(encoding) encoding") }
-        self = string
+        self = String(decoding: bytes, as: encoding)
+    }
+    
+    public init<Encoding>(
+        _ html: some HTML,
+        as encoding: Encoding.Type = UTF8.self
+    ) throws(HTMLPrinter.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
+        self = try .init(html: html, as: encoding)
     }
 }
 

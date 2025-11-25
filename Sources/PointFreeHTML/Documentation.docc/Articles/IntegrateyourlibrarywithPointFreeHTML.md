@@ -129,7 +129,7 @@ button { "Call us" }
 
 ```swift
 // Make your Anchor callable as a function returning some HTML
-extension HTMLElementTypes.Anchor {
+extension HTML_Standard_Elements.Anchor {
     public func callAsFunction(
         @HTMLBuilder _ content: () -> some HTML
     ) -> some HTML {
@@ -161,8 +161,8 @@ let link = a(
 extension HTML {
     @discardableResult
     public func color(
-        _ color: CSSPropertyTypes.Color?,
-        media: CSSAtRuleTypes.Media? = nil,
+        _ color: W3C_CSS_Color.Color?,
+        media: W3C_CSS_MediaQueries.Media? = nil,
         pseudo: Pseudo? = nil
     ) -> HTMLInlineStyle<Self> {
         self.inlineStyle(color, media: media, pseudo: pseudo)

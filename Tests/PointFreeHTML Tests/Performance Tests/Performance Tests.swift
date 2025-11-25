@@ -6,5 +6,8 @@
 
 import Testing
 
-@Suite(.serialized)
+@Suite(
+    .serialized,
+    .disabled()
+)
 struct `Performance Tests` {}

@@ -37,6 +37,14 @@ public struct HTMLEmpty: HTML {
     ///   - printer: The printer to render the HTML into.
     public static func _render(_ html: Self, into printer: inout HTMLPrinter) {}
 
+    /// Streaming render - no-op for empty content.
+    @inlinable
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ html: Self,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {}
+
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }

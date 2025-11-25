@@ -113,7 +113,7 @@ Add PointFreeHTML to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/coenttb/pointfree-html", branch: "main")
+    .package(url: "https://github.com/coenttb/pointfree-html", from: "0.1.0")
 ],
 targets: [
     .target(
@@ -166,7 +166,7 @@ PointFreeHTML powers production applications:
 - [pointfree-html-to-pdf](https://github.com/coenttb/pointfree-html-to-pdf): A Swift package integrating pointfree-html with swift-html-to-pdf.
 - [pointfree-html-translating](https://github.com/coenttb/pointfree-html-translating): A Swift package integrating pointfree-html with swift-translating.
 - [swift-html](https://github.com/coenttb/swift-html): The Swift library for domain-accurate and type-safe HTML & CSS.
-- [swift-html-css-pointfree](https://github.com/coenttb/swift-html-css-pointfree): A Swift package integrating swift-html-types and swift-css-types with pointfree-html.
+- [swift-html-css-pointfree](https://github.com/coenttb/swift-html-css-pointfree): A Swift package integrating swift-html-standard and swift-css-types with pointfree-html.
 - [swift-html-prism](https://github.com/coenttb/swift-html-prism): A Swift package integrating PrismJS with swift-html.
 - [swift-web-foundation](https://github.com/coenttb/swift-web-foundation): A Swift package with tools to simplify web development.
 
@@ -183,7 +183,7 @@ PointFreeHTML is part of a comprehensive Swift web development ecosystem:
 ### Core Libraries
 - [swift-html](https://github.com/coenttb/swift-html): Type-safe HTML & CSS DSL built on PointFreeHTML -** use this for examples and full developer experience**
 - [swift-html-css-pointfree](https://github.com/coenttb/swift-html-css-pointfree): Integration layer combining PointFreeHTML with CSS types - **use this as example for third-party library integration**
-- [swift-html-types](https://github.com/coenttb/swift-html-types): Complete Swift domain model of HTML elements and attributes  
+- [swift-html-standard](https://github.com/coenttb/swift-html-standard): Complete Swift domain model of HTML elements and attributes  
 - [swift-css-types](https://github.com/coenttb/swift-css-types): Complete Swift domain model of CSS properties and types
 
 ### Extended Functionality

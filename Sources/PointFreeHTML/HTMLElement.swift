@@ -193,6 +193,97 @@ public struct HTMLElement<Content: HTML>: HTML {
         }
     }
 
+    /// Streaming render - writes directly to any byte buffer.
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ html: Self,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        // Special handling for pre elements to preserve formatting
+        let isPreElement = html.tag == "pre"
+
+        // Add newline and indentation for block elements
+        if html.isBlock {
+            buffer.append(contentsOf: context.configuration.newline)
+            buffer.append(contentsOf: context.currentIndentation)
+        }
+
+        // Write opening tag
+        buffer.append(UInt8.ascii.lessThanSign)
+        buffer.append(contentsOf: html.tag.utf8)
+
+        // Add attributes
+        for (name, value) in context.attributes {
+            buffer.append(UInt8.ascii.space)
+            buffer.append(contentsOf: name.utf8)
+            if !value.isEmpty {
+                buffer.append(UInt8.ascii.equalsSign)
+                buffer.append(UInt8.ascii.dquote)
+
+                // Fast path: check if escaping is needed
+                let valueBytes = Array(value.utf8)
+                let needsEscaping = valueBytes.contains { byte in
+                    byte == UInt8.ascii.dquote || byte == UInt8.ascii.apostrophe ||
+                    byte == UInt8.ascii.ampersand || byte == UInt8.ascii.lessThanSign ||
+                    byte == UInt8.ascii.greaterThanSign
+                }
+
+                if needsEscaping {
+                    // Slow path: byte-by-byte escaping
+                    for byte in valueBytes {
+                        switch byte {
+                        case UInt8.ascii.dquote:
+                            buffer.append(contentsOf: [UInt8].htmlEntityQuot)
+                        case UInt8.ascii.apostrophe:
+                            buffer.append(contentsOf: [UInt8].htmlEntityApos)
+                        case UInt8.ascii.ampersand:
+                            buffer.append(contentsOf: [UInt8].htmlEntityAmp)
+                        case UInt8.ascii.lessThanSign:
+                            buffer.append(contentsOf: [UInt8].htmlEntityLt)
+                        case UInt8.ascii.greaterThanSign:
+                            buffer.append(contentsOf: [UInt8].htmlEntityGt)
+                        default:
+                            buffer.append(byte)
+                        }
+                    }
+                } else {
+                    // Fast path: bulk copy when no escaping needed
+                    buffer.append(contentsOf: valueBytes)
+                }
+
+                buffer.append(UInt8.ascii.dquote)
+            }
+        }
+        buffer.append(UInt8.ascii.greaterThanSign)
+
+        // Render content if present
+        if let content = html.content {
+            let oldAttributes = context.attributes
+            let oldIndentation = context.currentIndentation
+            defer {
+                context.attributes = oldAttributes
+                context.currentIndentation = oldIndentation
+            }
+            context.attributes.removeAll()
+            if html.isBlock && !isPreElement {
+                context.currentIndentation += context.configuration.indentation
+            }
+            Content._render(content, into: &buffer, context: &context)
+        }
+
+        // Add closing tag unless it's a void element
+        if !HTMLVoidTag.allTags.contains(html.tag) {
+            if html.isBlock && !isPreElement {
+                buffer.append(contentsOf: context.configuration.newline)
+                buffer.append(contentsOf: context.currentIndentation)
+            }
+            buffer.append(UInt8.ascii.lessThanSign)
+            buffer.append(UInt8.ascii.slant)
+            buffer.append(contentsOf: html.tag.utf8)
+            buffer.append(UInt8.ascii.greaterThanSign)
+        }
+    }
+
     /// Determines if this element is a block-level element.
     ///
     /// Block-level elements are rendered with newlines and indentation,

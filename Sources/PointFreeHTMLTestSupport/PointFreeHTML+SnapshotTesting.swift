@@ -6,7 +6,7 @@
 //
 
 import Dependencies
-import PointFreeHTML
+public import PointFreeHTML
 import SnapshotTesting
 
 extension Snapshotting where Value: PointFreeHTML.HTMLDocumentProtocol, Format == String {

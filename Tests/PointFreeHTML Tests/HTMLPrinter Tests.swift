@@ -6,9 +6,11 @@
 //
 
 import Dependencies
-import Foundation
+import INCITS_4_1986
 import PointFreeHTML
+import OrderedCollections
 import Testing
+import Foundation
 
 @Suite("HTMLPrinter Tests")
 struct HTMLPrinterTests {
@@ -19,11 +21,10 @@ struct HTMLPrinterTests {
             HTMLText("test content")
         }
 
-        withDependencies {
+        try withDependencies {
             $0.htmlPrinter = HTMLPrinter(.default)
         } operation: {
-            let bytes = element.render()
-            let rendered = String(data: Data(bytes), encoding: .utf8) ?? ""
+            let rendered = try String(element)
 
             #expect(rendered.contains("<div>"))
             #expect(rendered.contains("test content"))
@@ -37,11 +38,10 @@ struct HTMLPrinterTests {
             HTMLText("content")
         }
 
-        withDependencies {
+        try withDependencies {
             $0.htmlPrinter = HTMLPrinter(.pretty)
         } operation: {
-            let bytes = element.render()
-            let rendered = String(data: Data(bytes), encoding: .utf8) ?? ""
+            let rendered = try String(element)
 
             #expect(!rendered.isEmpty)
             #expect(rendered.contains("content"))
@@ -53,11 +53,10 @@ struct HTMLPrinterTests {
     func emptyContent() throws {
         let empty = HTMLEmpty()
 
-        withDependencies {
+        try withDependencies {
             $0.htmlPrinter = HTMLPrinter(.default)
         } operation: {
-            let bytes = empty.render()
-            let rendered = String(data: Data(bytes), encoding: .utf8) ?? ""
+            let rendered = try String(empty)
 
             #expect(rendered.isEmpty)
         }
@@ -74,7 +73,7 @@ struct HTMLPrinterTests {
         withDependencies {
             $0.htmlPrinter = HTMLPrinter(.default)
         } operation: {
-            let bytes = element.render()
+            let bytes = ContiguousArray(element)
             let rendered = String(data: Data(bytes), encoding: .utf8) ?? ""
 
             #expect(rendered.contains("<div>"))
@@ -142,11 +141,10 @@ struct HTMLPrinterTests {
             }
         }
 
-        withDependencies {
+        try withDependencies {
             $0.htmlPrinter = HTMLPrinter(.default)
         } operation: {
-            let bytes = document.render()
-            let rendered = String(data: Data(bytes), encoding: .utf8) ?? ""
+            let rendered = try String(document)
 
             #expect(rendered.contains("<!doctype html>"))
             #expect(rendered.contains("<title>Test</title>"))
