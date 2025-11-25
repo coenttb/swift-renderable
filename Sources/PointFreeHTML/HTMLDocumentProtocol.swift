@@ -5,7 +5,6 @@
 //  Created by Point-Free, Inc
 //
 
-import Dependencies
 import OrderedCollections
 
 /// A protocol representing a complete HTML document.
@@ -160,8 +159,7 @@ extension HTMLDocumentProtocol {
     ///   ```
     @available(*, deprecated, message: "Use ContiguousArray(html) or String(html) instead. The RFC pattern makes bytes canonical and String derived.")
     public func render() -> ContiguousArray<UInt8> {
-        @Dependency(\.htmlPrinter) var htmlPrinter
-        var printer = htmlPrinter
+        var printer = HTMLPrinter(HTMLPrinter.Configuration.current)
         Self._render(self, into: &printer)
         return printer.bytes
     }

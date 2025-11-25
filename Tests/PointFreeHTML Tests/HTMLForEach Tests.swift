@@ -5,14 +5,11 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite(
-    "HTMLForEach Tests",
-    .snapshots(record: .missing)
-)
+@Suite("HTMLForEach Tests")
 struct HTMLForEachTests {
 
     @Test("HTMLForEach with array of strings")
@@ -111,138 +108,143 @@ struct HTMLForEachTests {
         #expect(rendered.contains("<h3>Second</h3>"))
         #expect(rendered.contains("<p>Second description</p>"))
     }
+}
 
-    // MARK: - Snapshot Tests
+// MARK: - Snapshot Tests
 
-    @Test("HTMLForEach list generation snapshot")
-    func forEachListSnapshot() {
-        let items = ["Home", "About", "Services", "Contact"]
+extension `Snapshot Tests` {
+    @Suite
+    struct HTMLForEachSnapshotTests {
+        @Test("HTMLForEach list generation snapshot")
+        func forEachListSnapshot() {
+            let items = ["Home", "About", "Services", "Contact"]
 
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("nav") {
-                    tag("ul") {
-                        HTMLForEach(items) { item in
-                            tag("li") {
-                                tag("a") {
-                                    HTMLText(item)
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("nav") {
+                        tag("ul") {
+                            HTMLForEach(items) { item in
+                                tag("li") {
+                                    tag("a") {
+                                        HTMLText(item)
+                                    }
+                                    .attribute("href", "#\(item.lowercased())")
                                 }
-                                .attribute("href", "#\(item.lowercased())")
                             }
                         }
+                        .attribute("class", "navigation")
                     }
-                    .attribute("class", "navigation")
-                }
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
 
-                </style>
-              </head>
-              <body>
-            <nav>
-              <ul class="navigation">
-                <li><a href="#home">Home</a>
-                </li>
-                <li><a href="#about">About</a>
-                </li>
-                <li><a href="#services">Services</a>
-                </li>
-                <li><a href="#contact">Contact</a>
-                </li>
-              </ul>
-            </nav>
-              </body>
-            </html>
-            """
-        }
-    }
-
-    @Test("HTMLForEach complex content snapshot")
-    func forEachComplexContentSnapshot() {
-        struct Product {
-            let name: String
-            let price: String
-            let description: String
+                    </style>
+                  </head>
+                  <body>
+                <nav>
+                  <ul class="navigation">
+                    <li><a href="#home">Home</a>
+                    </li>
+                    <li><a href="#about">About</a>
+                    </li>
+                    <li><a href="#services">Services</a>
+                    </li>
+                    <li><a href="#contact">Contact</a>
+                    </li>
+                  </ul>
+                </nav>
+                  </body>
+                </html>
+                """
+            }
         }
 
-        let products = [
-            Product(
-                name: "Widget A",
-                price: "$19.99",
-                description: "Essential widget for daily use"
-            ),
-            Product(
-                name: "Widget B",
-                price: "$29.99",
-                description: "Premium widget with extra features"
-            ),
-        ]
+        @Test("HTMLForEach complex content snapshot")
+        func forEachComplexContentSnapshot() {
+            struct Product {
+                let name: String
+                let price: String
+                let description: String
+            }
 
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div") {
-                    tag("h1") {
-                        HTMLText("Our Products")
-                    }
-                    HTMLForEach(products) { product in
-                        tag("article") {
-                            tag("h2") {
-                                HTMLText(product.name)
-                            }
-                            tag("p") {
-                                HTMLText("Price: \(product.price)")
-                            }
-                            .attribute("class", "price")
-                            tag("p") {
-                                HTMLText(product.description)
-                            }
-                            .attribute("class", "description")
+            let products = [
+                Product(
+                    name: "Widget A",
+                    price: "$19.99",
+                    description: "Essential widget for daily use"
+                ),
+                Product(
+                    name: "Widget B",
+                    price: "$29.99",
+                    description: "Premium widget with extra features"
+                ),
+            ]
+
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div") {
+                        tag("h1") {
+                            HTMLText("Our Products")
                         }
-                        .attribute("class", "product-card")
+                        HTMLForEach(products) { product in
+                            tag("article") {
+                                tag("h2") {
+                                    HTMLText(product.name)
+                                }
+                                tag("p") {
+                                    HTMLText("Price: \(product.price)")
+                                }
+                                .attribute("class", "price")
+                                tag("p") {
+                                    HTMLText(product.description)
+                                }
+                                .attribute("class", "description")
+                            }
+                            .attribute("class", "product-card")
+                        }
                     }
-                }
-                .attribute("class", "products-container")
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
+                    .attribute("class", "products-container")
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
 
-                </style>
-              </head>
-              <body>
-            <div class="products-container">
-              <h1>Our Products
-              </h1>
-              <article class="product-card">
-                <h2>Widget A
-                </h2>
-                <p class="price">Price: $19.99
-                </p>
-                <p class="description">Essential widget for daily use
-                </p>
-              </article>
-              <article class="product-card">
-                <h2>Widget B
-                </h2>
-                <p class="price">Price: $29.99
-                </p>
-                <p class="description">Premium widget with extra features
-                </p>
-              </article>
-            </div>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <div class="products-container">
+                  <h1>Our Products
+                  </h1>
+                  <article class="product-card">
+                    <h2>Widget A
+                    </h2>
+                    <p class="price">Price: $19.99
+                    </p>
+                    <p class="description">Essential widget for daily use
+                    </p>
+                  </article>
+                  <article class="product-card">
+                    <h2>Widget B
+                    </h2>
+                    <p class="price">Price: $29.99
+                    </p>
+                    <p class="description">Premium widget with extra features
+                    </p>
+                  </article>
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
     }
 }

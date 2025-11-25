@@ -10,7 +10,7 @@ extension Set<String> {
     ///
     /// Inline elements are rendered without additional newlines or indentation,
     /// as they typically appear within the flow of text content.
-    static let inlineTags: Self = [
+    package static let inlineTags: Self = [
         "a",
         "abbr",
         "acronym",

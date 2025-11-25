@@ -5,7 +5,7 @@
 //  Performance tests for HTML attribute value escaping optimization.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 import TestingPerformance

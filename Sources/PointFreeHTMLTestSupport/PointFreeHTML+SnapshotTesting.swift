@@ -5,7 +5,6 @@
 //  Created by Coen ten Thije Boonkkamp on 02/04/2025.
 //
 
-import Dependencies
 public import PointFreeHTML
 import SnapshotTesting
 
@@ -18,9 +17,7 @@ extension Snapshotting where Value: PointFreeHTML.HTMLDocumentProtocol, Format =
         printerConfiguration: HTMLPrinter.Configuration = .pretty
     ) -> Self {
         Snapshotting<String, String>.lines.pullback { value in
-            return withDependencies {
-                $0.htmlPrinter = .init(.pretty)
-            } operation: {
+            HTMLPrinter.Configuration.$current.withValue(printerConfiguration) {
                 (try? String(value)) ?? "HTML rendering failed"
             }
         }
@@ -36,9 +33,7 @@ extension Snapshotting where Value: PointFreeHTML.HTML, Format == String {
         printerConfiguration: HTMLPrinter.Configuration = .pretty
     ) -> Self {
         Snapshotting<String, String>.lines.pullback { value in
-            return withDependencies {
-                $0.htmlPrinter = .init(.pretty)
-            } operation: {
+            HTMLPrinter.Configuration.$current.withValue(printerConfiguration) {
                 (try? String(value)) ?? "HTML rendering failed"
             }
         }

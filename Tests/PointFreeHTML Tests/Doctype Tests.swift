@@ -1,18 +1,15 @@
 //
-//  DoctypeTests.swift
+//  Doctype Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite(
-    "Doctype Tests",
-    .snapshots(record: .missing)
-)
+@Suite("Doctype Tests")
 struct DoctypeTests {
 
     @Test("Doctype renders HTML5 doctype")
@@ -74,48 +71,53 @@ struct DoctypeTests {
         let rendered = try String(content)
         #expect(rendered == "<!doctype html><!doctype html>")
     }
+}
 
-    // MARK: - Snapshot Tests
+// MARK: - Snapshot Tests
 
-    @Test("Doctype in complete document snapshot")
-    func doctypeInDocumentSnapshot() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div") {
-                    tag("h1") {
-                        HTMLText("HTML5 Document")
+extension `Snapshot Tests` {
+    @Suite
+    struct DoctypeSnapshotTests {
+        @Test("Doctype in complete document snapshot")
+        func doctypeInDocumentSnapshot() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div") {
+                        tag("h1") {
+                            HTMLText("HTML5 Document")
+                        }
+                        tag("p") {
+                            HTMLText("This document starts with a proper HTML5 doctype declaration.")
+                        }
                     }
-                    tag("p") {
-                        HTMLText("This document starts with a proper HTML5 doctype declaration.")
+                } head: {
+                    tag("title") {
+                        HTMLText("Doctype Example")
                     }
-                }
-            } head: {
-                tag("title") {
-                    HTMLText("Doctype Example")
-                }
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <title>Doctype Example
-                </title>
-                <style>
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <title>Doctype Example
+                    </title>
+                    <style>
 
-                </style>
-              </head>
-              <body>
-            <div>
-              <h1>HTML5 Document
-              </h1>
-              <p>This document starts with a proper HTML5 doctype declaration.
-              </p>
-            </div>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <div>
+                  <h1>HTML5 Document
+                  </h1>
+                  <p>This document starts with a proper HTML5 doctype declaration.
+                  </p>
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
     }
 }

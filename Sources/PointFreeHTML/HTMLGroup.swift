@@ -55,3 +55,5 @@ public struct HTMLGroup<Content: HTML>: HTML {
         content
     }
 }
+
+extension HTMLGroup: Sendable where Content: Sendable {}

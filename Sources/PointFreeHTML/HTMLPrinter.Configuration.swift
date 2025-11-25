@@ -8,13 +8,42 @@
 import INCITS_4_1986
 
 extension HTMLPrinter {
-    
+
     /// Configuration options for HTML rendering.
     ///
     /// This struct provides options to control how HTML is rendered,
     /// including pretty-printing options and special handling for
     /// specific contexts like email.
+    ///
+    /// ## Task-Local Configuration
+    ///
+    /// Use the `current` task-local to configure rendering without passing
+    /// configuration explicitly:
+    ///
+    /// ```swift
+    /// HTMLPrinter.Configuration.$current.withValue(.pretty) {
+    ///     let html = document.render()
+    /// }
+    /// ```
     public struct Configuration: Sendable {
+        /// Task-local configuration for HTML rendering.
+        ///
+        /// This enables configuration without explicit parameter passing.
+        /// Use `$current.withValue(.pretty) { ... }` to set configuration
+        /// for a scope.
+        ///
+        /// ## Example
+        ///
+        /// ```swift
+        /// // Default (minified)
+        /// let minified = ContiguousArray(html)
+        ///
+        /// // Pretty-printed
+        /// HTMLPrinter.Configuration.$current.withValue(.pretty) {
+        ///     let pretty = ContiguousArray(html)
+        /// }
+        /// ```
+        @TaskLocal public static var current: Self = .default
         /// Whether to add `!important` to all CSS rules.
         package let forceImportant: Bool
         
@@ -38,7 +67,26 @@ extension HTMLPrinter {
         /// - Medium documents (1-10KB): 4096 bytes
         /// - Large documents (> 10KB): 16384 bytes
         package let reservedCapacity: Int
-        
+
+        /// Creates a custom HTML rendering configuration.
+        ///
+        /// - Parameters:
+        ///   - forceImportant: Whether to add `!important` to all CSS rules.
+        ///   - indentation: The bytes to use for indentation.
+        ///   - newline: The bytes to use for newlines.
+        ///   - reservedCapacity: Reserved capacity for the byte buffer in bytes.
+        public init(
+            forceImportant: Bool,
+            indentation: [UInt8],
+            newline: [UInt8],
+            reservedCapacity: Int
+        ) {
+            self.forceImportant = forceImportant
+            self.indentation = indentation
+            self.newline = newline
+            self.reservedCapacity = reservedCapacity
+        }
+
         /// Default configuration with no indentation or newlines.
         ///
         /// Pre-allocates 1KB to handle most simple documents without reallocation.

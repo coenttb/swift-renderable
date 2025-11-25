@@ -5,8 +5,6 @@
 //  RFC pattern implementation: ContiguousArray<UInt8> as canonical byte representation.
 //
 
-public import Dependencies
-
 // MARK: - RFC Pattern: Bytes as Canonical Representation
 
 extension ContiguousArray<UInt8>  {
@@ -36,12 +34,10 @@ extension ContiguousArray<UInt8>  {
     ///
     /// ## Configuration
     ///
-    /// Rendering behavior is controlled via the `htmlPrinter` dependency:
+    /// Rendering behavior is controlled via task-local configuration:
     ///
     /// ```swift
-    /// withDependencies {
-    ///     $0.htmlPrinter = .init(.pretty)  // Pretty-printed output
-    /// } operation: {
+    /// HTMLPrinter.Configuration.$current.withValue(.pretty) {
     ///     let bytes = ContiguousArray(myHTMLDocument)
     /// }
     /// ```
@@ -73,8 +69,7 @@ extension ContiguousArray<UInt8>  {
     /// - ``HTML/render()``: Legacy method (deprecated, use this instead)
     @inlinable
     public init<T: HTML>(_ html: T) {
-        @Dependency(\.htmlPrinter) var htmlPrinter
-        var printer = htmlPrinter
+        var printer = HTMLPrinter(HTMLPrinter.Configuration.current)
         T._render(html, into: &printer)
         self = printer.bytes
     }

@@ -5,7 +5,6 @@
 //  Created by Point-Free, Inc
 //
 
-import Dependencies
 import INCITS_4_1986
 public import OrderedCollections
 

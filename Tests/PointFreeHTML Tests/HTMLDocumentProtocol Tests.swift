@@ -5,14 +5,11 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite(
-    "HTMLDocumentProtocol Tests",
-    .snapshots(record: .missing)
-)
+@Suite("HTMLDocumentProtocol Tests")
 struct HTMLDocumentProtocolTests {
 
     @Test("Basic HTML document structure")
@@ -38,82 +35,87 @@ struct HTMLDocumentProtocolTests {
         #expect(rendered.contains("</body>"))
         #expect(rendered.contains("</html>"))
     }
+}
 
-    // MARK: - Snapshot Tests
+// MARK: - Snapshot Tests
 
-    @Test("Complete HTML document snapshot")
-    func completeDocumentSnapshot() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("main") {
-                    tag("section") {
-                        tag("h1") {
-                            HTMLText("Welcome to Our Site")
-                        }
-                        tag("p") {
-                            HTMLText("This is a complete HTML document with proper structure.")
-                        }
-                    }
-                    tag("aside") {
-                        tag("h2") {
-                            HTMLText("Sidebar")
-                        }
-                        tag("ul") {
-                            tag("li") {
-                                HTMLText("Link 1")
+extension `Snapshot Tests` {
+    @Suite
+    struct HTMLDocumentProtocolSnapshotTests {
+        @Test("Complete HTML document snapshot")
+        func completeDocumentSnapshot() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("main") {
+                        tag("section") {
+                            tag("h1") {
+                                HTMLText("Welcome to Our Site")
                             }
-                            tag("li") {
-                                HTMLText("Link 2")
+                            tag("p") {
+                                HTMLText("This is a complete HTML document with proper structure.")
                             }
                         }
+                        tag("aside") {
+                            tag("h2") {
+                                HTMLText("Sidebar")
+                            }
+                            tag("ul") {
+                                tag("li") {
+                                    HTMLText("Link 1")
+                                }
+                                tag("li") {
+                                    HTMLText("Link 2")
+                                }
+                            }
+                        }
                     }
-                }
-            } head: {
-                tag("title") {
-                    HTMLText("My Website")
-                }
-                tag("meta")
-                    .attribute("charset", "utf-8")
-                tag("meta")
-                    .attribute("name", "viewport")
-                    .attribute("content", "width=device-width, initial-scale=1")
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <title>My Website
-                </title>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <style>
+                } head: {
+                    tag("title") {
+                        HTMLText("My Website")
+                    }
+                    tag("meta")
+                        .attribute("charset", "utf-8")
+                    tag("meta")
+                        .attribute("name", "viewport")
+                        .attribute("content", "width=device-width, initial-scale=1")
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <title>My Website
+                    </title>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <style>
 
-                </style>
-              </head>
-              <body>
-            <main>
-              <section>
-                <h1>Welcome to Our Site
-                </h1>
-                <p>This is a complete HTML document with proper structure.
-                </p>
-              </section>
-              <aside>
-                <h2>Sidebar
-                </h2>
-                <ul>
-                  <li>Link 1
-                  </li>
-                  <li>Link 2
-                  </li>
-                </ul>
-              </aside>
-            </main>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <main>
+                  <section>
+                    <h1>Welcome to Our Site
+                    </h1>
+                    <p>This is a complete HTML document with proper structure.
+                    </p>
+                  </section>
+                  <aside>
+                    <h2>Sidebar
+                    </h2>
+                    <ul>
+                      <li>Link 1
+                      </li>
+                      <li>Link 2
+                      </li>
+                    </ul>
+                  </aside>
+                </main>
+                  </body>
+                </html>
+                """
+            }
         }
     }
 }

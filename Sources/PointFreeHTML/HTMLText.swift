@@ -11,7 +11,7 @@ import INCITS_4_1986
 ///
 /// `HTMLText` handles escaping special characters in text content to ensure
 /// proper HTML rendering without security vulnerabilities.
-public struct HTMLText: HTML {
+public struct HTMLText: HTML, Sendable {
     /// The raw text content.
     let text: String
 

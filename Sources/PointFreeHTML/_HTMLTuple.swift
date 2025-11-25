@@ -37,3 +37,5 @@ public struct _HTMLTuple<each Content: HTML>: HTML {
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
+
+extension _HTMLTuple: Sendable where repeat each Content: Sendable {}

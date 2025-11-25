@@ -28,3 +28,5 @@ extension HTMLDocument {
         self.head = head()
     }
 }
+
+extension HTMLDocument: Sendable where Body: Sendable, Head: Sendable {}

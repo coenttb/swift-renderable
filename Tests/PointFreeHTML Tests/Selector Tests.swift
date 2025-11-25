@@ -5,14 +5,11 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite(
-    "Selector Tests",
-    .snapshots(record: .missing)
-)
+@Suite("Selector Tests")
 struct SelectorTests {
 
     // MARK: - Basic Creation Tests
@@ -429,64 +426,44 @@ struct SelectorTests {
 
     // MARK: - Complex Real-World Examples
 
-    //    @Test("Complex real-world selectors")
-    //    func complexRealWorldSelectors() {
-    //        // nav > ul > li:first-child > a
-    //        let navLink: Selector = Selector.nav > Selector.ul > Selector.li.withPseudo(.firstChild) > Selector.a
-    //        #expect(navLink.rawValue == "nav > ul > li:first-child > a")
-    //
-    //        // form input[type="email"]:focus, form input[type="password"]:focus
-    //        let focusedInputs: Selector = (Selector.form >> Selector.inputEmail.withPseudo(.focus)) |
-    //                           (Selector.form >> Selector.inputPassword.withPseudo(.focus))
-    //        #expect(focusedInputs.rawValue == "form input[type=\"email\"]:focus, form input[type=\"password\"]:focus")
-    //
-    //        // table.data-table > tbody > tr:nth-child(odd) > td
-    //        let oddTableRows: Selector = Selector.table.withClass("data-table") > Selector.tbody >
-    //                          Selector.tr.withPseudo(.nthChild("odd")) > Selector.td
-    //        #expect(oddTableRows.rawValue == "table.data-table > tbody > tr:nth-child(odd) > td")
-    //
-    //        // div.modal#settings[aria-hidden="false"]
-    //        let visibleModal = Selector.div.withClass("modal").withId("settings").withAttribute("aria-hidden", equals: "false")
-    //        #expect(visibleModal.rawValue == "div.modal#settings[aria-hidden=\"false\"]")
-    //    }
-    //
-    //    @Test("Selector with multiple classes")
-    //    func selectorWithMultipleClasses() {
-    //        let result = Selector.div.withClass("btn").withClass("btn-primary").withClass("active")
-    //        #expect(result.rawValue == "div.btn.btn-primary.active")
-    //    }
-
     @Test("Complex attribute and pseudo combinations")
     func complexAttributeAndPseudoCombinations() {
         // input[type="text"]:not(:disabled):focus
         let focusedEnabledInput = Selector.inputText.withPseudo(.not(.disabled)).withPseudo(.focus)
         #expect(focusedEnabledInput.rawValue == "input[type=\"text\"]:not(:disabled):focus")
     }
+}
 
-    @Test("HTML align-content with prefix renders properly")
-    func htmlAlignContentWithPrefixRendersCorrectly() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div")
-                    .inlineStyle("align-content", "space-between", selector: "my-component")
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
-            my-component .align-content-KzNip3{align-content:space-between}
+// MARK: - Snapshot Tests
 
-                </style>
-              </head>
-              <body>
-            <div class="align-content-KzNip3">
-            </div>
-              </body>
-            </html>
-            """
+extension `Snapshot Tests` {
+    @Suite
+    struct SelectorSnapshotTests {
+        @Test("HTML align-content with prefix renders properly")
+        func htmlAlignContentWithPrefixRendersCorrectly() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div")
+                        .inlineStyle("align-content", "space-between", selector: "my-component")
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
+                my-component .align-content-0{align-content:space-between}
+
+                    </style>
+                  </head>
+                  <body>
+                <div class="align-content-0">
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
     }
 }

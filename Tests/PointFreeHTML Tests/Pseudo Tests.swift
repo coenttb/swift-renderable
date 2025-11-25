@@ -5,14 +5,11 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite(
-    "Pseudo Tests",
-    .snapshots(record: .missing)
-)
+@Suite("Pseudo Tests")
 struct PseudoTests {
 
     @Test("Pseudo class creation")
@@ -139,31 +136,38 @@ struct PseudoTests {
         #expect(customHover.rawValue == ":not(.hidden):hover")
         #expect(hoverCustom.rawValue == ":hover:not(.hidden)")
     }
+}
 
-    @Test("HTML align-content with prefix renders properly")
-    func htmlAlignContentWithPrefixRendersCorrectly() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div")
-                    .inlineStyle("align-content", "space-between", pseudo: .after)
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
-            .align-content-QxtfK3::after{align-content:space-between}
+// MARK: - Snapshot Tests
 
-                </style>
-              </head>
-              <body>
-            <div class="align-content-QxtfK3">
-            </div>
-              </body>
-            </html>
-            """
+extension `Snapshot Tests` {
+    @Suite
+    struct PseudoSnapshotTests {
+        @Test("HTML align-content with prefix renders properly")
+        func htmlAlignContentWithPrefixRendersCorrectly() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div")
+                        .inlineStyle("align-content", "space-between", pseudo: .after)
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
+                .align-content-0::after{align-content:space-between}
+
+                    </style>
+                  </head>
+                  <body>
+                <div class="align-content-0">
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
     }
 }

@@ -5,14 +5,11 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite(
-    "HTMLTag Tests",
-    .snapshots(record: .missing)
-)
+@Suite("HTMLTag Tests")
 struct HTMLTagTests {
 
     @Test("HTMLTag basic functionality")
@@ -86,134 +83,139 @@ struct HTMLTagTests {
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("</div>"))
     }
+}
 
-    // MARK: - Snapshot Tests
+// MARK: - Snapshot Tests
 
-    @Test("HTMLTag semantic structure snapshot")
-    func semanticStructureSnapshot() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("main") {
-                    HTMLTag("header") {
-                        HTMLTag("nav") {
-                            HTMLTextTag("h1") {
-                                "Site Navigation"
+extension `Snapshot Tests` {
+    @Suite
+    struct HTMLTagSnapshotTests {
+        @Test("HTMLTag semantic structure snapshot")
+        func semanticStructureSnapshot() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("main") {
+                        HTMLTag("header") {
+                            HTMLTag("nav") {
+                                HTMLTextTag("h1") {
+                                    "Site Navigation"
+                                }
+                                HTMLTag("ul") {
+                                    HTMLTag("li") {
+                                        HTMLTextTag("a") {
+                                            "Home"
+                                        }
+                                    }
+                                    HTMLTag("li") {
+                                        HTMLTextTag("a") {
+                                            "About"
+                                        }
+                                    }
+                                }
                             }
-                            HTMLTag("ul") {
-                                HTMLTag("li") {
-                                    HTMLTextTag("a") {
-                                        "Home"
-                                    }
-                                }
-                                HTMLTag("li") {
-                                    HTMLTextTag("a") {
-                                        "About"
-                                    }
-                                }
+                        }
+
+                        HTMLTag("section") {
+                            HTMLTextTag("h2") {
+                                "Main Content"
+                            }
+                            HTMLTextTag("p") {
+                                "This demonstrates semantic HTML structure using HTMLTag components."
                             }
                         }
                     }
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
 
-                    HTMLTag("section") {
-                        HTMLTextTag("h2") {
-                            "Main Content"
-                        }
-                        HTMLTextTag("p") {
-                            "This demonstrates semantic HTML structure using HTMLTag components."
-                        }
-                    }
-                }
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
-
-                </style>
-              </head>
-              <body>
-            <main>
-              <header>
-                <nav>
-                  <h1>Site Navigation
-                  </h1>
-                  <ul>
-                    <li><a>Home</a>
-                    </li>
-                    <li><a>About</a>
-                    </li>
-                  </ul>
-                </nav>
-              </header>
-              <section>
-                <h2>Main Content
-                </h2>
-                <p>This demonstrates semantic HTML structure using HTMLTag components.
-                </p>
-              </section>
-            </main>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <main>
+                  <header>
+                    <nav>
+                      <h1>Site Navigation
+                      </h1>
+                      <ul>
+                        <li><a>Home</a>
+                        </li>
+                        <li><a>About</a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </header>
+                  <section>
+                    <h2>Main Content
+                    </h2>
+                    <p>This demonstrates semantic HTML structure using HTMLTag components.
+                    </p>
+                  </section>
+                </main>
+                  </body>
+                </html>
+                """
+            }
         }
-    }
 
-    @Test("HTMLVoidTag form elements snapshot")
-    func voidTagFormSnapshot() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                HTMLTag("form") {
-                    HTMLTag("fieldset") {
-                        HTMLTextTag("legend") {
-                            "Contact Information"
+        @Test("HTMLVoidTag form elements snapshot")
+        func voidTagFormSnapshot() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    HTMLTag("form") {
+                        HTMLTag("fieldset") {
+                            HTMLTextTag("legend") {
+                                "Contact Information"
+                            }
+
+                            HTMLVoidTag("input")()
+                                .attribute("type", "text")
+                                .attribute("name", "name")
+                                .attribute("placeholder", "Your Name")
+
+                            HTMLVoidTag("br")()
+
+                            HTMLVoidTag("input")()
+                                .attribute("type", "email")
+                                .attribute("name", "email")
+                                .attribute("placeholder", "Your Email")
+
+                            HTMLVoidTag("hr")()
+
+                            HTMLTag("button") {
+                                HTMLText("Submit Form")
+                            }
+                            .attribute("type", "submit")
                         }
-
-                        HTMLVoidTag("input")()
-                            .attribute("type", "text")
-                            .attribute("name", "name")
-                            .attribute("placeholder", "Your Name")
-
-                        HTMLVoidTag("br")()
-
-                        HTMLVoidTag("input")()
-                            .attribute("type", "email")
-                            .attribute("name", "email")
-                            .attribute("placeholder", "Your Email")
-
-                        HTMLVoidTag("hr")()
-
-                        HTMLTag("button") {
-                            HTMLText("Submit Form")
-                        }
-                        .attribute("type", "submit")
                     }
-                }
-                .attribute("method", "post")
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
+                    .attribute("method", "post")
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
 
-                </style>
-              </head>
-              <body>
-            <form method="post">
-              <fieldset>
-                <legend>Contact Information
-                </legend><input type="text" name="name" placeholder="Your Name"><br><input type="email" name="email" placeholder="Your Email">
-                <hr><button type="submit">Submit Form</button>
-              </fieldset>
-            </form>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <form method="post">
+                  <fieldset>
+                    <legend>Contact Information
+                    </legend><input type="text" name="name" placeholder="Your Name"><br><input type="email" name="email" placeholder="Your Email">
+                    <hr><button type="submit">Submit Form</button>
+                  </fieldset>
+                </form>
+                  </body>
+                </html>
+                """
+            }
         }
     }
 }

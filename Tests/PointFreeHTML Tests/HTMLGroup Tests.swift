@@ -5,14 +5,11 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite(
-    "HTMLGroup Tests",
-    .snapshots(record: .missing)
-)
+@Suite("HTMLGroup Tests")
 struct HTMLGroupTests {
 
     @Test("HTMLGroup with multiple elements")
@@ -110,64 +107,69 @@ struct HTMLGroupTests {
         #expect(rendered.contains("</div>"))
         #expect(!rendered.contains("<group>") && !rendered.contains("</group>"))
     }
+}
 
-    // MARK: - Snapshot Tests
+// MARK: - Snapshot Tests
 
-    @Test("HTMLGroup transparent container snapshot")
-    func transparentContainerSnapshot() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div") {
-                    HTMLGroup {
-                        tag("h2") {
-                            HTMLText("Section Title")
-                        }
-                        tag("p") {
-                            HTMLText("First paragraph in the group.")
-                        }
-                        tag("p") {
-                            HTMLText("Second paragraph in the group.")
-                        }
-                        tag("ul") {
-                            tag("li") {
-                                HTMLText("List item 1")
+extension `Snapshot Tests` {
+    @Suite
+    struct HTMLGroupSnapshotTests {
+        @Test("HTMLGroup transparent container snapshot")
+        func transparentContainerSnapshot() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div") {
+                        HTMLGroup {
+                            tag("h2") {
+                                HTMLText("Section Title")
                             }
-                            tag("li") {
-                                HTMLText("List item 2")
+                            tag("p") {
+                                HTMLText("First paragraph in the group.")
+                            }
+                            tag("p") {
+                                HTMLText("Second paragraph in the group.")
+                            }
+                            tag("ul") {
+                                tag("li") {
+                                    HTMLText("List item 1")
+                                }
+                                tag("li") {
+                                    HTMLText("List item 2")
+                                }
                             }
                         }
                     }
-                }
-                .attribute("class", "content-wrapper")
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
+                    .attribute("class", "content-wrapper")
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
 
-                </style>
-              </head>
-              <body>
-            <div class="content-wrapper">
-              <h2>Section Title
-              </h2>
-              <p>First paragraph in the group.
-              </p>
-              <p>Second paragraph in the group.
-              </p>
-              <ul>
-                <li>List item 1
-                </li>
-                <li>List item 2
-                </li>
-              </ul>
-            </div>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <div class="content-wrapper">
+                  <h2>Section Title
+                  </h2>
+                  <p>First paragraph in the group.
+                  </p>
+                  <p>Second paragraph in the group.
+                  </p>
+                  <ul>
+                    <li>List item 1
+                    </li>
+                    <li>List item 2
+                    </li>
+                  </ul>
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
     }
 }

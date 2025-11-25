@@ -34,11 +34,50 @@ public struct HTMLContext: Sendable {
     /// The current indentation level for pretty-printing.
     public var currentIndentation: [UInt8] = []
 
+    // MARK: - Style Tracking for Deterministic Class Names
+
+    /// Counter for generating sequential class names.
+    /// Each render context starts at 0, ensuring deterministic naming.
+    private var styleCounter: Int = 0
+
+    /// Maps seen styles to their assigned class names within this render.
+    /// Same style always returns same class name within a single render.
+    private var seenStyles: [Style: String] = [:]
+
     /// Creates a new HTML rendering context with the specified configuration.
     ///
     /// - Parameter configuration: The configuration to use for rendering.
-    public init(_ configuration: HTMLPrinter.Configuration = .default) {
+    public init(_ configuration: HTMLPrinter.Configuration = .current) {
         self.configuration = configuration
+    }
+
+    // MARK: - Class Name Generation
+
+    /// Get or create a class name for a style.
+    ///
+    /// Same style always returns same class name within a render context.
+    /// Class names are descriptive and sequential: `color-0`, `margin-1`, etc.
+    ///
+    /// - Parameter style: The style to get a class name for.
+    /// - Returns: A deterministic class name for the style.
+    mutating func className(for style: Style) -> String {
+        if let existing = seenStyles[style] {
+            return existing
+        }
+        let name = "\(style.property)-\(styleCounter)"
+        styleCounter += 1
+        seenStyles[style] = name
+        return name
+    }
+
+    /// Get or create class names for multiple styles.
+    ///
+    /// Batch version of `className(for:)` for efficiency.
+    ///
+    /// - Parameter styles: The styles to get class names for.
+    /// - Returns: An array of deterministic class names.
+    mutating func classNames(for styles: [Style]) -> [String] {
+        styles.map { className(for: $0) }
     }
 
     /// Generates a CSS stylesheet from the collected styles.

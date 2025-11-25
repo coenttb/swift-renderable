@@ -149,4 +149,6 @@ public struct HTMLElement<Content: HTML>: HTML {
     }
 }
 
+extension HTMLElement: Sendable where Content: Sendable {}
+
 

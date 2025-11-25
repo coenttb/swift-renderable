@@ -5,14 +5,11 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite(
-    "HTMLRaw Tests",
-    .snapshots(record: .missing)
-)
+@Suite("HTMLRaw Tests")
 struct HTMLRawTests {
 
     @Test("HTMLRaw with plain text")
@@ -85,138 +82,143 @@ struct HTMLRawTests {
         #expect(rendered.contains("<h1>Title</h1>"))
         #expect(rendered.contains("<p>Paragraph</p>"))
     }
+}
 
-    // MARK: - Snapshot Tests
+// MARK: - Snapshot Tests
 
-    @Test("HTMLRaw embedded content snapshot")
-    func rawEmbeddedContentSnapshot() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div") {
-                    tag("h1") {
-                        HTMLText("Blog Post")
-                    }
-
+extension `Snapshot Tests` {
+    @Suite
+    struct HTMLRawSnapshotTests {
+        @Test("HTMLRaw embedded content snapshot")
+        func rawEmbeddedContentSnapshot() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
                     tag("div") {
+                        tag("h1") {
+                            HTMLText("Blog Post")
+                        }
+
+                        tag("div") {
+                            HTMLRaw(
+                                """
+                                <p>This content includes <strong>pre-formatted HTML</strong> that should render as-is.</p>
+                                <blockquote cite="https://example.com">
+                                    <p>This is a quote with <em>emphasis</em> and a citation.</p>
+                                </blockquote>
+                                """
+                            )
+                        }
+                        .attribute("class", "raw-content")
+
+                        tag("p") {
+                            HTMLText("This is regular text that will be escaped.")
+                        }
+                    }
+                    .attribute("class", "blog-post")
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
+
+                    </style>
+                  </head>
+                  <body>
+                <div class="blog-post">
+                  <h1>Blog Post
+                  </h1>
+                  <div class="raw-content"><p>This content includes <strong>pre-formatted HTML</strong> that should render as-is.</p>
+                <blockquote cite="https://example.com">
+                    <p>This is a quote with <em>emphasis</em> and a citation.</p>
+                </blockquote>
+                  </div>
+                  <p>This is regular text that will be escaped.
+                  </p>
+                </div>
+                  </body>
+                </html>
+                """
+            }
+        }
+
+        @Test("HTMLRaw with scripts and styles snapshot")
+        func rawWithScriptsSnapshot() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div") {
+                        tag("h2") {
+                            HTMLText("Interactive Content")
+                        }
+
                         HTMLRaw(
                             """
-                            <p>This content includes <strong>pre-formatted HTML</strong> that should render as-is.</p>
-                            <blockquote cite="https://example.com">
-                                <p>This is a quote with <em>emphasis</em> and a citation.</p>
-                            </blockquote>
+                            <div id="interactive-widget">
+                                <p>Click the button below:</p>
+                                <button onclick="alert('Hello!')">Click Me</button>
+                            </div>
+                            <style>
+                                #interactive-widget {
+                                    border: 2px solid #007bff;
+                                    padding: 20px;
+                                    border-radius: 8px;
+                                }
+                                #interactive-widget button {
+                                    background: #007bff;
+                                    color: white;
+                                    border: none;
+                                    padding: 10px 20px;
+                                    border-radius: 4px;
+                                }
+                            </style>
                             """
                         )
-                    }
-                    .attribute("class", "raw-content")
 
-                    tag("p") {
-                        HTMLText("This is regular text that will be escaped.")
+                        tag("p") {
+                            HTMLText("The above widget was inserted as raw HTML.")
+                        }
                     }
-                }
-                .attribute("class", "blog-post")
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
+
+                    </style>
+                  </head>
+                  <body>
+                <div>
+                  <h2>Interactive Content
+                  </h2><div id="interactive-widget">
+                    <p>Click the button below:</p>
+                    <button onclick="alert('Hello!')">Click Me</button>
+                </div>
                 <style>
-
-                </style>
-              </head>
-              <body>
-            <div class="blog-post">
-              <h1>Blog Post
-              </h1>
-              <div class="raw-content"><p>This content includes <strong>pre-formatted HTML</strong> that should render as-is.</p>
-            <blockquote cite="https://example.com">
-                <p>This is a quote with <em>emphasis</em> and a citation.</p>
-            </blockquote>
-              </div>
-              <p>This is regular text that will be escaped.
-              </p>
-            </div>
-              </body>
-            </html>
-            """
-        }
-    }
-
-    @Test("HTMLRaw with scripts and styles snapshot")
-    func rawWithScriptsSnapshot() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div") {
-                    tag("h2") {
-                        HTMLText("Interactive Content")
+                    #interactive-widget {
+                        border: 2px solid #007bff;
+                        padding: 20px;
+                        border-radius: 8px;
                     }
-
-                    HTMLRaw(
-                        """
-                        <div id="interactive-widget">
-                            <p>Click the button below:</p>
-                            <button onclick="alert('Hello!')">Click Me</button>
-                        </div>
-                        <style>
-                            #interactive-widget {
-                                border: 2px solid #007bff;
-                                padding: 20px;
-                                border-radius: 8px;
-                            }
-                            #interactive-widget button {
-                                background: #007bff;
-                                color: white;
-                                border: none;
-                                padding: 10px 20px;
-                                border-radius: 4px;
-                            }
-                        </style>
-                        """
-                    )
-
-                    tag("p") {
-                        HTMLText("The above widget was inserted as raw HTML.")
+                    #interactive-widget button {
+                        background: #007bff;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 4px;
                     }
-                }
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
-
                 </style>
-              </head>
-              <body>
-            <div>
-              <h2>Interactive Content
-              </h2><div id="interactive-widget">
-                <p>Click the button below:</p>
-                <button onclick="alert('Hello!')">Click Me</button>
-            </div>
-            <style>
-                #interactive-widget {
-                    border: 2px solid #007bff;
-                    padding: 20px;
-                    border-radius: 8px;
-                }
-                #interactive-widget button {
-                    background: #007bff;
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 4px;
-                }
-            </style>
-              <p>The above widget was inserted as raw HTML.
-              </p>
-            </div>
-              </body>
-            </html>
-            """
+                  <p>The above widget was inserted as raw HTML.
+                  </p>
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
     }
 }

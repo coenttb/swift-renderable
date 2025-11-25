@@ -27,7 +27,7 @@
 /// - Warning: Using `HTMLRaw` with user-provided content can lead to security
 ///   vulnerabilities such as cross-site scripting (XSS) attacks. Only use
 ///   `HTMLRaw` with trusted content that you have full control over.
-public struct HTMLRaw: HTML {
+public struct HTMLRaw: HTML, Sendable {
     /// The raw bytes to render.
     let bytes: ContiguousArray<UInt8>
 

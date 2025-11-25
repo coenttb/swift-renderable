@@ -5,9 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import Dependencies
 import INCITS_4_1986
-import PointFreeHTML
+@testable import PointFreeHTML
 import OrderedCollections
 import Testing
 import Foundation
@@ -21,9 +20,7 @@ struct HTMLPrinterTests {
             HTMLText("test content")
         }
 
-        try withDependencies {
-            $0.htmlPrinter = HTMLPrinter(.default)
-        } operation: {
+        try HTMLPrinter.Configuration.$current.withValue(.default) {
             let rendered = try String(element)
 
             #expect(rendered.contains("<div>"))
@@ -38,9 +35,7 @@ struct HTMLPrinterTests {
             HTMLText("content")
         }
 
-        try withDependencies {
-            $0.htmlPrinter = HTMLPrinter(.pretty)
-        } operation: {
+        try HTMLPrinter.Configuration.$current.withValue(.pretty) {
             let rendered = try String(element)
 
             #expect(!rendered.isEmpty)
@@ -53,9 +48,7 @@ struct HTMLPrinterTests {
     func emptyContent() throws {
         let empty = HTMLEmpty()
 
-        try withDependencies {
-            $0.htmlPrinter = HTMLPrinter(.default)
-        } operation: {
+        try HTMLPrinter.Configuration.$current.withValue(.default) {
             let rendered = try String(empty)
 
             #expect(rendered.isEmpty)
@@ -70,9 +63,7 @@ struct HTMLPrinterTests {
             }
         }
 
-        withDependencies {
-            $0.htmlPrinter = HTMLPrinter(.default)
-        } operation: {
+        HTMLPrinter.Configuration.$current.withValue(.default) {
             let bytes = ContiguousArray(element)
             let rendered = String(data: Data(bytes), encoding: .utf8) ?? ""
 
@@ -141,9 +132,7 @@ struct HTMLPrinterTests {
             }
         }
 
-        try withDependencies {
-            $0.htmlPrinter = HTMLPrinter(.default)
-        } operation: {
+        try HTMLPrinter.Configuration.$current.withValue(.default) {
             let rendered = try String(document)
 
             #expect(rendered.contains("<!doctype html>"))

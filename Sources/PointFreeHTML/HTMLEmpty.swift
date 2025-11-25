@@ -26,7 +26,7 @@
 ///
 /// - Note: `HTMLEmpty` is automatically used by the `HTMLBuilder` when no
 ///   content is provided in a builder block.
-public struct HTMLEmpty: HTML {
+public struct HTMLEmpty: HTML, Sendable {
     /// Creates a new empty HTML node.
     public init() {}
 

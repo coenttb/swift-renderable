@@ -1,4 +1,4 @@
-import PointFreeHTML
+@testable import PointFreeHTML
 import Testing
 
 @Suite("README Verification Tests")

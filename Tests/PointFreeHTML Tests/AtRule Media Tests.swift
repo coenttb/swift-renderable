@@ -5,15 +5,12 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite(
-    "AtRule media Tests",
-    .snapshots(record: .failed)
-)
-struct AtRuleTests {
+@Suite("AtRule media Tests")
+struct AtRuleMediaTests {
 
     @Test("AtRule media basic creation")
     func atRuleBasicCreation() throws {
@@ -68,170 +65,177 @@ struct AtRuleTests {
         #expect(query1.rawValue == query2.rawValue)
         #expect(query1.rawValue != query3.rawValue)
     }
+}
 
-    @Test("AtRule media snapshot - mobile styles")
-    func atRuleMediaSnapshotMobile() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div") {
-                    "Mobile content"
+// MARK: - Snapshot Tests
+
+extension `Snapshot Tests` {
+    @Suite
+    struct AtRuleSnapshotTests {
+        @Test("AtRule media snapshot - mobile styles")
+        func atRuleMediaSnapshotMobile() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div") {
+                        "Mobile content"
+                    }
+                    .inlineStyle("color", "blue", atRule: AtRule(rawValue: "@media (max-width: 768px)"))
+                    .inlineStyle(
+                        "font-size",
+                        "14px",
+                        atRule: AtRule(rawValue: "@media (max-width: 768px)")
+                    )
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
+                @media (max-width: 768px){
+                  .color-0{color:blue}
+                  .font-size-1{font-size:14px}
                 }
-                .inlineStyle("color", "blue", atRule: AtRule(rawValue: "@media (max-width: 768px)"))
-                .inlineStyle(
-                    "font-size",
-                    "14px",
-                    atRule: AtRule(rawValue: "@media (max-width: 768px)")
-                )
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
-            @media (max-width: 768px){
-              .color-IFTUA{color:blue}
-              .font-size-gu1YL{font-size:14px}
-            }
 
-                </style>
-              </head>
-              <body>
-            <div class="color-IFTUA font-size-gu1YL">Mobile content
-            </div>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <div class="color-0 font-size-1">Mobile content
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
-    }
 
-    @Test("AtRule media snapshot - print styles")
-    func atRuleMediaSnapshotPrint() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div") {
-                    "Print content"
+        @Test("AtRule media snapshot - print styles")
+        func atRuleMediaSnapshotPrint() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div") {
+                        "Print content"
+                    }
+                    .inlineStyle("display", "none", atRule: AtRule(rawValue: "@media print"))
+                    .inlineStyle("color", "black", atRule: AtRule(rawValue: "@media print"))
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
+                @media print{
+                  .display-0{display:none}
+                  .color-1{color:black}
                 }
-                .inlineStyle("display", "none", atRule: AtRule(rawValue: "@media print"))
-                .inlineStyle("color", "black", atRule: AtRule(rawValue: "@media print"))
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
-            @media print{
-              .display-D5ekn{display:none}
-              .color-JZgIp4{color:black}
-            }
 
-                </style>
-              </head>
-              <body>
-            <div class="display-D5ekn color-JZgIp4">Print content
-            </div>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <div class="display-0 color-1">Print content
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
-    }
 
-    @Test("AtRule media snapshot - mixed media queries")
-    func atRuleMediaSnapshotMixed() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div") {
-                    tag("h1") { "Responsive Title" }
-                        .inlineStyle(
-                            "font-size",
-                            "24px",
-                            atRule: AtRule(rawValue: "@media (min-width: 768px)")
-                        )
-                        .inlineStyle(
-                            "font-size",
-                            "18px",
-                            atRule: AtRule(rawValue: "@media (max-width: 767px)")
-                        )
+        @Test("AtRule media snapshot - mixed media queries")
+        func atRuleMediaSnapshotMixed() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div") {
+                        tag("h1") { "Responsive Title" }
+                            .inlineStyle(
+                                "font-size",
+                                "24px",
+                                atRule: AtRule(rawValue: "@media (min-width: 768px)")
+                            )
+                            .inlineStyle(
+                                "font-size",
+                                "18px",
+                                atRule: AtRule(rawValue: "@media (max-width: 767px)")
+                            )
 
-                    tag("p") { "This paragraph adapts to different screen sizes" }
-                        .inlineStyle(
-                            "margin",
-                            "1rem",
-                            atRule: AtRule(rawValue: "@media (min-width: 768px)")
-                        )
-                        .inlineStyle(
-                            "margin",
-                            "0.5rem",
-                            atRule: AtRule(rawValue: "@media (max-width: 767px)")
-                        )
-                        .inlineStyle("display", "none", atRule: AtRule(rawValue: "@media print"))
+                        tag("p") { "This paragraph adapts to different screen sizes" }
+                            .inlineStyle(
+                                "margin",
+                                "1rem",
+                                atRule: AtRule(rawValue: "@media (min-width: 768px)")
+                            )
+                            .inlineStyle(
+                                "margin",
+                                "0.5rem",
+                                atRule: AtRule(rawValue: "@media (max-width: 767px)")
+                            )
+                            .inlineStyle("display", "none", atRule: AtRule(rawValue: "@media print"))
+                    }
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
+                @media (min-width: 768px){
+                  .font-size-0{font-size:24px}
+                  .margin-2{margin:1rem}
                 }
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
-            @media (min-width: 768px){
-              .font-size-brRBu{font-size:24px}
-              .margin-aLmST1{margin:1rem}
-            }
-            @media (max-width: 767px){
-              .font-size-kN7yq1{font-size:18px}
-              .margin-VpBjc3{margin:0.5rem}
-            }
-            @media print{
-              .display-D5ekn{display:none}
-            }
+                @media (max-width: 767px){
+                  .font-size-1{font-size:18px}
+                  .margin-3{margin:0.5rem}
+                }
+                @media print{
+                  .display-4{display:none}
+                }
 
-                </style>
-              </head>
-              <body>
-            <div>
-              <h1 class="font-size-brRBu font-size-kN7yq1">Responsive Title
-              </h1>
-              <p class="margin-aLmST1 margin-VpBjc3 display-D5ekn">This paragraph adapts to different screen sizes
-              </p>
-            </div>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <div>
+                  <h1 class="font-size-0 font-size-1">Responsive Title
+                  </h1>
+                  <p class="margin-2 margin-3 display-4">This paragraph adapts to different screen sizes
+                  </p>
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
-    }
 
-    @Test("AtRule media snapshot - no media query")
-    func atRuleMediaSnapshotNoMedia() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div") {
-                    "Regular content without media queries"
-                }
-                .inlineStyle("color", "red")
-                .inlineStyle("padding", "1rem")
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
-            .color-dMYaj4{color:red}
-            .padding-dnNPN1{padding:1rem}
+        @Test("AtRule media snapshot - no media query")
+        func atRuleMediaSnapshotNoMedia() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div") {
+                        "Regular content without media queries"
+                    }
+                    .inlineStyle("color", "red")
+                    .inlineStyle("padding", "1rem")
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
+                .color-0{color:red}
+                .padding-1{padding:1rem}
 
-                </style>
-              </head>
-              <body>
-            <div class="color-dMYaj4 padding-dnNPN1">Regular content without media queries
-            </div>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <div class="color-0 padding-1">Regular content without media queries
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
     }
 }

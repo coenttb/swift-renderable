@@ -5,7 +5,7 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import Testing
 
 @Suite("String Extensions Tests")

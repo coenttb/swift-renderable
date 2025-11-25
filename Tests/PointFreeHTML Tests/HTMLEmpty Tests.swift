@@ -5,14 +5,11 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-import PointFreeHTML
+@testable import PointFreeHTML
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite(
-    "HTMLEmpty Tests",
-    .snapshots(record: .missing)
-)
+@Suite("HTMLEmpty Tests")
 struct HTMLEmptyTests {
 
     @Test("HTMLEmpty renders nothing")
@@ -74,114 +71,119 @@ struct HTMLEmptyTests {
         let rendered = try String(group)
         #expect(rendered.isEmpty)
     }
+}
 
-    // MARK: - Snapshot Tests
+// MARK: - Snapshot Tests
 
-    @Test("HTMLEmpty in conditional content snapshot")
-    func emptyConditionalSnapshot() {
-        let showContent = false
-        let showAlternate = true
+extension `Snapshot Tests` {
+    @Suite
+    struct HTMLEmptySnapshotTests {
+        @Test("HTMLEmpty in conditional content snapshot")
+        func emptyConditionalSnapshot() {
+            let showContent = false
+            let showAlternate = true
 
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("div") {
-                    tag("h1") {
-                        HTMLText("Content Display")
-                    }
-
-                    if showContent {
-                        tag("section") {
-                            HTMLText("Main content here")
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("div") {
+                        tag("h1") {
+                            HTMLText("Content Display")
                         }
-                    } else {
-                        HTMLEmpty()
-                    }
 
-                    if showAlternate {
-                        tag("aside") {
-                            HTMLText("Alternate content")
+                        if showContent {
+                            tag("section") {
+                                HTMLText("Main content here")
+                            }
+                        } else {
+                            HTMLEmpty()
                         }
-                    } else {
-                        HTMLEmpty()
-                    }
 
-                    tag("footer") {
-                        HTMLText("Footer always shows")
-                    }
-                }
-                .attribute("class", "container")
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
+                        if showAlternate {
+                            tag("aside") {
+                                HTMLText("Alternate content")
+                            }
+                        } else {
+                            HTMLEmpty()
+                        }
 
-                </style>
-              </head>
-              <body>
-            <div class="container">
-              <h1>Content Display
-              </h1>
-              <aside>Alternate content
-              </aside>
-              <footer>Footer always shows
-              </footer>
-            </div>
-              </body>
-            </html>
-            """
+                        tag("footer") {
+                            HTMLText("Footer always shows")
+                        }
+                    }
+                    .attribute("class", "container")
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
+
+                    </style>
+                  </head>
+                  <body>
+                <div class="container">
+                  <h1>Content Display
+                  </h1>
+                  <aside>Alternate content
+                  </aside>
+                  <footer>Footer always shows
+                  </footer>
+                </div>
+                  </body>
+                </html>
+                """
+            }
         }
-    }
 
-    @Test("HTMLEmpty mixed with content snapshot")
-    func emptyMixedContentSnapshot() {
-        assertInlineSnapshot(
-            of: HTMLDocument {
-                tag("article") {
-                    tag("h1") {
-                        HTMLText("Article Title")
+        @Test("HTMLEmpty mixed with content snapshot")
+        func emptyMixedContentSnapshot() {
+            assertInlineSnapshot(
+                of: HTMLDocument {
+                    tag("article") {
+                        tag("h1") {
+                            HTMLText("Article Title")
+                        }
+
+                        HTMLEmpty()  // This should render nothing
+
+                        tag("p") {
+                            HTMLText("First paragraph of content.")
+                        }
+
+                        HTMLEmpty()  // This should render nothing
+
+                        tag("p") {
+                            HTMLText("Second paragraph of content.")
+                        }
+
+                        HTMLEmpty()  // This should render nothing
                     }
+                },
+                as: .html
+            ) {
+                """
+                <!doctype html>
+                <html>
+                  <head>
+                    <style>
 
-                    HTMLEmpty()  // This should render nothing
-
-                    tag("p") {
-                        HTMLText("First paragraph of content.")
-                    }
-
-                    HTMLEmpty()  // This should render nothing
-
-                    tag("p") {
-                        HTMLText("Second paragraph of content.")
-                    }
-
-                    HTMLEmpty()  // This should render nothing
-                }
-            },
-            as: .html
-        ) {
-            """
-            <!doctype html>
-            <html>
-              <head>
-                <style>
-
-                </style>
-              </head>
-              <body>
-            <article>
-              <h1>Article Title
-              </h1>
-              <p>First paragraph of content.
-              </p>
-              <p>Second paragraph of content.
-              </p>
-            </article>
-              </body>
-            </html>
-            """
+                    </style>
+                  </head>
+                  <body>
+                <article>
+                  <h1>Article Title
+                  </h1>
+                  <p>First paragraph of content.
+                  </p>
+                  <p>Second paragraph of content.
+                  </p>
+                </article>
+                  </body>
+                </html>
+                """
+            }
         }
     }
 }

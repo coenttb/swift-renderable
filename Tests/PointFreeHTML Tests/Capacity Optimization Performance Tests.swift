@@ -5,7 +5,6 @@
 //  Performance tests for buffer capacity pre-allocation optimization.
 //
 
-import Dependencies
 import Testing
 import TestingPerformance
 @testable import PointFreeHTML
@@ -19,9 +18,7 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .seconds(3)))
         func `baseline - no capacity reservation 10K renders`() {
-            withDependencies {
-                $0.htmlPrinter = HTMLPrinter(.default)
-            } operation: {
+            HTMLPrinter.Configuration.$current.withValue(.default) {
                 for _ in 0..<10_000 {
                     _ = try! String(
                         HTMLDocument {
@@ -36,9 +33,7 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .seconds(3)))
         func `baseline - large document no reservation 1K renders`() {
-            withDependencies {
-                $0.htmlPrinter = HTMLPrinter(.default)
-            } operation: {
+            HTMLPrinter.Configuration.$current.withValue(.default) {
                 for _ in 0..<1_000 {
                     _ = try! String(
                         HTMLDocument {
@@ -60,9 +55,7 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .seconds(3)))
         func `optimized - 4KB capacity reservation 10K renders`() {
-            withDependencies {
-                $0.htmlPrinter = HTMLPrinter(.optimized)
-            } operation: {
+            HTMLPrinter.Configuration.$current.withValue(.optimized) {
                 for _ in 0..<10_000 {
                     _ = try! String(
                         HTMLDocument {
@@ -77,9 +70,7 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .seconds(3)))
         func `optimized - 4KB capacity large document 1K renders`() {
-            withDependencies {
-                $0.htmlPrinter = HTMLPrinter(.optimized)
-            } operation: {
+            HTMLPrinter.Configuration.$current.withValue(.optimized) {
                 for _ in 0..<1_000 {
                     _ = try! String(
                         HTMLDocument {
@@ -101,14 +92,13 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .milliseconds(300)))
         func `small capacity - 512 bytes for small docs 1K renders`() {
-            withDependencies {
-                $0.htmlPrinter = HTMLPrinter(.init(
-                    forceImportant: false,
-                    indentation: [],
-                    newline: [],
-                    reservedCapacity: 512
-                ))
-            } operation: {
+            let config = HTMLPrinter.Configuration(
+                forceImportant: false,
+                indentation: [],
+                newline: [],
+                reservedCapacity: 512
+            )
+            HTMLPrinter.Configuration.$current.withValue(config) {
                 for _ in 0..<1_000 {
                     _ = try! String(
                         HTMLDocument {
@@ -121,14 +111,13 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .seconds(3)))
         func `large capacity - 16KB for large docs 1K renders`() {
-            withDependencies {
-                $0.htmlPrinter = HTMLPrinter(.init(
-                    forceImportant: false,
-                    indentation: [],
-                    newline: [],
-                    reservedCapacity: 16384
-                ))
-            } operation: {
+            let config = HTMLPrinter.Configuration(
+                forceImportant: false,
+                indentation: [],
+                newline: [],
+                reservedCapacity: 16384
+            )
+            HTMLPrinter.Configuration.$current.withValue(config) {
                 for _ in 0..<1_000 {
                     _ = try! String(
                         HTMLDocument {
