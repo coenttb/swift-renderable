@@ -65,7 +65,9 @@ let package = Package(
     targets: [
         .target(
             name: .rendering,
-            dependencies: []
+            dependencies: [
+                .asyncAlgorithms,
+            ]
         ),
         .target(
             name: .renderingHTML,
