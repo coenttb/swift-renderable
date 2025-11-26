@@ -122,3 +122,82 @@ extension AsyncStream where Element == ArraySlice<UInt8> {
         }
     }
 }
+
+extension AsyncStream where Element == ArraySlice<UInt8> {
+    /// Progressive streaming for HTML fragments (non-throwing).
+    public init<T: HTML & Sendable>(
+        progressive html: T,
+        chunkSize: Int = 4096,
+        configuration: HTMLContext.Rendering? = nil
+    ) {
+        let config = configuration ?? .default
+        self.init { continuation in
+            Task { @Sendable in
+                var context = HTMLContext(config)
+                var buffer = ChunkingBuffer(chunkSize: chunkSize) { chunk in
+                    continuation.yield(chunk)
+                }
+
+                T._render(html, into: &buffer, context: &context)
+                buffer.flushRemaining()
+                continuation.finish()
+            }
+        }
+    }
+
+    /// Progressive streaming for HTML documents (non-throwing).
+    public init<T: HTMLDocumentProtocol & Sendable>(
+        progressiveDocument document: T,
+        chunkSize: Int = 4096,
+        configuration: HTMLContext.Rendering? = nil
+    ) {
+        let config = configuration ?? .default
+        self.init { continuation in
+            Task { @Sendable in
+                var context = HTMLContext(config)
+                var buffer = ChunkingBuffer(chunkSize: chunkSize) { chunk in
+                    continuation.yield(chunk)
+                }
+
+                // Stream doctype and opening tags
+                buffer.append(contentsOf: [UInt8].doctypeHTML)
+                buffer.append(contentsOf: config.newline)
+                buffer.append(contentsOf: [UInt8].htmlOpen)
+                buffer.append(contentsOf: config.newline)
+
+                // Stream head
+                buffer.append(contentsOf: [UInt8].headOpen)
+                buffer.append(contentsOf: config.newline)
+                T.Head._render(document.head, into: &buffer, context: &context)
+                buffer.append(contentsOf: config.newline)
+                buffer.append(contentsOf: [UInt8].headClose)
+                buffer.append(contentsOf: config.newline)
+
+                // Stream body opening
+                buffer.append(contentsOf: [UInt8].bodyOpen)
+
+                // Stream body content progressively, collecting styles
+                T.Content._render(document.body, into: &buffer, context: &context)
+
+                // Emit collected styles at end of body
+                if !context.styles.isEmpty {
+                    buffer.append(contentsOf: config.newline)
+                    buffer.append(contentsOf: [UInt8].styleOpen)
+                    let stylesheetBytes = context.stylesheetBytes
+                    buffer.append(contentsOf: stylesheetBytes)
+                    buffer.append(contentsOf: [UInt8].styleClose)
+                }
+
+                // Close body and html
+                buffer.append(contentsOf: config.newline)
+                buffer.append(contentsOf: [UInt8].bodyClose)
+                buffer.append(contentsOf: config.newline)
+                buffer.append(contentsOf: [UInt8].htmlClose)
+
+                buffer.flushRemaining()
+                continuation.finish()
+            }
+        }
+    }
+}
+

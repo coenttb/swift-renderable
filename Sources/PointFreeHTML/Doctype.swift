@@ -29,6 +29,6 @@ public struct Doctype: HTML {
 
     /// The body of the doctype declaration, which renders as raw HTML.
     public var body: some HTML {
-        HTMLRaw("<!doctype html>")
+        HTMLRaw([UInt8].doctypeHTML)
     }
 }

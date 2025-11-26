@@ -27,7 +27,7 @@ public struct AnyHTML: HTML {
 
 extension AnyHTML {
     public init(
-        _ closure: () -> any HTML
+        @HTMLBuilder _ closure: () -> any HTML
     ) {
         self = .init(closure())
     }
