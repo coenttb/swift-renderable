@@ -123,7 +123,7 @@ struct SecurityTests {
         let malicious = "expression(alert('XSS'))"
         let html = tag("div") { HTMLText("Content") }
             .inlineStyle("color", malicious)
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
 
         // Style should be present but expression shouldn't execute
         // The style value is passed through - it's CSS, not HTML
@@ -136,7 +136,7 @@ struct SecurityTests {
         let malicious = "url(javascript:alert('XSS'))"
         let html = tag("div") { HTMLText("Content") }
             .inlineStyle("background", malicious)
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
 
         // The value is passed through - CSS, not HTML context
         #expect(rendered.contains("background:"))
@@ -256,7 +256,7 @@ struct SecurityTests {
 
     @Test("HTML document sets proper structure")
     func documentStructure() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("p") { HTMLText("Content") }
         }
         let rendered = try String(document)

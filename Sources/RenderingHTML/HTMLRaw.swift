@@ -5,7 +5,7 @@
 //  Created by Point-Free, Inc
 //
 
-import Rendering
+public import Rendering
 
 /// Represents raw, unescaped HTML content.
 ///
@@ -29,23 +29,11 @@ import Rendering
 /// - Warning: Using `HTMLRaw` with user-provided content can lead to security
 ///   vulnerabilities such as cross-site scripting (XSS) attacks. Only use
 ///   `HTMLRaw` with trusted content that you have full control over.
-public struct HTMLRaw: HTML, Sendable {
-    /// The raw bytes to render.
-    let bytes: ContiguousArray<UInt8>
+public typealias HTMLRaw = Raw
 
-    /// Creates a new raw HTML component from a string.
-    ///
-    /// - Parameter string: The string containing raw HTML content.
-    public init(_ string: String) {
-        self.init(string.utf8)
-    }
-
-    /// Creates a new raw HTML component from a sequence of bytes.
-    ///
-    /// - Parameter bytes: The bytes containing raw HTML content.
-    public init(_ bytes: some Sequence<UInt8>) {
-        self.bytes = ContiguousArray(bytes)
-    }
+extension Raw: Rendering {
+    public typealias Content = Never
+    public typealias Context = HTMLContext
 
     /// Renders the raw HTML bytes directly to the buffer without any processing.
     public static func _render<Buffer: RangeReplaceableCollection>(
@@ -59,3 +47,5 @@ public struct HTMLRaw: HTML, Sendable {
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
+
+extension Raw: HTML {}

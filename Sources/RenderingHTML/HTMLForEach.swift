@@ -5,7 +5,7 @@
 //  Created by Point-Free, Inc
 //
 
-import Rendering
+public import Rendering
 
 /// A component that creates HTML content for each element in a collection.
 ///
@@ -38,24 +38,6 @@ import Rendering
 ///
 /// - Note: This component works around a bug in `buildArray` that causes
 ///   build failures when the element is `some HTML`.
-public struct HTMLForEach<Content: HTML>: HTML {
-    /// The array of HTML content generated from the collection.
-    let content: _HTMLArray<Content>
+public typealias HTMLForEach<Content: HTML> = ForEach<Content>
 
-    /// Creates a new HTML component that generates content for each element in a collection.
-    ///
-    /// - Parameters:
-    ///   - data: The collection to iterate over.
-    ///   - content: A closure that transforms each element of the collection into HTML content.
-    public init<Data: RandomAccessCollection>(
-        _ data: Data,
-        @Builder content: (Data.Element) -> Content
-    ) {
-        self.content = Builder.buildArray(data.map(content))
-    }
-
-    /// The body of this component, which is the array of HTML content.
-    public var body: some HTML {
-        content
-    }
-}
+extension ForEach: HTML where Content: HTML {}

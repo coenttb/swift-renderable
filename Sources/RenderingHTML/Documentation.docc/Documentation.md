@@ -83,7 +83,7 @@ struct BlogPost: HTML {
 > ```swift
 > import SwiftUI
 > #Preview {
->     HTMLDocument {
+>     Document {
 >         h1 { "Hello world!" }
 >             .color(.red)
 >     }
@@ -126,7 +126,7 @@ let htmlString: String = try String(welcome)
 Build full HTML5 documents with proper structure:
 
 ```swift
-let document = HTMLDocument {
+let document = Document {
     WelcomeMessage(name: "World")
 } head: {
     tag("title") { "My App" }

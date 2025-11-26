@@ -146,7 +146,7 @@ extension `Snapshot Tests` {
         @Test("HTML align-content with prefix renders properly")
         func htmlAlignContentWithPrefixRendersCorrectly() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div")
                         .inlineStyle("align-content", "space-between", pseudo: .after)
                 },
@@ -157,13 +157,12 @@ extension `Snapshot Tests` {
                 <html>
                   <head>
                     <style>
-                .align-content-0::after{align-content:space-between}
-
+                      .align-content-0::after{align-content:space-between}
                     </style>
                   </head>
                   <body>
-                <div class="align-content-0">
-                </div>
+                    <div class="align-content-0">
+                    </div>
                   </body>
                 </html>
                 """

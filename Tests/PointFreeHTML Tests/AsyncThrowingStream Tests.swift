@@ -114,7 +114,7 @@ struct AsyncThrowingStreamTests {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(document: HTMLDocument { StyledHTML() }, configuration: .email) {
+        for try await chunk in AsyncThrowingStream(document: Document { StyledHTML() }, configuration: .email) {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -145,7 +145,7 @@ struct AsyncThrowingStreamTests {
 
     @Test("AsyncThrowingStream streams HTML document")
     func streamsDocument() async throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("main") {
                 HTMLText("Main content")
             }
@@ -166,7 +166,7 @@ struct AsyncThrowingStreamTests {
 
     @Test("AsyncThrowingStream document with styles")
     func documentWithStyles() async throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Styled")
             }
@@ -313,7 +313,7 @@ struct ProgressiveStreamingTests {
 
     @Test("Progressive document stream puts styles at end of body")
     func progressiveDocumentStream() async throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Content")
             }
@@ -366,7 +366,7 @@ struct ProgressiveStreamingTests {
 
     @Test("Progressive document stream convenience method")
     func progressiveDocumentConvenienceMethod() async throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("main") { HTMLText("Main") }
         }
 

@@ -83,7 +83,7 @@ struct AnyHTMLTests {
         .attribute("class", "nav-link")
 
         let anyHTML = AnyHTML(element)
-        let rendered = try String(HTMLDocument { anyHTML })
+        let rendered = try String(Document { anyHTML })
         #expect(rendered.contains("href=\"/page\""))
         #expect(rendered.contains("class=\"nav-link\""))
     }
@@ -96,7 +96,7 @@ struct AnyHTMLTests {
         .inlineStyle("color", "red")
 
         let anyHTML = AnyHTML(element)
-        let rendered = try String(HTMLDocument { anyHTML })
+        let rendered = try String(Document { anyHTML })
         #expect(rendered.contains("color:red"))
     }
 
@@ -169,7 +169,7 @@ extension `Snapshot Tests` {
             ]
 
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("article") {
                         for element in elements {
                             element
@@ -182,19 +182,16 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <article>
-                  <h1>Title
-                  </h1>
-                  <p>First paragraph
-                  </p>
-                  <p>Second paragraph
-                  </p>
-                </article>
+                    <article>
+                      <h1>Title
+                      </h1>
+                      <p>First paragraph
+                      </p>
+                      <p>Second paragraph
+                      </p>
+                    </article>
                   </body>
                 </html>
                 """

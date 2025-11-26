@@ -21,7 +21,7 @@ extension `Performance Tests` {
             HTMLContext.Rendering.$current.withValue(.default) {
                 for _ in 0..<10_000 {
                     _ = try! String(
-                        HTMLDocument {
+                        Document {
                             tag("div")
                                 .attribute("id", "container")
                                 .attribute("class", "content")
@@ -36,7 +36,7 @@ extension `Performance Tests` {
             HTMLContext.Rendering.$current.withValue(.default) {
                 for _ in 0..<1_000 {
                     _ = try! String(
-                        HTMLDocument {
+                        Document {
                             tag("div") {
                                 for i in 0..<20 {
                                     tag("section")
@@ -58,7 +58,7 @@ extension `Performance Tests` {
             HTMLContext.Rendering.$current.withValue(.optimized) {
                 for _ in 0..<10_000 {
                     _ = try! String(
-                        HTMLDocument {
+                        Document {
                             tag("div")
                                 .attribute("id", "container")
                                 .attribute("class", "content")
@@ -73,7 +73,7 @@ extension `Performance Tests` {
             HTMLContext.Rendering.$current.withValue(.optimized) {
                 for _ in 0..<1_000 {
                     _ = try! String(
-                        HTMLDocument {
+                        Document {
                             tag("div") {
                                 for i in 0..<20 {
                                     tag("section")
@@ -101,7 +101,7 @@ extension `Performance Tests` {
             HTMLContext.Rendering.$current.withValue(config) {
                 for _ in 0..<1_000 {
                     _ = try! String(
-                        HTMLDocument {
+                        Document {
                             tag("p") { "Hello, World!" }
                         }
                     )
@@ -120,7 +120,7 @@ extension `Performance Tests` {
             HTMLContext.Rendering.$current.withValue(config) {
                 for _ in 0..<1_000 {
                     _ = try! String(
-                        HTMLDocument {
+                        Document {
                             tag("div") {
                                 for i in 0..<50 {
                                     tag("article")

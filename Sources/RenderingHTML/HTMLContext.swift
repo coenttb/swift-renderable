@@ -86,7 +86,11 @@ public struct HTMLContext: Sendable {
     ///
     /// This is the canonical implementation - generates bytes directly without
     /// intermediate String allocation.
-    public var stylesheetBytes: ContiguousArray<UInt8> {
+    ///
+    /// - Parameter baseIndentation: The base indentation to apply to all CSS rules.
+    ///   This should match the indentation level of the containing `<style>` tag's content.
+    /// - Returns: The stylesheet bytes with proper indentation.
+    public func stylesheetBytes(baseIndentation: [UInt8] = []) -> ContiguousArray<UInt8> {
         // Group styles by atRule
         var grouped: OrderedDictionary<AtRule?, [(selector: String, style: String)]> = [:]
         for (key, style) in styles {
@@ -94,16 +98,19 @@ public struct HTMLContext: Sendable {
         }
 
         var sheet = ContiguousArray<UInt8>()
-        sheet.append(contentsOf: rendering.newline)
+        let sortedGroups = grouped.sorted(by: { $0.key == nil ? $1.key != nil : false })
 
-        for (mediaQuery, stylesForMedia) in grouped.sorted(by: { $0.key == nil ? $1.key != nil : false }) {
+        for (mediaQuery, stylesForMedia) in sortedGroups {
             if let mediaQuery {
+                sheet.append(contentsOf: rendering.newline)
+                sheet.append(contentsOf: baseIndentation)
                 sheet.append(contentsOf: mediaQuery.rawValue.utf8)
                 sheet.append(0x7B) // {
-                sheet.append(contentsOf: rendering.newline)
             }
 
             for (selector, style) in stylesForMedia {
+                sheet.append(contentsOf: rendering.newline)
+                sheet.append(contentsOf: baseIndentation)
                 if mediaQuery != nil {
                     sheet.append(contentsOf: rendering.indentation)
                 }
@@ -114,15 +121,22 @@ public struct HTMLContext: Sendable {
                     sheet.append(contentsOf: " !important".utf8)
                 }
                 sheet.append(0x7D) // }
-                sheet.append(contentsOf: rendering.newline)
             }
 
             if mediaQuery != nil {
-                sheet.append(0x7D) // }
                 sheet.append(contentsOf: rendering.newline)
+                sheet.append(contentsOf: baseIndentation)
+                sheet.append(0x7D) // }
             }
         }
         return sheet
+    }
+
+    /// Generates a CSS stylesheet from the collected styles as bytes.
+    ///
+    /// Convenience property that calls `stylesheetBytes(baseIndentation:)` with no indentation.
+    public var stylesheetBytes: ContiguousArray<UInt8> {
+        stylesheetBytes(baseIndentation: [])
     }
 
     /// Generates a CSS stylesheet from the collected styles.

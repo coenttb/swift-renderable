@@ -85,7 +85,7 @@ struct EdgeCasesTests {
         }
 
         let html = nest(50) { HTMLText("Deep content") }
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("Deep content"))
     }
 
@@ -143,7 +143,7 @@ struct EdgeCasesTests {
     func emptyStyleValue() throws {
         let html = tag("div") { HTMLText("Content") }
             .inlineStyle("color", "")
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("<div"))
     }
 
@@ -151,7 +151,7 @@ struct EdgeCasesTests {
     func styleSpecialCSSValue() throws {
         let html = tag("div") { HTMLText("Content") }
             .inlineStyle("content", "'Hello'")
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("content:"))
     }
 
@@ -160,7 +160,7 @@ struct EdgeCasesTests {
         let longValue = String(repeating: "a", count: 10_000)
         let html = tag("div") { HTMLText("Content") }
             .inlineStyle("--custom-prop", longValue)
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("--custom-prop"))
     }
 
@@ -246,7 +246,7 @@ struct EdgeCasesTests {
         let original = tag("div") { HTMLText("Original") }
         let erased = AnyHTML(original)
         let doubleErased = AnyHTML(erased)
-        let rendered = try String(HTMLDocument { doubleErased })
+        let rendered = try String(Document { doubleErased })
         #expect(rendered.contains("Original"))
     }
 
@@ -255,7 +255,7 @@ struct EdgeCasesTests {
         let styled = tag("div") { HTMLText("Styled") }
             .inlineStyle("color", "red")
         let erased = AnyHTML(styled)
-        let rendered = try String(HTMLDocument { erased })
+        let rendered = try String(Document { erased })
         #expect(rendered.contains("color:red"))
     }
 
@@ -339,7 +339,7 @@ extension `Snapshot Tests` {
         @Test("Complex edge case snapshot")
         func complexEdgeCase() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         // Empty content
                         Empty()
@@ -363,13 +363,10 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <div>  <span><strong>Nested</strong></span>Shown
-                </div>
+                    <div>  <span><strong>Nested</strong></span>Shown
+                    </div>
                   </body>
                 </html>
                 """

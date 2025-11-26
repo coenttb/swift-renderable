@@ -64,7 +64,7 @@ struct _HTMLTupleTests {
 
     @Test("_HTMLTuple isolates attributes between elements")
     func isolatesAttributes() throws {
-        let html = HTMLDocument {
+        let html = Document {
             tag("div") {
                 HTMLText("First div")
             }
@@ -129,7 +129,7 @@ struct _HTMLTupleTests {
             }
         }
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("Plain text"))
         #expect(rendered.contains("<br>"))
         #expect(rendered.contains("<strong>Raw HTML</strong>"))
@@ -149,7 +149,7 @@ struct _HTMLTupleTests {
                 .attribute("type", "submit")
         }
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("type=\"text\""))
         #expect(rendered.contains("<label>"))
         #expect(rendered.contains("<br>"))
@@ -160,7 +160,7 @@ struct _HTMLTupleTests {
 
     @Test("_HTMLTuple propagates styles correctly")
     func propagatesStyles() throws {
-        let html = HTMLDocument {
+        let html = Document {
             tag("div") {
                 HTMLText("First")
             }
@@ -181,7 +181,7 @@ struct _HTMLTupleTests {
 
     @Test("_HTMLTuple in document structure")
     func inDocumentStructure() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("header") {
                 tag("h1") {
                     HTMLText("Site Title")
@@ -217,7 +217,7 @@ extension `Snapshot Tests` {
         @Test("_HTMLTuple page layout snapshot")
         func pageLayoutSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("header") {
                         tag("h1") {
                             HTMLText("My Website")
@@ -240,21 +240,18 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <header>
-                  <h1>My Website
-                  </h1>
-                </header>
-                <main>
-                  <p>Welcome to my site.
-                  </p>
-                </main>
-                <footer><small>© 2025</small>
-                </footer>
+                    <header>
+                      <h1>My Website
+                      </h1>
+                    </header>
+                    <main>
+                      <p>Welcome to my site.
+                      </p>
+                    </main>
+                    <footer><small>© 2025</small>
+                    </footer>
                   </body>
                 </html>
                 """

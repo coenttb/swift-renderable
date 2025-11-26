@@ -34,7 +34,7 @@ struct GroupTests {
             HTMLText("more text")
         }
 
-        let rendered = try String(HTMLDocument { group })
+        let rendered = try String(Document { group })
         #expect(rendered.contains("text"))
         #expect(rendered.contains("<span>"))
         #expect(rendered.contains("span content"))
@@ -117,7 +117,7 @@ extension `Snapshot Tests` {
         @Test("Group transparent container snapshot")
         func transparentContainerSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         Group {
                             tag("h2") {
@@ -147,25 +147,22 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <div class="content-wrapper">
-                  <h2>Section Title
-                  </h2>
-                  <p>First paragraph in the group.
-                  </p>
-                  <p>Second paragraph in the group.
-                  </p>
-                  <ul>
-                    <li>List item 1
-                    </li>
-                    <li>List item 2
-                    </li>
-                  </ul>
-                </div>
+                    <div class="content-wrapper">
+                      <h2>Section Title
+                      </h2>
+                      <p>First paragraph in the group.
+                      </p>
+                      <p>Second paragraph in the group.
+                      </p>
+                      <ul>
+                        <li>List item 1
+                        </li>
+                        <li>List item 2
+                        </li>
+                      </ul>
+                    </div>
                   </body>
                 </html>
                 """

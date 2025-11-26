@@ -16,7 +16,7 @@ struct HTMLDocumentTests {
 
     @Test("HTMLDocument with body only")
     func bodyOnly() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Content")
             }
@@ -33,7 +33,7 @@ struct HTMLDocumentTests {
 
     @Test("HTMLDocument with head and body")
     func headAndBody() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("main") {
                 HTMLText("Main content")
             }
@@ -67,7 +67,7 @@ struct HTMLDocumentTests {
 
     @Test("HTMLDocument with empty head")
     func emptyHead() throws {
-        let document = HTMLDocument {
+        let document = Document {
             HTMLText("Just body")
         }
 
@@ -81,7 +81,7 @@ struct HTMLDocumentTests {
 
     @Test("HTMLDocument includes doctype")
     func includesDoctype() throws {
-        let document = HTMLDocument {
+        let document = Document {
             Empty()
         }
 
@@ -91,7 +91,7 @@ struct HTMLDocumentTests {
 
     @Test("HTMLDocument includes style element in head")
     func includesStyleElement() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Content")
             }
@@ -108,7 +108,7 @@ struct HTMLDocumentTests {
 
     @Test("HTMLDocument with meta tags")
     func withMetaTags() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("h1") {
                 HTMLText("Hello")
             }
@@ -131,7 +131,7 @@ struct HTMLDocumentTests {
 
     @Test("HTMLDocument with multiple body elements")
     func multipleBodyElements() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("header") {
                 HTMLText("Header")
             }
@@ -158,7 +158,7 @@ extension `Snapshot Tests` {
         @Test("HTMLDocument complete structure snapshot")
         func completeStructureSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("header") {
                         tag("nav") {
                             tag("a") {
@@ -196,25 +196,22 @@ extension `Snapshot Tests` {
                     <title>My Page
                     </title>
                     <meta charset="utf-8">
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <header>
-                  <nav><a href="/">Home</a>
-                  </nav>
-                </header>
-                <main>
-                  <h1>Welcome
-                  </h1>
-                  <p>This is the main content.
-                  </p>
-                </main>
-                <footer>
-                  <p>© 2025
-                  </p>
-                </footer>
+                    <header>
+                      <nav><a href="/">Home</a>
+                      </nav>
+                    </header>
+                    <main>
+                      <h1>Welcome
+                      </h1>
+                      <p>This is the main content.
+                      </p>
+                    </main>
+                    <footer>
+                      <p>© 2025
+                      </p>
+                    </footer>
                   </body>
                 </html>
                 """
@@ -224,7 +221,7 @@ extension `Snapshot Tests` {
         @Test("HTMLDocument minimal snapshot")
         func minimalSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     HTMLText("Hello")
                 },
                 as: .html
@@ -233,9 +230,6 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>Hello
                   </body>

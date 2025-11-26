@@ -18,7 +18,7 @@ struct _HTMLAttributesTests {
             HTMLText("content")
         }.attribute("class", "test-class")
         
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         #expect(rendered.contains("class=\"test-class\""))
         #expect(rendered.contains("content"))
     }
@@ -31,7 +31,7 @@ struct _HTMLAttributesTests {
             .attribute("class", "test-class")
             .attribute("id", "test-id")
         
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         #expect(rendered.contains("class=\"test-class\""))
         #expect(rendered.contains("id=\"test-id\""))
     }
@@ -42,7 +42,7 @@ struct _HTMLAttributesTests {
             HTMLText("content")
         }.attribute("class", nil)
         
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         #expect(!rendered.contains("class="))
     }
     
@@ -64,7 +64,7 @@ struct _HTMLAttributesTests {
             .attribute("placeholder", "Enter username")
             .attribute("required", "")
         
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         
         print("rendered", rendered)
         #expect(rendered.contains("type=\"text\""))
@@ -82,7 +82,7 @@ extension `Snapshot Tests` {
         @Test("Form with various attributes snapshot")
         func formWithAttributesSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("form") {
                         tag("div") {
                             tag("label") {
@@ -129,17 +129,14 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <form method="post" action="/submit">
-                  <div class="form-group"><label for="name">Name:</label><input type="text" id="name" name="name" placeholder="Enter your name" required>
-                  </div>
-                  <div class="form-group"><label for="email">Email:</label><input type="email" id="email" name="email" placeholder="Enter your email" required>
-                  </div><button type="submit" class="btn-primary">Submit</button>
-                </form>
+                    <form method="post" action="/submit">
+                      <div class="form-group"><label for="name">Name:</label><input type="text" id="name" name="name" placeholder="Enter your name" required>
+                      </div>
+                      <div class="form-group"><label for="email">Email:</label><input type="email" id="email" name="email" placeholder="Enter your email" required>
+                      </div><button type="submit" class="btn-primary">Submit</button>
+                    </form>
                   </body>
                 </html>
                 """
@@ -149,7 +146,7 @@ extension `Snapshot Tests` {
         @Test("Media attributes snapshot")
         func mediaAttributesSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         tag("img")
                             .attribute("src", "/images/hero.jpg")
@@ -177,16 +174,13 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <div class="media-container"><img src="/images/hero.jpg" alt="Hero image" width="800" height="600" loading="lazy">
-                  <video controls width="640" height="480" poster="/images/video-poster.jpg">
-                    <source src="/videos/demo.mp4" type="video/mp4">Your browser does not support the video tag.
-                  </video>
-                </div>
+                    <div class="media-container"><img src="/images/hero.jpg" alt="Hero image" width="800" height="600" loading="lazy">
+                      <video controls width="640" height="480" poster="/images/video-poster.jpg">
+                        <source src="/videos/demo.mp4" type="video/mp4">Your browser does not support the video tag.
+                      </video>
+                    </div>
                   </body>
                 </html>
                 """

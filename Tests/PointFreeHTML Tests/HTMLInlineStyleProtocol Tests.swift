@@ -24,7 +24,7 @@ struct HTMLInlineStyleProtocolTests {
         }
         .inlineStyle("color", "red")
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("color:red"))
     }
 
@@ -37,7 +37,7 @@ struct HTMLInlineStyleProtocolTests {
         .inlineStyle("margin", "10px")
         .inlineStyle("padding", "5px")
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("color:red"))
         #expect(rendered.contains("margin:10px"))
         #expect(rendered.contains("padding:5px"))
@@ -52,7 +52,7 @@ struct HTMLInlineStyleProtocolTests {
         }
         .inlineStyle("font-weight", "bold")
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("Original content"))
         #expect(rendered.contains("<span"))
     }
@@ -66,7 +66,7 @@ struct HTMLInlineStyleProtocolTests {
         }
         .inlineStyle("background", "white")
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("<div"))
         #expect(rendered.contains("<p>"))
         #expect(rendered.contains("Paragraph"))
@@ -83,7 +83,7 @@ struct HTMLInlineStyleProtocolTests {
         .inlineStyle("background-color", "yellow")
         .inlineStyle("border", "1px solid black")
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("color:blue"))
         #expect(rendered.contains("background-color:yellow"))
         #expect(rendered.contains("border:1px solid black"))
@@ -98,7 +98,7 @@ struct HTMLInlineStyleProtocolTests {
         }
         .inlineStyle("display", "none", atRule: .init(rawValue: "@media print"), selector: nil, pseudo: nil)
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("@media print"))
         #expect(rendered.contains("display:none"))
     }
@@ -111,7 +111,7 @@ struct HTMLInlineStyleProtocolTests {
         .inlineStyle("width", "100%", atRule: .init(rawValue: "@media (max-width: 768px)"), selector: nil, pseudo: nil)
         .inlineStyle("width", "50%", atRule: .init(rawValue: "@media (min-width: 769px)"), selector: nil, pseudo: nil)
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("@media (max-width: 768px)"))
         #expect(rendered.contains("@media (min-width: 769px)"))
     }
@@ -126,7 +126,7 @@ struct HTMLInlineStyleProtocolTests {
         .attribute("href", "#")
         .inlineStyle("color", "red", pseudo: .hover)
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains(":hover"))
         #expect(rendered.contains("color:red"))
     }
@@ -141,7 +141,7 @@ struct HTMLInlineStyleProtocolTests {
         .inlineStyle("color", "")
 
         // Should still render without crashing
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("<div"))
     }
 
@@ -156,7 +156,7 @@ struct HTMLInlineStyleProtocolTests {
         .inlineStyle("color", "green")
 
         let erased = AnyHTML(original)
-        let rendered = try String(HTMLDocument { erased })
+        let rendered = try String(Document { erased })
 
         #expect(rendered.contains("color:green"))
         #expect(rendered.contains("Erased"))
@@ -181,7 +181,7 @@ struct HTMLInlineStyleProtocolTests {
             }
         }
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("color:red"))
         #expect(!rendered.contains("color:blue"))
     }
@@ -200,7 +200,7 @@ struct HTMLInlineStyleProtocolTests {
             }
         }
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("color:red"))
         #expect(rendered.contains("color:green"))
         #expect(rendered.contains("color:blue"))

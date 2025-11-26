@@ -81,7 +81,7 @@ extension `Snapshot Tests` {
         @Test("Doctype in complete document snapshot")
         func doctypeInDocumentSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         tag("h1") {
                             HTMLText("HTML5 Document")
@@ -103,17 +103,14 @@ extension `Snapshot Tests` {
                   <head>
                     <title>Doctype Example
                     </title>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <div>
-                  <h1>HTML5 Document
-                  </h1>
-                  <p>This document starts with a proper HTML5 doctype declaration.
-                  </p>
-                </div>
+                    <div>
+                      <h1>HTML5 Document
+                      </h1>
+                      <p>This document starts with a proper HTML5 doctype declaration.
+                      </p>
+                    </div>
                   </body>
                 </html>
                 """

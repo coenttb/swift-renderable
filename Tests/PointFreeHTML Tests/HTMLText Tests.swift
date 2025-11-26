@@ -141,7 +141,7 @@ struct HTMLTextTests {
 
     @Test("HTMLText in document context")
     func inDocumentContext() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("p") {
                 HTMLText("This is & that")
             }
@@ -159,7 +159,7 @@ extension `Snapshot Tests` {
         @Test("HTMLText basic rendering snapshot")
         func basicRenderingSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         tag("h1") {
                             HTMLText("Welcome & Hello")
@@ -175,17 +175,14 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <div>
-                  <h1>Welcome &amp; Hello
-                  </h1>
-                  <p>This is a paragraph with &lt;special&gt; characters &amp; symbols.
-                  </p>
-                </div>
+                    <div>
+                      <h1>Welcome &amp; Hello
+                      </h1>
+                      <p>This is a paragraph with &lt;special&gt; characters &amp; symbols.
+                      </p>
+                    </div>
                   </body>
                 </html>
                 """
@@ -195,7 +192,7 @@ extension `Snapshot Tests` {
         @Test("HTMLText with various content types snapshot")
         func variousContentSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("article") {
                         tag("h2") {
                             HTMLText("Code Examples")
@@ -214,19 +211,16 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <article>
-                  <h2>Code Examples
-                  </h2>
-                  <p>In HTML, use &amp;lt;tag&amp;gt; syntax (shown escaped).
-                  </p>
-                  <p>Copyright © 2025 - All rights reserved
-                  </p>
-                </article>
+                    <article>
+                      <h2>Code Examples
+                      </h2>
+                      <p>In HTML, use &amp;lt;tag&amp;gt; syntax (shown escaped).
+                      </p>
+                      <p>Copyright © 2025 - All rights reserved
+                      </p>
+                    </article>
                   </body>
                 </html>
                 """

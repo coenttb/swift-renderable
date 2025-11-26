@@ -75,7 +75,7 @@ extension `Snapshot Tests` {
         @Test("AtRule media snapshot - mobile styles")
         func atRuleMediaSnapshotMobile() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         "Mobile content"
                     }
@@ -93,16 +93,15 @@ extension `Snapshot Tests` {
                 <html>
                   <head>
                     <style>
-                @media (max-width: 768px){
-                  .color-0{color:blue}
-                  .font-size-1{font-size:14px}
-                }
-
+                      @media (max-width: 768px){
+                        .color-0{color:blue}
+                        .font-size-1{font-size:14px}
+                      }
                     </style>
                   </head>
                   <body>
-                <div class="color-0 font-size-1">Mobile content
-                </div>
+                    <div class="color-0 font-size-1">Mobile content
+                    </div>
                   </body>
                 </html>
                 """
@@ -112,7 +111,7 @@ extension `Snapshot Tests` {
         @Test("AtRule media snapshot - print styles")
         func atRuleMediaSnapshotPrint() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         "Print content"
                     }
@@ -126,16 +125,15 @@ extension `Snapshot Tests` {
                 <html>
                   <head>
                     <style>
-                @media print{
-                  .display-0{display:none}
-                  .color-1{color:black}
-                }
-
+                      @media print{
+                        .display-0{display:none}
+                        .color-1{color:black}
+                      }
                     </style>
                   </head>
                   <body>
-                <div class="display-0 color-1">Print content
-                </div>
+                    <div class="display-0 color-1">Print content
+                    </div>
                   </body>
                 </html>
                 """
@@ -145,7 +143,7 @@ extension `Snapshot Tests` {
         @Test("AtRule media snapshot - mixed media queries")
         func atRuleMediaSnapshotMixed() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         tag("h1") { "Responsive Title" }
                             .inlineStyle(
@@ -180,27 +178,26 @@ extension `Snapshot Tests` {
                 <html>
                   <head>
                     <style>
-                @media (min-width: 768px){
-                  .font-size-0{font-size:24px}
-                  .margin-2{margin:1rem}
-                }
-                @media (max-width: 767px){
-                  .font-size-1{font-size:18px}
-                  .margin-3{margin:0.5rem}
-                }
-                @media print{
-                  .display-4{display:none}
-                }
-
+                      @media (min-width: 768px){
+                        .font-size-0{font-size:24px}
+                        .margin-2{margin:1rem}
+                      }
+                      @media (max-width: 767px){
+                        .font-size-1{font-size:18px}
+                        .margin-3{margin:0.5rem}
+                      }
+                      @media print{
+                        .display-4{display:none}
+                      }
                     </style>
                   </head>
                   <body>
-                <div>
-                  <h1 class="font-size-0 font-size-1">Responsive Title
-                  </h1>
-                  <p class="margin-2 margin-3 display-4">This paragraph adapts to different screen sizes
-                  </p>
-                </div>
+                    <div>
+                      <h1 class="font-size-0 font-size-1">Responsive Title
+                      </h1>
+                      <p class="margin-2 margin-3 display-4">This paragraph adapts to different screen sizes
+                      </p>
+                    </div>
                   </body>
                 </html>
                 """
@@ -210,7 +207,7 @@ extension `Snapshot Tests` {
         @Test("AtRule media snapshot - no media query")
         func atRuleMediaSnapshotNoMedia() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         "Regular content without media queries"
                     }
@@ -224,14 +221,13 @@ extension `Snapshot Tests` {
                 <html>
                   <head>
                     <style>
-                .color-0{color:red}
-                .padding-1{padding:1rem}
-
+                      .color-0{color:red}
+                      .padding-1{padding:1rem}
                     </style>
                   </head>
                   <body>
-                <div class="color-0 padding-1">Regular content without media queries
-                </div>
+                    <div class="color-0 padding-1">Regular content without media queries
+                    </div>
                   </body>
                 </html>
                 """

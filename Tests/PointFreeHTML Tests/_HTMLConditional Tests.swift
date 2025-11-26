@@ -149,7 +149,7 @@ struct _HTMLConditionalTests {
             }
         }
 
-        let rendered = try String(HTMLDocument { TestHTML() })
+        let rendered = try String(Document { TestHTML() })
         #expect(rendered.contains("btn-active"))
         #expect(rendered.contains("Active"))
         #expect(!rendered.contains("btn-inactive"))
@@ -176,7 +176,7 @@ struct _HTMLConditionalTests {
             }
         }
 
-        let rendered = try String(HTMLDocument { TestHTML() })
+        let rendered = try String(Document { TestHTML() })
         #expect(rendered.contains("background-color:yellow"))
         #expect(rendered.contains("Highlighted"))
     }
@@ -201,7 +201,7 @@ struct _HTMLConditionalTests {
             }
         }
 
-        let rendered = try String(HTMLDocument { TestHTML() })
+        let rendered = try String(Document { TestHTML() })
         #expect(rendered.contains("<a"))
         #expect(rendered.contains("href=\"/page\""))
         #expect(!rendered.contains("<span>"))
@@ -271,7 +271,7 @@ extension `Snapshot Tests` {
             }
 
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     ConditionalPage()
                 },
                 as: .html
@@ -280,15 +280,12 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <header>
-                  <nav><span>Welcome, User!</span><a href="/logout">Logout</a>
-                  </nav>
-                </header>
+                    <header>
+                      <nav><span>Welcome, User!</span><a href="/logout">Logout</a>
+                      </nav>
+                    </header>
                   </body>
                 </html>
                 """

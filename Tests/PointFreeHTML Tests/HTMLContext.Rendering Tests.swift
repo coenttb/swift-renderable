@@ -101,13 +101,13 @@ struct HTMLContextRenderingTests {
         .inlineStyle("color", "red")
 
         // Default rendering (no !important)
-        let defaultRendered = try String(HTMLDocument { html })
+        let defaultRendered = try String(Document { html })
         #expect(defaultRendered.contains("color:red}"))
         #expect(!defaultRendered.contains("!important"))
 
         // Email rendering (with !important)
         let emailRendered: String = try HTMLContext.Rendering.$current.withValue(.email) {
-            try String(HTMLDocument { html })
+            try String(Document { html })
         }
         #expect(emailRendered.contains("!important"))
     }
@@ -164,7 +164,7 @@ struct HTMLContextRenderingTests {
         .inlineStyle("color", "blue")
 
         let rendered: String = try HTMLContext.Rendering.$current.withValue(.email) {
-            try String(HTMLDocument { html })
+            try String(Document { html })
         }
 
         #expect(rendered.contains("!important"))
@@ -180,7 +180,7 @@ extension `Snapshot Tests` {
         func prettyRenderingSnapshot() {
             HTMLContext.Rendering.$current.withValue(.pretty) {
                 assertInlineSnapshot(
-                    of: HTMLDocument {
+                    of: Document {
                         tag("main") {
                             tag("h1") {
                                 HTMLText("Pretty Printed")
@@ -193,15 +193,12 @@ extension `Snapshot Tests` {
                     <!doctype html>
                     <html>
                       <head>
-                        <style>
-
-                        </style>
                       </head>
                       <body>
-                    <main>
-                      <h1>Pretty Printed
-                      </h1>
-                    </main>
+                        <main>
+                          <h1>Pretty Printed
+                          </h1>
+                        </main>
                       </body>
                     </html>
                     """

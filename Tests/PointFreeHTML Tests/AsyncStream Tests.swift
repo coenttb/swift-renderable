@@ -113,7 +113,7 @@ struct AsyncStreamTests {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncStream(document: HTMLDocument { StyledHTML() }, configuration: .email) {
+        for await chunk in AsyncStream(document: Document { StyledHTML() }, configuration: .email) {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -144,7 +144,7 @@ struct AsyncStreamTests {
 
     @Test("AsyncStream streams HTML document")
     func streamsDocument() async {
-        let document = HTMLDocument {
+        let document = Document {
             tag("main") {
                 HTMLText("Main content")
             }
@@ -196,7 +196,7 @@ struct AsyncStreamTests {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in HTMLDocument { StyledHTML() }.asyncStreamNonThrowing(chunkSize: 4096, configuration: .email) {
+        for await chunk in Document { StyledHTML() }.asyncStreamNonThrowing(chunkSize: 4096, configuration: .email) {
             allBytes.append(contentsOf: chunk)
         }
 

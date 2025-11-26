@@ -19,7 +19,7 @@ struct Example: HTML {
 
 You can then easily use this component in an HTML document:
 ```swift
-struct ExampleDocument: HTMLDocument {
+struct ExampleDocument: Document {
     var head: some HTML {
         title { "My Page" }
     }
@@ -31,7 +31,7 @@ struct ExampleDocument: HTMLDocument {
 
 or just
 
-HTMLDocument {
+Document {
     Example(name: "Coen")
 }
 ```

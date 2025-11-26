@@ -17,7 +17,7 @@ struct StringExtensionsTests {
             HTMLText("test content")
         }
 
-        let string = try String(HTMLDocument { element })
+        let string = try String(Document { element })
         #expect(string.contains("<div>"))
         #expect(string.contains("test content"))
         #expect(string.contains("</div>"))
@@ -45,7 +45,7 @@ struct StringExtensionsTests {
             }
         }
 
-        let string = try String(HTMLDocument { html })
+        let string = try String(Document { html })
         #expect(string.contains("<article>"))
         #expect(string.contains("<h1>Article Title</h1>"))
         #expect(string.contains("<p>Paragraph content</p>"))
@@ -60,7 +60,7 @@ struct StringExtensionsTests {
         .attribute("class", "test-class")
         .attribute("id", "test-id")
 
-        let string = try String(HTMLDocument { element })
+        let string = try String(Document { element })
         #expect(string.contains("class=\"test-class\""))
         #expect(string.contains("id=\"test-id\""))
         #expect(string.contains("content"))
@@ -90,7 +90,7 @@ struct StringExtensionsTests {
     //
     //    @Test("String from document")
     //    func stringFromDocument() throws {
-    //        let document = HTMLDocument {
+    //        let document = Document {
     //            tag("title") {
     //                tag("h1") {
     //                    HTMLText("Hello, World!")

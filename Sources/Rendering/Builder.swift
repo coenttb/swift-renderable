@@ -1,13 +1,11 @@
 //
-//  HTMLBuilder.swift
-//
+//  Builder.swift
+//  pointfree-html
 //
 //  Created by Point-Free, Inc
 //
 
-public import Rendering
-
-/// A result builder that enables declarative HTML construction with a SwiftUI-like syntax.
+/// A result builder that enables declarative content construction with a SwiftUI-like syntax.
 ///
 /// `HTMLBuilder` provides a DSL for constructing HTML content in Swift code.
 /// It transforms multiple statements in a closure into a single HTML value,

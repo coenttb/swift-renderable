@@ -50,7 +50,7 @@ struct AsyncTests {
         let results = await withTaskGroup(of: String.self) { group in
             for i in 0..<10 {
                 group.addTask {
-                    let html = HTMLDocument {
+                    let html = Document {
                         tag("div") {
                             HTMLText("Item \(i)")
                         }
@@ -160,7 +160,7 @@ struct AsyncTests {
             }
         }
 
-        let document = HTMLDocument {
+        let document = Document {
             StyledMainHTML()
         }
 

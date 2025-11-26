@@ -17,7 +17,7 @@ import Rendering
 ///
 /// Example:
 /// ```swift
-/// struct MyDocument: HTMLDocument {
+/// struct MyDocument: Document {
 ///     var head: some HTML {
 ///         title { "My Web Page" }
 ///         meta().charset("utf-8")
@@ -35,7 +35,7 @@ import Rendering
 public protocol HTMLDocumentProtocol: HTML {
     /// The type of HTML content for the document's head section.
     associatedtype Head: HTML
-
+    
     /// The head section of the HTML document.
     ///
     /// This property defines metadata, title, stylesheets, scripts, and other
@@ -49,29 +49,91 @@ extension HTMLDocumentProtocol {
     ///
     /// Documents require two-phase rendering:
     /// 1. Render body to collect styles
-    /// 2. Stream document with collected styles
+    /// 2. Write document structure with collected styles
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,
         into buffer: inout Buffer,
         context: inout HTMLContext
     ) where Buffer.Element == UInt8 {
-        // Phase 1: Render body to collect styles
-        var bodyBuffer: [UInt8] = []
-        var bodyContext = HTMLContext(context.rendering)
-        Content._render(html.body, into: &bodyBuffer, context: &bodyContext)
+        let rendering = context.rendering
+        let indent = rendering.indentation
 
+        // Phase 1: Render body to collect styles
+        // Body content is 2 levels deep: html > body > content
+        var bodyBuffer: [UInt8] = []
+        var bodyContext = HTMLContext(rendering)
+        bodyContext.currentIndentation = indent + indent
+        Content._render(html.body, into: &bodyBuffer, context: &bodyContext)
+        
         // Transfer collected styles to main context
         for (key, value) in bodyContext.styles {
             context.styles[key] = value
         }
 
-        // Phase 2: Render document structure
-        let doc = Document(
-            head: html.head,
-            stylesheetBytes: bodyContext.stylesheetBytes,
-            bodyBytes: ContiguousArray(bodyBuffer)
-        )
-        Document._render(doc, into: &buffer, context: &context)
+        // Phase 2: Write document structure directly (more performant than building HTML tree)
+        // Match HTMLElement's block-level rendering behavior for consistent output
+        let newline = rendering.newline
+
+        // <!doctype html>
+        buffer.append(contentsOf: [UInt8].doctypeHTML)
+        
+        // <html> (block element - newline before, indent content)
+        buffer.append(contentsOf: newline)
+        buffer.append(contentsOf: [UInt8].htmlOpen)
+        
+        // <head> (block element inside html - newline + indent before)
+        buffer.append(contentsOf: newline)
+        buffer.append(contentsOf: indent)
+        buffer.append(contentsOf: [UInt8].headOpen)
+        
+        // Render head content (with increased indentation)
+        let oldIndentation = context.currentIndentation
+        context.currentIndentation = indent + indent
+        Head._render(html.head, into: &buffer, context: &context)
+        
+        // Add collected styles if any (as block element inside head)
+        // Style content indentation: 3 levels deep (html > head > style content)
+        let styleContentIndent = indent + indent + indent
+        let stylesheetBytes = bodyContext.stylesheetBytes(baseIndentation: styleContentIndent)
+        if !bodyContext.styles.isEmpty {
+            // <style> tag as block element: newline + indent before
+            buffer.append(contentsOf: newline)
+            buffer.append(contentsOf: indent)
+            buffer.append(contentsOf: indent)
+            buffer.append(contentsOf: [UInt8].styleOpen)
+            // Stylesheet content (starts with newline, has proper indentation)
+            buffer.append(contentsOf: stylesheetBytes)
+            // </style> as block element: newline + indent before closing
+            buffer.append(contentsOf: newline)
+            buffer.append(contentsOf: indent)
+            buffer.append(contentsOf: indent)
+            buffer.append(contentsOf: [UInt8].styleClose)
+        }
+        
+        // </head> (newline + indent before closing)
+        buffer.append(contentsOf: newline)
+        buffer.append(contentsOf: indent)
+        buffer.append(contentsOf: [UInt8].headClose)
+        
+        // <body> (block element inside html)
+        buffer.append(contentsOf: newline)
+        buffer.append(contentsOf: indent)
+        buffer.append(contentsOf: [UInt8].bodyOpen)
+        
+        // Append pre-rendered body bytes (already has proper indentation)
+        buffer.append(contentsOf: bodyBuffer)
+        
+        // </body> (newline + indent before closing)
+        buffer.append(contentsOf: newline)
+        buffer.append(contentsOf: indent)
+        buffer.append(contentsOf: [UInt8].bodyClose)
+        
+        // </html> (newline before closing, no indent since it's root)
+        buffer.append(contentsOf: newline)
+        buffer.append(contentsOf: [UInt8].htmlClose)
+        
+        // Restore indentation
+        context.currentIndentation = oldIndentation
     }
 }
 
@@ -91,7 +153,7 @@ extension HTMLDocumentProtocol where Self: Sendable {
     ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
         AsyncThrowingStream(document: self, chunkSize: chunkSize, configuration: configuration)
     }
-
+    
     /// Stream this HTML document as async byte chunks (non-throwing).
     ///
     /// Convenience method that delegates to `AsyncStream.init(document:chunkSize:configuration:)`.
@@ -122,7 +184,7 @@ extension HTMLDocumentProtocol {
     ) async -> [UInt8] {
         await [UInt8](document: self, configuration: configuration)
     }
-
+    
     /// Asynchronously render this document to a String.
     ///
     /// Convenience method that delegates to `String.init(document:configuration:)`.
@@ -136,8 +198,6 @@ extension HTMLDocumentProtocol {
         await String(document: self, configuration: configuration)
     }
 }
-
-
 
 extension HTMLDocumentProtocol {
     /// Renders this HTML document to bytes.

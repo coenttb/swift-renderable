@@ -32,7 +32,7 @@ struct HTMLForEachTests {
             }
         }
 
-        let rendered = try String(HTMLDocument { forEach })
+        let rendered = try String(Document { forEach })
         #expect(rendered.contains("<li>first</li>"))
         #expect(rendered.contains("<li>second</li>"))
         #expect(rendered.contains("<li>third</li>"))
@@ -71,7 +71,7 @@ struct HTMLForEachTests {
             }
         }
 
-        let rendered = try String(HTMLDocument { list })
+        let rendered = try String(Document { list })
         #expect(rendered.contains("<ul>"))
         #expect(rendered.contains("<li>item1</li>"))
         #expect(rendered.contains("<li>item2</li>"))
@@ -102,7 +102,7 @@ struct HTMLForEachTests {
             }
         }
 
-        let rendered = try String(HTMLDocument { forEach })
+        let rendered = try String(Document { forEach })
         #expect(rendered.contains("<h3>First</h3>"))
         #expect(rendered.contains("<p>First description</p>"))
         #expect(rendered.contains("<h3>Second</h3>"))
@@ -120,7 +120,7 @@ extension `Snapshot Tests` {
             let items = ["Home", "About", "Services", "Contact"]
 
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("nav") {
                         tag("ul") {
                             HTMLForEach(items) { item in
@@ -141,23 +141,20 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <nav>
-                  <ul class="navigation">
-                    <li><a href="#home">Home</a>
-                    </li>
-                    <li><a href="#about">About</a>
-                    </li>
-                    <li><a href="#services">Services</a>
-                    </li>
-                    <li><a href="#contact">Contact</a>
-                    </li>
-                  </ul>
-                </nav>
+                    <nav>
+                      <ul class="navigation">
+                        <li><a href="#home">Home</a>
+                        </li>
+                        <li><a href="#about">About</a>
+                        </li>
+                        <li><a href="#services">Services</a>
+                        </li>
+                        <li><a href="#contact">Contact</a>
+                        </li>
+                      </ul>
+                    </nav>
                   </body>
                 </html>
                 """
@@ -186,7 +183,7 @@ extension `Snapshot Tests` {
             ]
 
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         tag("h1") {
                             HTMLText("Our Products")
@@ -216,31 +213,28 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <div class="products-container">
-                  <h1>Our Products
-                  </h1>
-                  <article class="product-card">
-                    <h2>Widget A
-                    </h2>
-                    <p class="price">Price: $19.99
-                    </p>
-                    <p class="description">Essential widget for daily use
-                    </p>
-                  </article>
-                  <article class="product-card">
-                    <h2>Widget B
-                    </h2>
-                    <p class="price">Price: $29.99
-                    </p>
-                    <p class="description">Premium widget with extra features
-                    </p>
-                  </article>
-                </div>
+                    <div class="products-container">
+                      <h1>Our Products
+                      </h1>
+                      <article class="product-card">
+                        <h2>Widget A
+                        </h2>
+                        <p class="price">Price: $19.99
+                        </p>
+                        <p class="description">Essential widget for daily use
+                        </p>
+                      </article>
+                      <article class="product-card">
+                        <h2>Widget B
+                        </h2>
+                        <p class="price">Price: $29.99
+                        </p>
+                        <p class="description">Premium widget with extra features
+                        </p>
+                      </article>
+                    </div>
                   </body>
                 </html>
                 """

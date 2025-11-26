@@ -18,7 +18,7 @@ struct HTMLTagTests {
             HTMLText("content")
         }
 
-        let rendered = try String(HTMLDocument { tag })
+        let rendered = try String(Document { tag })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("content"))
         #expect(rendered.contains("</div>"))
@@ -30,7 +30,7 @@ struct HTMLTagTests {
             "text content"
         }
 
-        let rendered = try String(HTMLDocument { textTag })
+        let rendered = try String(Document { textTag })
         #expect(rendered.contains("<span>"))
         #expect(rendered.contains("text content"))
         #expect(rendered.contains("</span>"))
@@ -40,7 +40,7 @@ struct HTMLTagTests {
     func htmlVoidTag() throws {
         let voidTag = HTMLVoidTag("br")()
 
-        let rendered = try String(HTMLDocument { voidTag })
+        let rendered = try String(Document { voidTag })
         #expect(rendered.contains("<br"))
         #expect(rendered.contains("/>") || rendered.contains(">"))
         #expect(!rendered.contains("</br>"))
@@ -52,7 +52,7 @@ struct HTMLTagTests {
             .attribute("type", "text")
             .attribute("name", "username")
 
-        let rendered = try String(HTMLDocument { voidTag })
+        let rendered = try String(Document { voidTag })
         #expect(rendered.contains("<input"))
         #expect(rendered.contains("type=\"text\""))
         #expect(rendered.contains("name=\"username\""))
@@ -67,7 +67,7 @@ struct HTMLTagTests {
             }
         }
 
-        let rendered = try String(HTMLDocument { outerTag })
+        let rendered = try String(Document { outerTag })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("<p>"))
         #expect(rendered.contains("nested paragraph"))
@@ -79,7 +79,7 @@ struct HTMLTagTests {
     func emptyTag() throws {
         let tag = HTMLTag("div")()
 
-        let rendered = try String(HTMLDocument { tag })
+        let rendered = try String(Document { tag })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("</div>"))
     }
@@ -93,7 +93,7 @@ extension `Snapshot Tests` {
         @Test("HTMLTag semantic structure snapshot")
         func semanticStructureSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("main") {
                         HTMLTag("header") {
                             HTMLTag("nav") {
@@ -131,31 +131,28 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <main>
-                  <header>
-                    <nav>
-                      <h1>Site Navigation
-                      </h1>
-                      <ul>
-                        <li><a>Home</a>
-                        </li>
-                        <li><a>About</a>
-                        </li>
-                      </ul>
-                    </nav>
-                  </header>
-                  <section>
-                    <h2>Main Content
-                    </h2>
-                    <p>This demonstrates semantic HTML structure using HTMLTag components.
-                    </p>
-                  </section>
-                </main>
+                    <main>
+                      <header>
+                        <nav>
+                          <h1>Site Navigation
+                          </h1>
+                          <ul>
+                            <li><a>Home</a>
+                            </li>
+                            <li><a>About</a>
+                            </li>
+                          </ul>
+                        </nav>
+                      </header>
+                      <section>
+                        <h2>Main Content
+                        </h2>
+                        <p>This demonstrates semantic HTML structure using HTMLTag components.
+                        </p>
+                      </section>
+                    </main>
                   </body>
                 </html>
                 """
@@ -165,7 +162,7 @@ extension `Snapshot Tests` {
         @Test("HTMLVoidTag form elements snapshot")
         func voidTagFormSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     HTMLTag("form") {
                         HTMLTag("fieldset") {
                             HTMLTextTag("legend") {
@@ -200,18 +197,15 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <form method="post">
-                  <fieldset>
-                    <legend>Contact Information
-                    </legend><input type="text" name="name" placeholder="Your Name"><br><input type="email" name="email" placeholder="Your Email">
-                    <hr><button type="submit">Submit Form</button>
-                  </fieldset>
-                </form>
+                    <form method="post">
+                      <fieldset>
+                        <legend>Contact Information
+                        </legend><input type="text" name="name" placeholder="Your Name"><br><input type="email" name="email" placeholder="Your Email">
+                        <hr><button type="submit">Submit Form</button>
+                      </fieldset>
+                    </form>
                   </body>
                 </html>
                 """

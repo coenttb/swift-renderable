@@ -14,7 +14,7 @@ struct HTMLDocumentProtocolTests {
 
     @Test("Basic HTML document structure")
     func basicDocumentStructure() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Body content")
             }
@@ -45,7 +45,7 @@ extension `Snapshot Tests` {
         @Test("Complete HTML document snapshot")
         func completeDocumentSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("main") {
                         tag("section") {
                             tag("h1") {
@@ -89,29 +89,26 @@ extension `Snapshot Tests` {
                     </title>
                     <meta charset="utf-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <main>
-                  <section>
-                    <h1>Welcome to Our Site
-                    </h1>
-                    <p>This is a complete HTML document with proper structure.
-                    </p>
-                  </section>
-                  <aside>
-                    <h2>Sidebar
-                    </h2>
-                    <ul>
-                      <li>Link 1
-                      </li>
-                      <li>Link 2
-                      </li>
-                    </ul>
-                  </aside>
-                </main>
+                    <main>
+                      <section>
+                        <h1>Welcome to Our Site
+                        </h1>
+                        <p>This is a complete HTML document with proper structure.
+                        </p>
+                      </section>
+                      <aside>
+                        <h2>Sidebar
+                        </h2>
+                        <ul>
+                          <li>Link 1
+                          </li>
+                          <li>Link 2
+                          </li>
+                        </ul>
+                      </aside>
+                    </main>
                   </body>
                 </html>
                 """

@@ -76,8 +76,8 @@ struct HTMLContextRenderingErrorTests {
 
     @Test("String initializer throws on invalid encoding")
     func stringInitializerThrows() throws {
-        // Test that String(HTMLDocument { ... }) works normally
-        let document = HTMLDocument {
+        // Test that String(Document { ... }) works normally
+        let document = Document {
             tag("div") {
                 HTMLText("Valid content")
             }

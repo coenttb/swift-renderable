@@ -77,7 +77,7 @@ struct UInt8ArrayTests {
 
     @Test("[UInt8] async init from document")
     func asyncInitFromDocument() async {
-        let document = HTMLDocument {
+        let document = Document {
             tag("p") {
                 HTMLText("Document content")
             }
@@ -157,7 +157,7 @@ extension `Snapshot Tests` {
         @Test("[UInt8] document rendering snapshot")
         func documentRenderingSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("main") {
                         tag("h1") {
                             HTMLText("Byte Array Test")
@@ -173,17 +173,14 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <main>
-                  <h1>Byte Array Test
-                  </h1>
-                  <p>Testing [UInt8] rendering path
-                  </p>
-                </main>
+                    <main>
+                      <h1>Byte Array Test
+                      </h1>
+                      <p>Testing [UInt8] rendering path
+                      </p>
+                    </main>
                   </body>
                 </html>
                 """

@@ -87,7 +87,7 @@ struct ContiguousArrayUInt8Tests {
 
     @Test("ContiguousArray from HTMLDocument")
     func fromHTMLDocument() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("p") {
                 HTMLText("Hello")
             }
@@ -195,7 +195,7 @@ extension `Snapshot Tests` {
         @Test("ContiguousArray document rendering snapshot")
         func documentRenderingSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("main") {
                         tag("h1") {
                             HTMLText("ContiguousArray Test")
@@ -211,17 +211,14 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <main>
-                  <h1>ContiguousArray Test
-                  </h1>
-                  <p>Testing canonical byte transformation
-                  </p>
-                </main>
+                    <main>
+                      <h1>ContiguousArray Test
+                      </h1>
+                      <p>Testing canonical byte transformation
+                      </p>
+                    </main>
                   </body>
                 </html>
                 """

@@ -84,7 +84,7 @@ extension `Snapshot Tests` {
             let showAlternate = true
 
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         tag("h1") {
                             HTMLText("Content Display")
@@ -118,19 +118,16 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <div class="container">
-                  <h1>Content Display
-                  </h1>
-                  <aside>Alternate content
-                  </aside>
-                  <footer>Footer always shows
-                  </footer>
-                </div>
+                    <div class="container">
+                      <h1>Content Display
+                      </h1>
+                      <aside>Alternate content
+                      </aside>
+                      <footer>Footer always shows
+                      </footer>
+                    </div>
                   </body>
                 </html>
                 """
@@ -140,7 +137,7 @@ extension `Snapshot Tests` {
         @Test("Empty mixed with content snapshot")
         func emptyMixedContentSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("article") {
                         tag("h1") {
                             HTMLText("Article Title")
@@ -167,19 +164,16 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <article>
-                  <h1>Article Title
-                  </h1>
-                  <p>First paragraph of content.
-                  </p>
-                  <p>Second paragraph of content.
-                  </p>
-                </article>
+                    <article>
+                      <h1>Article Title
+                      </h1>
+                      <p>First paragraph of content.
+                      </p>
+                      <p>Second paragraph of content.
+                      </p>
+                    </article>
                   </body>
                 </html>
                 """

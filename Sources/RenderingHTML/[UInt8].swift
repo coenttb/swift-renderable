@@ -72,7 +72,7 @@ extension [UInt8] {
     /// ## Example
     ///
     /// ```swift
-    /// let document = HTMLDocument {
+    /// let document = Document {
     ///     div { h1 { "Hello!" } }
     /// }
     ///

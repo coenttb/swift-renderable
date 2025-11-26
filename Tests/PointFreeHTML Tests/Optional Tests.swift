@@ -104,7 +104,7 @@ struct OptionalTests {
         // Since Optional<HTML> conforms to HTML but doesn't chain .attribute,
         // we test by rendering the base element with attributes first
         if let element = optionalElement?.attribute("class", "highlight") {
-            let rendered = try String(HTMLDocument { element })
+            let rendered = try String(Document { element })
             #expect(rendered.contains("class=\"highlight\""))
         }
     }
@@ -166,7 +166,7 @@ struct OptionalTests {
         )
 
         if let element = optionalElement {
-            let rendered = try String(HTMLDocument { element })
+            let rendered = try String(Document { element })
             #expect(rendered.contains("color:blue"))
         } else {
             Issue.record("Optional should not be nil")
@@ -198,7 +198,7 @@ extension `Snapshot Tests` {
             }
 
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     OptionalList(items: ["First", nil, "Third", "Fourth", nil])
                 },
                 as: .html
@@ -207,19 +207,16 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <ul>
-                  <li>First
-                  </li>
-                  <li>Third
-                  </li>
-                  <li>Fourth
-                  </li>
-                </ul>
+                    <ul>
+                      <li>First
+                      </li>
+                      <li>Third
+                      </li>
+                      <li>Fourth
+                      </li>
+                    </ul>
                   </body>
                 </html>
                 """

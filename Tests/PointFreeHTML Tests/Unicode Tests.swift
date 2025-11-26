@@ -324,7 +324,7 @@ extension `Snapshot Tests` {
         @Test("Multilingual page snapshot")
         func multilingualPageSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("article") {
                         tag("h1") { HTMLText("Welcome 欢迎 مرحبا") }
                         tag("p") { HTMLText("This is English.") }
@@ -338,21 +338,18 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <article>
-                  <h1>Welcome 欢迎 مرحبا
-                  </h1>
-                  <p>This is English.
-                  </p>
-                  <p>これは日本語です。
-                  </p>
-                  <p>هذه اللغة العربية.
-                  </p>
-                </article>
+                    <article>
+                      <h1>Welcome 欢迎 مرحبا
+                      </h1>
+                      <p>This is English.
+                      </p>
+                      <p>これは日本語です。
+                      </p>
+                      <p>هذه اللغة العربية.
+                      </p>
+                    </article>
                   </body>
                 </html>
                 """

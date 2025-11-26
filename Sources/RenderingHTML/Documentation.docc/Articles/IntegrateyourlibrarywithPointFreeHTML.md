@@ -386,7 +386,7 @@ import HTMLElementTypes
 import CSSTypes
 import PointFreeHTML
 
-let contactPage = HTMLDocument {
+let contactPage = Document {
     div {
         h1 { "Get in touch" }
         

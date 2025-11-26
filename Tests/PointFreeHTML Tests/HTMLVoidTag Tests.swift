@@ -86,7 +86,7 @@ struct HTMLVoidTagTests {
             .attribute("src", "/image.jpg")
             .attribute("alt", "Description")
 
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         #expect(rendered.contains("<img"))
         #expect(rendered.contains("src=\"/image.jpg\""))
         #expect(rendered.contains("alt=\"Description\""))
@@ -101,7 +101,7 @@ struct HTMLVoidTagTests {
             .attribute("name", "username")
             .attribute("placeholder", "Enter username")
 
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         #expect(rendered.contains("<input"))
         #expect(rendered.contains("type=\"text\""))
         #expect(rendered.contains("name=\"username\""))
@@ -113,7 +113,7 @@ struct HTMLVoidTagTests {
         let element = meta()
             .attribute("charset", "utf-8")
 
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         #expect(rendered.contains("<meta"))
         #expect(rendered.contains("charset=\"utf-8\""))
     }
@@ -125,7 +125,7 @@ struct HTMLVoidTagTests {
             .attribute("rel", "stylesheet")
             .attribute("href", "/styles.css")
 
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         #expect(rendered.contains("<link"))
         #expect(rendered.contains("rel=\"stylesheet\""))
         #expect(rendered.contains("href=\"/styles.css\""))
@@ -143,7 +143,7 @@ struct HTMLVoidTagTests {
             .attribute("required", "")
             .attribute("placeholder", "your@email.com")
 
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         #expect(rendered.contains("type=\"email\""))
         #expect(rendered.contains("name=\"email\""))
         #expect(rendered.contains("id=\"email-field\""))
@@ -168,7 +168,7 @@ struct HTMLVoidTagTests {
             input().attribute("type", "email").attribute("name", "email")
         }
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("<form>"))
         #expect(rendered.contains("<br>"))
         #expect(rendered.contains("<input"))
@@ -179,7 +179,7 @@ struct HTMLVoidTagTests {
         let meta = HTMLVoidTag("meta")
         let link = HTMLVoidTag("link")
 
-        let document = HTMLDocument {
+        let document = Document {
             Empty()
         } head: {
             meta().attribute("charset", "utf-8")
@@ -205,7 +205,7 @@ extension `Snapshot Tests` {
             let br = HTMLVoidTag("br")
 
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("form") {
                         tag("fieldset") {
                             tag("legend") { HTMLText("Contact Form") }
@@ -231,17 +231,14 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <form method="post">
-                  <fieldset>
-                    <legend>Contact Form
-                    </legend><label>Name:</label><br><input type="text" name="name"><br><br><label>Email:</label><br><input type="email" name="email">
-                  </fieldset>
-                </form>
+                    <form method="post">
+                      <fieldset>
+                        <legend>Contact Form
+                        </legend><label>Name:</label><br><input type="text" name="name"><br><br><label>Email:</label><br><input type="email" name="email">
+                      </fieldset>
+                    </form>
                   </body>
                 </html>
                 """

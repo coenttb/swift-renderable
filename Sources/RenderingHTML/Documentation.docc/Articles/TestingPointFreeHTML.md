@@ -68,7 +68,7 @@ A snapshot test works well here:
 @Test("HTML element with attributes and styles")
 func anchorElementWithStyling() {
     assertInlineSnapshot(
-        of: HTMLDocument {
+        of: Document {
             Anchor(href: "#") {
                 "Click here!"
             }

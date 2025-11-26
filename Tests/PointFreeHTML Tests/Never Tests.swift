@@ -86,7 +86,7 @@ struct NeverTests {
         let raw = HTMLRaw("raw")
 
         #expect(usesHTML(text) == "HTMLText")
-        #expect(usesHTML(empty) == "Empty")  // Empty is typealias for Empty<HTMLContext>
-        #expect(usesHTML(raw) == "HTMLRaw")
+        #expect(usesHTML(empty) == "Empty")
+        #expect(usesHTML(raw) == "Raw")  // HTMLRaw is typealias for Raw
     }
 }

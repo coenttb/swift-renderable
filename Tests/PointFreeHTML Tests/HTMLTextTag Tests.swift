@@ -109,7 +109,7 @@ struct HTMLTextTagTests {
             .attribute("value", "1")
             .attribute("selected", "")
 
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         #expect(rendered.contains("value=\"1\""))
         #expect(rendered.contains("selected"))
         #expect(rendered.contains("First"))
@@ -119,7 +119,7 @@ struct HTMLTextTagTests {
 
     @Test("HTMLTextTag in head")
     func inHead() throws {
-        let document = HTMLDocument {
+        let document = Document {
             Empty()
         } head: {
             HTMLTextTag("title")("Document Title")
@@ -140,7 +140,7 @@ struct HTMLTextTagTests {
             option("Option 3").attribute("value", "3")
         }
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
         #expect(rendered.contains("<select>"))
         #expect(rendered.contains("<option value=\"1\">Option 1</option>"))
         #expect(rendered.contains("<option value=\"2\">Option 2</option>"))
@@ -159,7 +159,7 @@ extension `Snapshot Tests` {
             let label = HTMLTextTag("label")
 
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("form") {
                         tag("div") {
                             label("Country:")
@@ -180,21 +180,18 @@ extension `Snapshot Tests` {
                 <!doctype html>
                 <html>
                   <head>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <form>
-                  <div><label for="country">Country:</label><select id="country" name="country">
-                    <option value="us">USA
-                    </option>
-                    <option value="uk">UK
-                    </option>
-                    <option value="ca">Canada
-                    </option></select>
-                  </div>
-                </form>
+                    <form>
+                      <div><label for="country">Country:</label><select id="country" name="country">
+                        <option value="us">USA
+                        </option>
+                        <option value="uk">UK
+                        </option>
+                        <option value="ca">Canada
+                        </option></select>
+                      </div>
+                    </form>
                   </body>
                 </html>
                 """

@@ -126,7 +126,7 @@ struct RenderingTests {
 
     @Test("Document rendering")
     func documentRendering() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("h1") {
                 HTMLText("Hello World")
             }

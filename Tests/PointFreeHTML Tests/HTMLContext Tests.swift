@@ -181,7 +181,7 @@ extension `Snapshot Tests` {
         func stylesheetRenderingSnapshot() {
             // This tests the stylesheet generation through actual rendering
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         HTMLText("Styled content")
                     }
@@ -195,14 +195,13 @@ extension `Snapshot Tests` {
                 <html>
                   <head>
                     <style>
-                .color-0{color:red}
-                .padding-1{padding:10px}
-
+                      .color-0{color:red}
+                      .padding-1{padding:10px}
                     </style>
                   </head>
                   <body>
-                <div class="color-0 padding-1">Styled content
-                </div>
+                    <div class="color-0 padding-1">Styled content
+                    </div>
                   </body>
                 </html>
                 """

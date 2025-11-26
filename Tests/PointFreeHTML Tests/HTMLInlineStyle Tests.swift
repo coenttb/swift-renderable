@@ -19,7 +19,7 @@ struct HTMLInlineStyleTests {
         }
         .inlineStyle("color", "red")
 
-        let rendered = try String(HTMLDocument { styledElement })
+        let rendered = try String(Document { styledElement })
         #expect(rendered.contains("color:red"))
         #expect(rendered.contains("styled content"))
     }
@@ -33,7 +33,7 @@ struct HTMLInlineStyleTests {
         .inlineStyle("background-color", "blue")
         .inlineStyle("font-size", "16px")
 
-        let rendered = try String(HTMLDocument { styledElement })
+        let rendered = try String(Document { styledElement })
         #expect(rendered.contains("color:red"))
         #expect(rendered.contains("background-color:blue"))
         #expect(rendered.contains("font-size:16px"))
@@ -47,7 +47,7 @@ struct HTMLInlineStyleTests {
         .inlineStyle("margin", "10px")
         .inlineStyle("padding", "5px")
 
-        let rendered = try String(HTMLDocument { styledElement })
+        let rendered = try String(Document { styledElement })
         #expect(rendered.contains("margin:10px"))
         #expect(rendered.contains("padding:5px"))
     }
@@ -60,7 +60,7 @@ struct HTMLInlineStyleTests {
         .attribute("class", "test-class")
         .inlineStyle("display", "flex")
 
-        let rendered = try String(HTMLDocument { element })
+        let rendered = try String(Document { element })
         #expect(rendered.contains("class=\"test-class\""))
         #expect(rendered.contains("display:flex"))
     }
@@ -72,7 +72,7 @@ struct HTMLInlineStyleTests {
         }
         .inlineStyle("color", "")
 
-        let rendered = try String(HTMLDocument { styledElement })
+        let rendered = try String(Document { styledElement })
         // Empty values might be omitted or rendered as empty
         #expect(rendered.contains("content"))
     }
@@ -83,10 +83,13 @@ struct HTMLInlineStyleTests {
 extension `Snapshot Tests` {
     @Suite
     struct HTMLInlineStyleSnapshotTests {
-        @Test("Basic inline style snapshot")
+        @Test(
+            "Basic inline style snapshot",
+            .snapshots(record: .failed)
+        )
         func basicInlineStyleSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         HTMLText("Styled content")
                     }
@@ -100,14 +103,13 @@ extension `Snapshot Tests` {
                 <html>
                   <head>
                     <style>
-                .color-0{color:red}
-                .font-size-1{font-size:18px}
-
+                      .color-0{color:red}
+                      .font-size-1{font-size:18px}
                     </style>
                   </head>
                   <body>
-                <div class="color-0 font-size-1">Styled content
-                </div>
+                    <div class="color-0 font-size-1">Styled content
+                    </div>
                   </body>
                 </html>
                 """
@@ -117,7 +119,7 @@ extension `Snapshot Tests` {
         @Test("Complex styling snapshot")
         func complexStylingSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         tag("h1") {
                             HTMLText("Welcome")
@@ -141,21 +143,20 @@ extension `Snapshot Tests` {
                 <html>
                   <head>
                     <style>
-                .color-0{color:navy}
-                .font-family-1{font-family:Arial, sans-serif}
-                .color-2{color:#333}
-                .padding-3{padding:10px}
-                .background-color-4{background-color:#f5f5f5}
-
+                      .color-0{color:navy}
+                      .font-family-1{font-family:Arial, sans-serif}
+                      .color-2{color:#333}
+                      .padding-3{padding:10px}
+                      .background-color-4{background-color:#f5f5f5}
                     </style>
                   </head>
                   <body>
-                <div class="container">
-                  <h1 class="color-0 font-family-1">Welcome
-                  </h1>
-                  <p class="color-2 padding-3 background-color-4">This paragraph has styling.
-                  </p>
-                </div>
+                    <div class="container">
+                      <h1 class="color-0 font-family-1">Welcome
+                      </h1>
+                      <p class="color-2 padding-3 background-color-4">This paragraph has styling.
+                      </p>
+                    </div>
                   </body>
                 </html>
                 """
@@ -165,7 +166,7 @@ extension `Snapshot Tests` {
         @Test("Style with attributes snapshot")
         func styleWithAttributesSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument {
+                of: Document {
                     tag("div") {
                         tag("a") {
                             HTMLText("Styled link")
@@ -183,15 +184,14 @@ extension `Snapshot Tests` {
                 <html>
                   <head>
                     <style>
-                .padding-0{padding:20px}
-                .color-1{color:#007bff}
-                .text-decoration-2{text-decoration:none}
-
+                      .padding-0{padding:20px}
+                      .color-1{color:#007bff}
+                      .text-decoration-2{text-decoration:none}
                     </style>
                   </head>
                   <body>
-                <div class="padding-0"><a class="color-1 text-decoration-2" href="https://example.com">Styled link</a>
-                </div>
+                    <div class="padding-0"><a class="color-1 text-decoration-2" href="https://example.com">Styled link</a>
+                    </div>
                   </body>
                 </html>
                 """

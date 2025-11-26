@@ -21,7 +21,7 @@ struct DocumentTests {
 
     @Test("Document produces valid HTML structure")
     func validHTMLStructure() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Content")
             }
@@ -50,7 +50,7 @@ struct DocumentTests {
 
     @Test("Document includes style tag when styles present")
     func includesStyleTag() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Content")
             }
@@ -66,7 +66,7 @@ struct DocumentTests {
 
     @Test("Document omits style tag when no styles")
     func omitsStyleTagWhenNoStyles() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Content")
             }
@@ -81,7 +81,7 @@ struct DocumentTests {
 
     @Test("Document renders body content")
     func rendersBodyContent() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("h1") {
                 HTMLText("Welcome")
             }
@@ -98,7 +98,7 @@ struct DocumentTests {
 
     @Test("Document preserves body attributes")
     func preservesBodyAttributes() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Content")
             }
@@ -116,7 +116,7 @@ struct DocumentTests {
 
     @Test("Document collects styles in stylesheet")
     func collectsStylesInStylesheet() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Styled")
             }
@@ -132,7 +132,7 @@ struct DocumentTests {
 
     @Test("Document collects multiple element styles")
     func collectsMultipleElementStyles() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("First")
             }
@@ -154,7 +154,7 @@ struct DocumentTests {
 
     @Test("Document elements in correct order")
     func elementsInCorrectOrder() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Content")
             }
@@ -184,7 +184,7 @@ struct DocumentTests {
 
     @Test("Document with empty body")
     func emptyBody() throws {
-        let document = HTMLDocument {
+        let document = Document {
             Empty()
         }
 
@@ -213,7 +213,7 @@ struct DocumentTests {
 
     @Test("Document with complex nested content")
     func complexNestedContent() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("header") {
                 tag("nav") {
                     tag("ul") {
@@ -244,7 +244,7 @@ struct DocumentTests {
 
     @Test("Document with media query styles")
     func mediaQueryStyles() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 HTMLText("Responsive")
             }
@@ -293,17 +293,14 @@ extension `Snapshot Tests` {
                     <title>Test Page
                     </title>
                     <meta charset="utf-8">
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <main>
-                  <h1>Hello, World!
-                  </h1>
-                  <p>This is a test document.
-                  </p>
-                </main>
+                    <main>
+                      <h1>Hello, World!
+                      </h1>
+                      <p>This is a test document.
+                      </p>
+                    </main>
                   </body>
                 </html>
                 """

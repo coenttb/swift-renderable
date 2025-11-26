@@ -123,7 +123,7 @@ struct IntegrationTests {
         .inlineStyle("width", "50%", atRule: .init(rawValue: "@media (min-width: 768px)"), selector: nil, pseudo: nil)
         .inlineStyle("width", "33%", atRule: .init(rawValue: "@media (min-width: 1024px)"), selector: nil, pseudo: nil)
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
 
         #expect(rendered.contains("width:100%"))
         #expect(rendered.contains("@media (min-width: 768px)"))
@@ -140,7 +140,7 @@ struct IntegrationTests {
         .inlineStyle("color", "red", pseudo: .hover)
         .inlineStyle("text-decoration", "underline", pseudo: .hover)
 
-        let rendered = try String(HTMLDocument { html })
+        let rendered = try String(Document { html })
 
         #expect(rendered.contains("color:blue"))
         #expect(rendered.contains(":hover"))
@@ -310,7 +310,7 @@ struct IntegrationTests {
 
     @Test("Email configuration applies to full document")
     func emailConfiguration() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 tag("p") { HTMLText("Email content") }
                     .inlineStyle("color", "black")
@@ -327,7 +327,7 @@ struct IntegrationTests {
 
     @Test("Pretty configuration produces formatted output")
     func prettyConfiguration() throws {
-        let document = HTMLDocument {
+        let document = Document {
             tag("div") {
                 tag("p") { HTMLText("Pretty printed") }
             }
@@ -427,25 +427,22 @@ extension `Snapshot Tests` {
                   <head>
                     <title>Integration Test
                     </title>
-                    <style>
-
-                    </style>
                   </head>
                   <body>
-                <header>
-                  <h1>Welcome
-                  </h1>
-                </header>
-                <main>
-                  <article>
-                    <h2>Article Title
-                    </h2>
-                    <p>Article content here.
-                    </p>
-                  </article>
-                </main>
-                <footer>Footer
-                </footer>
+                    <header>
+                      <h1>Welcome
+                      </h1>
+                    </header>
+                    <main>
+                      <article>
+                        <h2>Article Title
+                        </h2>
+                        <p>Article content here.
+                        </p>
+                      </article>
+                    </main>
+                    <footer>Footer
+                    </footer>
                   </body>
                 </html>
                 """

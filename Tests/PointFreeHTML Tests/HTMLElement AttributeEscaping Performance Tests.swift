@@ -20,7 +20,7 @@ extension `Performance Tests` {
         func `fast path - simple attributes 10K renders`() {
             for _ in 0..<10_000 {
                 _ = try! String(
-                    HTMLDocument {
+                    Document {
                         tag("div")
                             .attribute("id", "simple-id")
                             .attribute("class", "container")
@@ -34,7 +34,7 @@ extension `Performance Tests` {
         func `fast path - many simple attributes 1K renders`() {
             for _ in 0..<1_000 {
                 _ = try! String(
-                    HTMLDocument {
+                    Document {
                         tag("input")
                             .attribute("type", "text")
                             .attribute("name", "username")
@@ -51,7 +51,7 @@ extension `Performance Tests` {
         func `fast path - large document simple attributes`() {
             for _ in 0..<100 {
                 _ = try! String(
-                    HTMLDocument {
+                    Document {
                         tag("div") {
                             for i in 0..<100 {
                                 tag("div")
@@ -71,7 +71,7 @@ extension `Performance Tests` {
         func `slow path - attributes with quotes 10K renders`() {
             for _ in 0..<10_000 {
                 _ = try! String(
-                    HTMLDocument {
+                    Document {
                         tag("div")
                             .attribute("data-message", "He said \"Hello\"")
                             .attribute("data-alt", "It's working")
@@ -84,7 +84,7 @@ extension `Performance Tests` {
         func `slow path - attributes with HTML entities 10K renders`() {
             for _ in 0..<10_000 {
                 _ = try! String(
-                    HTMLDocument {
+                    Document {
                         tag("a")
                             .attribute("href", "/search?q=foo&bar=baz")
                             .attribute("title", "x < 10 && y > 5")
@@ -97,7 +97,7 @@ extension `Performance Tests` {
         func `slow path - complex escaping 5K renders`() {
             for _ in 0..<5_000 {
                 _ = try! String(
-                    HTMLDocument {
+                    Document {
                         tag("div")
                             .attribute("data-complex", "<tag attr=\"value\" & 'quotes'>")
                             .attribute("data-json", "{\"key\": \"value & more\"}")
@@ -114,7 +114,7 @@ extension `Performance Tests` {
                 if i % 5 < 4 {
                     // Fast path: 80% of operations
                     _ = try! String(
-                        HTMLDocument {
+                        Document {
                             tag("div")
                                 .attribute("id", "simple-id")
                                 .attribute("class", "container")
@@ -123,7 +123,7 @@ extension `Performance Tests` {
                 } else {
                     // Slow path: 20% of operations
                     _ = try! String(
-                        HTMLDocument {
+                        Document {
                             tag("div")
                                 .attribute("data-message", "He said \"Hello\"")
                         }
@@ -138,7 +138,7 @@ extension `Performance Tests` {
         func `baseline - element without attributes 10K renders`() {
             for _ in 0..<10_000 {
                 _ = try! String(
-                    HTMLDocument {
+                    Document {
                         tag("div") {
                             tag("p") { "Hello World" }
                         }
@@ -151,7 +151,7 @@ extension `Performance Tests` {
         func `baseline - empty element with single attribute 10K renders`() {
             for _ in 0..<10_000 {
                 _ = try! String(
-                    HTMLDocument {
+                    Document {
                         tag("div").attribute("id", "test")
                     }
                 )
@@ -164,7 +164,7 @@ extension `Performance Tests` {
         func `real-world - form with mixed attributes 1K renders`() {
             for _ in 0..<1_000 {
                 _ = try! String(
-                    HTMLDocument {
+                    Document {
                         tag("form") {
                             tag("input")
                                 .attribute("type", "text")
@@ -190,7 +190,7 @@ extension `Performance Tests` {
         func `real-world - data table with URLs 500 renders`() {
             for _ in 0..<500 {
                 _ = try! String(
-                    HTMLDocument {
+                    Document {
                         tag("table") {
                             for i in 0..<50 {
                                 tag("tr") {

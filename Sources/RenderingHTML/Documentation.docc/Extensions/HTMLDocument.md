@@ -18,7 +18,7 @@ Unlike basic `HTML` elements, `HTMLDocument` orchestrates the complete document 
 ### Simple Document Creation
 
 ```swift
-let document = HTMLDocument {
+let document = Document {
     // Body content
     div {
         h1 { "Welcome to My Site" }
@@ -91,7 +91,7 @@ Document(
 `HTMLDocument` integrates with Swift Dependencies to access the `HTMLPrinter` configuration:
 
 ```swift
-let document = HTMLDocument {
+let document = Document {
     div { "Content" }
         .inlineStyle("color", "blue")
 }
@@ -110,7 +110,7 @@ withDependencies {
 The document automatically handles stylesheet generation from inline styles:
 
 ```swift
-let styledDocument = HTMLDocument {
+let styledDocument = Document {
     div { "Styled content" }
         .inlineStyle("color", "blue")
         .inlineStyle("font-size", "1.2em")
@@ -155,7 +155,7 @@ The document rendering process is optimized for efficiency:
 ```swift
 // Vapor
 app.get("home") { req in
-    let document = HTMLDocument {
+    let document = Document {
         homePage(for: req.user)
     } head: {
         title { "Home - My App" }
