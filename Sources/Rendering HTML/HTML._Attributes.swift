@@ -69,3 +69,19 @@ extension HTML {
         public var body: Never { fatalError() }
     }
 }
+
+// MARK: - Async Rendering
+
+extension HTML._Attributes: AsyncRendering where Content: AsyncRendering {
+    /// Async renders this HTML element with attributes.
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ html: Self,
+        into stream: Stream,
+        context: inout HTML.Context
+    ) async {
+        let previousValue = context.attributes
+        defer { context.attributes = previousValue }
+        context.attributes.merge(html.attributes, uniquingKeysWith: { $1 })
+        await Content._renderAsync(html.content, into: stream, context: &context)
+    }
+}

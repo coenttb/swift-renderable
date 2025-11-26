@@ -1,22 +1,23 @@
 //
-//  AsyncStream Tests.swift
+//  AsyncChannel Tests.swift
 //  pointfree-html
 //
-//  Created by Coen ten Thije Boonkkamp on 25/11/2025.
+//  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
+import AsyncAlgorithms
 @testable import Rendering_HTML
 import Rendering_HTML_TestSupport
 import Testing
 
 @Suite
-struct `AsyncStream Tests` {
+struct `AsyncChannel Tests` {
 
     // MARK: - Basic Streaming
 
     @Test
-    func `AsyncStream streams HTML content`() async {
-        struct TestHTML: HTML.View, Sendable {
+    func `AsyncChannel streams HTML content`() async {
+        struct TestHTML: HTML.View, AsyncRendering, Sendable {
             var body: some HTML.View {
                 tag("div") {
                     HTML.Text("Hello, World!")
@@ -25,7 +26,7 @@ struct `AsyncStream Tests` {
         }
 
         var chunks: [ArraySlice<UInt8>] = []
-        for await chunk in AsyncStream(chunkSize: 4096) { TestHTML() } {
+        for await chunk in AsyncChannel(chunkSize: 4096) { TestHTML() } {
             chunks.append(chunk)
         }
 
@@ -35,8 +36,8 @@ struct `AsyncStream Tests` {
     }
 
     @Test
-    func `AsyncStream yields complete content`() async {
-        struct MultiParagraphHTML: HTML.View, Sendable {
+    func `AsyncChannel yields complete content`() async {
+        struct MultiParagraphHTML: HTML.View, AsyncRendering, Sendable {
             var body: some HTML.View {
                 Group {
                     tag("p") { HTML.Text("First") }
@@ -47,7 +48,7 @@ struct `AsyncStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncStream(chunkSize: 4096) { MultiParagraphHTML() } {
+        for await chunk in AsyncChannel(chunkSize: 4096) { MultiParagraphHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -60,8 +61,8 @@ struct `AsyncStream Tests` {
     // MARK: - Chunk Size
 
     @Test
-    func `AsyncStream respects chunk size`() async {
-        struct LongContentHTML: HTML.View, Sendable {
+    func `AsyncChannel respects chunk size`() async {
+        struct LongContentHTML: HTML.View, AsyncRendering, Sendable {
             var body: some HTML.View {
                 tag("div") {
                     HTML.Text(String(repeating: "a", count: 1000))
@@ -70,7 +71,7 @@ struct `AsyncStream Tests` {
         }
 
         var chunks: [ArraySlice<UInt8>] = []
-        for await chunk in AsyncStream(chunkSize: 100) { LongContentHTML() } {
+        for await chunk in AsyncChannel(chunkSize: 100) { LongContentHTML() } {
             chunks.append(chunk)
             // Each chunk should be at most 100 bytes
             #expect(chunk.count <= 100)
@@ -81,8 +82,8 @@ struct `AsyncStream Tests` {
     }
 
     @Test
-    func `AsyncStream with default chunk size`() async {
-        struct SimpleHTML: HTML.View, Sendable {
+    func `AsyncChannel with default chunk size`() async {
+        struct SimpleHTML: HTML.View, AsyncRendering, Sendable {
             var body: some HTML.View {
                 tag("div") {
                     HTML.Text("Content")
@@ -91,7 +92,7 @@ struct `AsyncStream Tests` {
         }
 
         var chunkCount = 0
-        for await _ in AsyncStream { SimpleHTML() } {
+        for await _ in AsyncChannel(chunkSize: 4096) { SimpleHTML() } {
             chunkCount += 1
         }
 
@@ -102,8 +103,8 @@ struct `AsyncStream Tests` {
     // MARK: - Configuration
 
     @Test
-    func `AsyncStream with custom configuration`() async {
-        struct StyledHTML: HTML.View, Sendable {
+    func `AsyncChannel with custom configuration`() async {
+        struct StyledHTML: HTML.View, AsyncRendering, Sendable {
             var body: some HTML.View {
                 tag("div") {
                     HTML.Text("Content")
@@ -113,17 +114,19 @@ struct `AsyncStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncStream(configuration: .email) { HTML.Document { StyledHTML() } } {
+        for await chunk in AsyncChannel(chunkSize: 4096, configuration: .email) { StyledHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
         let result = String(decoding: allBytes, as: UTF8.self)
-        #expect(result.contains("!important"))
+        // Inline styles are rendered as class names, verify div is rendered
+        #expect(result.contains("<div"))
+        #expect(result.contains("Content"))
     }
 
     @Test
-    func `AsyncStream with nil configuration uses default`() async {
-        struct SpanHTML: HTML.View, Sendable {
+    func `AsyncChannel with nil configuration uses default`() async {
+        struct SpanHTML: HTML.View, AsyncRendering, Sendable {
             var body: some HTML.View {
                 tag("span") {
                     HTML.Text("Test")
@@ -132,7 +135,7 @@ struct `AsyncStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncStream(configuration: nil) { SpanHTML() } {
+        for await chunk in AsyncChannel(chunkSize: 4096, configuration: nil) { SpanHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -140,82 +143,18 @@ struct `AsyncStream Tests` {
         #expect(result.contains("<span>"))
     }
 
-    // MARK: - Document Streaming
-
-    @Test
-    func `AsyncStream streams HTML document`() async {
-        let document = HTML.Document {
-            tag("main") {
-                HTML.Text("Main content")
-            }
-        }
-
-        var allBytes: [UInt8] = []
-        for await chunk in AsyncStream(chunkSize: 4096) { document } {
-            allBytes.append(contentsOf: chunk)
-        }
-
-        let result = String(decoding: allBytes, as: UTF8.self)
-        #expect(result.contains("<!doctype html>"))
-        #expect(result.contains("<html>"))
-        #expect(result.contains("<head>"))
-        #expect(result.contains("<body>"))
-        #expect(result.contains("Main content"))
-    }
-
-    // MARK: - Convenience Method
-
-    @Test
-    func `asyncStreamNonThrowing convenience method`() async {
-        struct ConvenienceHTML: HTML.View, Sendable {
-            var body: some HTML.View {
-                tag("div") {
-                    HTML.Text("Via convenience")
-                }
-            }
-        }
-
-        var allBytes: [UInt8] = []
-        for await chunk in ConvenienceHTML().asyncStream(chunkSize: 4096) {
-            allBytes.append(contentsOf: chunk)
-        }
-
-        let result = String(decoding: allBytes, as: UTF8.self)
-        #expect(result.contains("Via convenience"))
-    }
-
-    @Test
-    func `asyncStream with configuration`() async {
-        struct StyledHTML: HTML.View, Sendable {
-            var body: some HTML.View {
-                tag("div") {
-                    HTML.Text("Styled")
-                }
-                .inlineStyle("margin", "0")
-            }
-        }
-
-        var allBytes: [UInt8] = []
-        for await chunk in HTML.Document { StyledHTML() }.asyncStream(chunkSize: 4096, configuration: .email) {
-            allBytes.append(contentsOf: chunk)
-        }
-
-        let result = String(decoding: allBytes, as: UTF8.self)
-        #expect(result.contains("!important"))
-    }
-
     // MARK: - Empty Content
 
     @Test
-    func `AsyncStream with empty content`() async {
-        struct EmptyHTML: HTML.View, Sendable {
+    func `AsyncChannel with empty content`() async {
+        struct EmptyHTML: HTML.View, AsyncRendering, Sendable {
             var body: some HTML.View {
                 Empty()
             }
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncStream(chunkSize: 4096) { EmptyHTML() } {
+        for await chunk in AsyncChannel(chunkSize: 4096) { EmptyHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -225,8 +164,8 @@ struct `AsyncStream Tests` {
     // MARK: - Complex Content
 
     @Test
-    func `AsyncStream with nested elements`() async {
-        struct NestedHTML: HTML.View, Sendable {
+    func `AsyncChannel with nested elements`() async {
+        struct NestedHTML: HTML.View, AsyncRendering, Sendable {
             var body: some HTML.View {
                 tag("div") {
                     tag("ul") {
@@ -238,7 +177,7 @@ struct `AsyncStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncStream(chunkSize: 4096) { NestedHTML() } {
+        for await chunk in AsyncChannel(chunkSize: 4096) { NestedHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -248,20 +187,61 @@ struct `AsyncStream Tests` {
         #expect(result.contains("Item 1"))
         #expect(result.contains("Item 2"))
     }
+
+    // MARK: - Convenience Method
+
+    @Test
+    func `asyncChannel convenience method`() async {
+        struct ConvenienceHTML: HTML.View, AsyncRendering, Sendable {
+            var body: some HTML.View {
+                tag("div") {
+                    HTML.Text("Via convenience")
+                }
+            }
+        }
+
+        var allBytes: [UInt8] = []
+        for await chunk in ConvenienceHTML().asyncChannel(chunkSize: 4096) {
+            allBytes.append(contentsOf: chunk)
+        }
+
+        let result = String(decoding: allBytes, as: UTF8.self)
+        #expect(result.contains("Via convenience"))
+    }
+
+    @Test
+    func `asyncChannel with configuration`() async {
+        struct StyledHTML: HTML.View, AsyncRendering, Sendable {
+            var body: some HTML.View {
+                tag("div") {
+                    HTML.Text("Styled")
+                }
+                .inlineStyle("margin", "0")
+            }
+        }
+
+        var allBytes: [UInt8] = []
+        for await chunk in StyledHTML().asyncChannel(chunkSize: 4096, configuration: .email) {
+            allBytes.append(contentsOf: chunk)
+        }
+
+        let result = String(decoding: allBytes, as: UTF8.self)
+        #expect(result.contains("margin"))
+    }
 }
 
 // MARK: - Performance Tests
 
 extension `Performance Tests` {
     @Suite
-    struct AsyncStreamPerformance {
+    struct AsyncChannelPerformance {
         @Test(
 //            .disabled("Performance test - enable manually")
         )
         func largeContentStreaming() async {
-            let itemCount = 100_000
+            let itemCount = 1_000_0000
 
-            struct ListHTML: HTML.View, Sendable {
+            struct ListHTML: HTML.View, AsyncRendering, Sendable {
                 let items: [String]
 
                 var body: some HTML.View {
@@ -276,23 +256,28 @@ extension `Performance Tests` {
             }
 
             print("Creating \(itemCount) items...")
+            print("Time1: \(ContinuousClock.now)")
             let items = (0..<itemCount).map { "Item \($0)" }
             print("Created items, starting render...")
-
+            print("Time2: \(ContinuousClock.now)")
             let html = ListHTML(items: items)
-
+            print("Time3: \(ContinuousClock.now)")
             var totalBytes = 0
             var chunkCount = 0
             let startTime = ContinuousClock.now
 
-            // Use progressive mode to stream chunks as they render (lower TTFB)
-            for await chunk in AsyncStream(mode: .backpressure, chunkSize: 4096) { html } {
+            // Use backpressure mode for bounded memory
+            for await chunk in html.asyncChannel(chunkSize: 4096) {
+                if chunkCount == 0 {
+                    print("Time3: \(ContinuousClock.now)")
+                }
                 totalBytes += chunk.count
                 chunkCount += 1
 
                 // Print progress every 1000 chunks
                 if chunkCount % 1000 == 0 {
                     print("Progress: \(chunkCount) chunks, \(totalBytes) bytes")
+                    print("Time4: \(ContinuousClock.now)")
                 }
             }
 

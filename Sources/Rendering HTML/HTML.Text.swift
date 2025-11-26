@@ -71,3 +71,29 @@ extension HTML.Text: ExpressibleByStringLiteral {
 
 /// Allows HTML text to be created with string interpolation.
 extension HTML.Text: ExpressibleByStringInterpolation {}
+
+// MARK: - Async Rendering
+
+extension HTML.Text: AsyncRendering {
+    /// Async renders the text content with proper HTML escaping.
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ html: Self,
+        into stream: Stream,
+        context: inout HTML.Context
+    ) async {
+        var buffer: [UInt8] = []
+        for byte in html.text.utf8 {
+            switch byte {
+            case .ascii.ampersand:
+                buffer.append(contentsOf: [UInt8].html.ampersand)
+            case .ascii.lessThanSign:
+                buffer.append(contentsOf: [UInt8].html.lessThan)
+            case .ascii.greaterThanSign:
+                buffer.append(contentsOf: [UInt8].html.greaterThan)
+            default:
+                buffer.append(byte)
+            }
+        }
+        await stream.write(buffer)
+    }
+}

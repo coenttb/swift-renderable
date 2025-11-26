@@ -33,6 +33,9 @@ extension Target.Dependency {
     static var testingPerformance: Self {
         .product(name: "TestingPerformance", package: "swift-testing-performance")
     }
+    static var asyncAlgorithms: Self {
+        .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
+    }
 }
 
 let package = Package(
@@ -51,6 +54,7 @@ let package = Package(
         .library(name: .renderingHTMLTestSupport, targets: [.renderingHTMLTestSupport]),
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-async-algorithms.git", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.2"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.3"),
         .package(url: "https://github.com/swift-standards/swift-incits-4-1986", from: "0.1.0"),
@@ -67,6 +71,7 @@ let package = Package(
             name: .renderingHTML,
             dependencies: [
                 .rendering,
+                .asyncAlgorithms,
                 .product(name: "OrderedCollections", package: "swift-collections"),
                 .incits4_1986,
                 .standards,

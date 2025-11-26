@@ -73,7 +73,9 @@ extension AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
                 }
             }
 
-        case .progressive:
+        case .progressive, .backpressure:
+            // Note: .backpressure with true backpressure is handled via progressiveStream().
+            // For AsyncThrowingStream, fall back to progressive mode.
             self.init { continuation in
                 Task { @Sendable in
                     var context = HTML.Context(config)
@@ -138,7 +140,9 @@ extension AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
                 }
             }
 
-        case .progressive:
+        case .progressive, .backpressure:
+            // Note: .backpressure with true backpressure is handled via progressiveStream().
+            // For AsyncThrowingStream, fall back to progressive mode.
             self.init { continuation in
                 Task { @Sendable in
                     var context = HTML.Context(config)

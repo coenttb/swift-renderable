@@ -46,3 +46,14 @@ extension HTML.Empty: Rendering {
 }
 
 extension HTML.Empty: HTML.View {}
+
+extension HTML.Empty: AsyncRendering {
+    /// Async renders nothing (empty content).
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ markup: Empty,
+        into stream: Stream,
+        context: inout HTML.Context
+    ) async {
+        // Produces no output
+    }
+}

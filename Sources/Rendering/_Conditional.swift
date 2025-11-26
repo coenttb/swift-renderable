@@ -41,3 +41,19 @@ extension _Conditional: Sendable where First: Sendable, Second: Sendable {}
 extension _Conditional: Hashable where First: Hashable, Second: Hashable {}
 extension _Conditional: Equatable where First: Equatable, Second: Equatable {}
 extension _Conditional: Codable where First: Codable, Second: Codable {}
+
+extension _Conditional: AsyncRendering where First: AsyncRendering, Second: AsyncRendering {
+    /// Async renders either the first or second component based on the case.
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ markup: Self,
+        into stream: Stream,
+        context: inout First.Context
+    ) async {
+        switch markup {
+        case .first(let first):
+            await First._renderAsync(first, into: stream, context: &context)
+        case .second(let second):
+            await Second._renderAsync(second, into: stream, context: &context)
+        }
+    }
+}

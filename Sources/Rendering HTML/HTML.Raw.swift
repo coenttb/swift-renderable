@@ -59,3 +59,14 @@ extension Raw: Rendering {
 }
 
 extension Raw: HTML.View {}
+
+extension Raw: AsyncRendering {
+    /// Async renders the raw bytes directly to the stream.
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ raw: Self,
+        into stream: Stream,
+        context: inout HTML.Context
+    ) async {
+        await stream.write(raw.bytes)
+    }
+}

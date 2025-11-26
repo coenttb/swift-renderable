@@ -16,23 +16,19 @@ struct `HTML.StreamingMode Tests` {
     @Test
     func `StreamingMode has batch case`() {
         let mode: HTML.StreamingMode = .batch
-        switch mode {
-        case .batch:
-            #expect(true)
-        case .progressive:
-            Issue.record("Expected batch")
-        }
+        #expect(mode == .batch)
     }
 
     @Test
     func `StreamingMode has progressive case`() {
         let mode: HTML.StreamingMode = .progressive
-        switch mode {
-        case .batch:
-            Issue.record("Expected progressive")
-        case .progressive:
-            #expect(true)
-        }
+        #expect(mode == .progressive)
+    }
+
+    @Test
+    func `StreamingMode has backpressure case`() {
+        let mode: HTML.StreamingMode = .backpressure
+        #expect(mode == .backpressure)
     }
 
     // MARK: - Sendable
@@ -43,7 +39,7 @@ struct `HTML.StreamingMode Tests` {
         Task {
             _ = mode
         }
-        #expect(true) // Compile-time check
+        #expect(Bool(true)) // Compile-time check
     }
 
     // MARK: - Equality
@@ -52,12 +48,10 @@ struct `HTML.StreamingMode Tests` {
     func `StreamingMode cases are distinct`() {
         let batch: HTML.StreamingMode = .batch
         let progressive: HTML.StreamingMode = .progressive
+        let backpressure: HTML.StreamingMode = .backpressure
 
-        switch (batch, progressive) {
-        case (.batch, .progressive):
-            #expect(true)
-        default:
-            Issue.record("Cases should be distinct")
-        }
+        #expect(batch != progressive)
+        #expect(batch != backpressure)
+        #expect(progressive != backpressure)
     }
 }

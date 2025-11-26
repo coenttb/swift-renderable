@@ -30,3 +30,18 @@ extension _Tuple: Rendering where repeat each Content: HTML.View {
 }
 
 extension _Tuple: HTML.View where repeat each Content: HTML.View {}
+
+extension _Tuple: AsyncRendering where repeat each Content: AsyncRendering, repeat each Content: HTML.View {
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ html: Self,
+        into stream: Stream,
+        context: inout HTML.Context
+    ) async {
+        func render<T: AsyncRendering>(_ element: T) async where T.Context == HTML.Context {
+            let oldAttributes = context.attributes
+            defer { context.attributes = oldAttributes }
+            await T._renderAsync(element, into: stream, context: &context)
+        }
+        repeat await render(each html.content)
+    }
+}

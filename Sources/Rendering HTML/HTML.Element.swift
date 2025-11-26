@@ -139,4 +139,94 @@ extension HTML {
 
 extension HTML.Element: Sendable where Content: Sendable {}
 
+// MARK: - Async Rendering
+
+extension HTML.Element: AsyncRendering where Content: AsyncRendering {
+    /// Async renders this HTML element with backpressure support.
+    ///
+    /// This implementation mirrors the sync `_render` but uses async writes
+    /// to the stream, allowing suspension at strategic points.
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ html: Self,
+        into stream: Stream,
+        context: inout HTML.Context
+    ) async {
+        let isPreElement = html.tag == "pre"
+        let htmlIsBlock = html.isBlock
+
+        // Build opening tag into local buffer, then write once
+        var openTag: [UInt8] = []
+
+        if htmlIsBlock {
+            openTag.append(contentsOf: context.configuration.newline)
+            openTag.append(contentsOf: context.currentIndentation)
+        }
+
+        openTag.append(.ascii.lessThanSign)
+        openTag.append(contentsOf: html.tag.utf8)
+
+        // Add attributes
+        for (name, value) in context.attributes {
+            openTag.append(.ascii.space)
+            openTag.append(contentsOf: name.utf8)
+            if !value.isEmpty {
+                openTag.append(.ascii.equalsSign)
+                openTag.append(.ascii.dquote)
+
+                for byte in value.utf8 {
+                    switch byte {
+                    case .ascii.dquote:
+                        openTag.append(contentsOf: [UInt8].html.doubleQuotationMark)
+                    case .ascii.apostrophe:
+                        openTag.append(contentsOf: [UInt8].html.apostrophe)
+                    case .ascii.ampersand:
+                        openTag.append(contentsOf: [UInt8].html.ampersand)
+                    case .ascii.lessThanSign:
+                        openTag.append(contentsOf: [UInt8].html.lessThan)
+                    case .ascii.greaterThanSign:
+                        openTag.append(contentsOf: [UInt8].html.greaterThan)
+                    default:
+                        openTag.append(byte)
+                    }
+                }
+
+                openTag.append(.ascii.dquote)
+            }
+        }
+        openTag.append(.ascii.greaterThanSign)
+
+        await stream.write(openTag)
+
+        // Render content if present
+        if let content = html.content {
+            let oldAttributes = context.attributes
+            let oldIndentation = context.currentIndentation
+            defer {
+                context.attributes = oldAttributes
+                context.currentIndentation = oldIndentation
+            }
+            context.attributes.removeAll()
+            if htmlIsBlock && !isPreElement {
+                context.currentIndentation += context.configuration.indentation
+            }
+            await Content._renderAsync(content, into: stream, context: &context)
+        }
+
+        // Add closing tag unless void element
+        if !HTML.Tag.Void.allTags.contains(html.tag) {
+            var closeTag: [UInt8] = []
+            if htmlIsBlock && !isPreElement {
+                closeTag.append(contentsOf: context.configuration.newline)
+                closeTag.append(contentsOf: context.currentIndentation)
+            }
+            closeTag.append(.ascii.lessThanSign)
+            closeTag.append(.ascii.slant)
+            closeTag.append(contentsOf: html.tag.utf8)
+            closeTag.append(.ascii.greaterThanSign)
+
+            await stream.write(closeTag)
+        }
+    }
+}
+
 

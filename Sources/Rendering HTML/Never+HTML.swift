@@ -29,3 +29,12 @@ extension Never: Rendering {
 /// This conformance is provided to allow the use of the `HTML.View` protocol in
 /// contexts where no content is expected or possible.
 extension Never: HTML.View {}
+
+extension Never: AsyncRendering {
+    @inlinable
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ markup: Self,
+        into stream: Stream,
+        context: inout HTML.Context
+    ) async {}
+}
