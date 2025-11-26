@@ -14,28 +14,22 @@ struct `HTML.StreamingMode Tests` {
     // MARK: - Enum Cases
 
     @Test
-    func `StreamingMode has batch case`() {
-        let mode: HTML.StreamingMode = .batch
-        #expect(mode == .batch)
+    func `StreamingMode has buffered case`() {
+        let mode: HTML.StreamingMode = .buffered
+        #expect(mode == .buffered)
     }
 
     @Test
-    func `StreamingMode has progressive case`() {
-        let mode: HTML.StreamingMode = .progressive
-        #expect(mode == .progressive)
-    }
-
-    @Test
-    func `StreamingMode has backpressure case`() {
-        let mode: HTML.StreamingMode = .backpressure
-        #expect(mode == .backpressure)
+    func `StreamingMode has streaming case`() {
+        let mode: HTML.StreamingMode = .streaming
+        #expect(mode == .streaming)
     }
 
     // MARK: - Sendable
 
     @Test
     func `StreamingMode is Sendable`() {
-        let mode: HTML.StreamingMode = .batch
+        let mode: HTML.StreamingMode = .buffered
         Task {
             _ = mode
         }
@@ -46,12 +40,9 @@ struct `HTML.StreamingMode Tests` {
 
     @Test
     func `StreamingMode cases are distinct`() {
-        let batch: HTML.StreamingMode = .batch
-        let progressive: HTML.StreamingMode = .progressive
-        let backpressure: HTML.StreamingMode = .backpressure
+        let buffered: HTML.StreamingMode = .buffered
+        let streaming: HTML.StreamingMode = .streaming
 
-        #expect(batch != progressive)
-        #expect(batch != backpressure)
-        #expect(progressive != backpressure)
+        #expect(buffered != streaming)
     }
 }

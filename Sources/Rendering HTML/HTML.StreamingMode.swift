@@ -8,63 +8,66 @@
 extension HTML {
     /// Controls how HTML content is streamed to clients.
     ///
-    /// ## Batch Mode
+    /// ## Buffered Mode
     /// Renders the entire HTML into memory first, then streams chunks from that buffer.
-    /// - Pros: Simple, predictable memory usage pattern
-    /// - Cons: Higher Time To First Byte (TTFB) for large documents
-    /// - Memory: O(doc size) during render, O(chunkSize) during stream
-    /// - Best for: Small to medium documents
+    /// - Pros: Simple, predictable, works with any `HTML.View`
+    /// - Cons: Higher Time To First Byte (TTFB), O(doc size) memory during render
+    /// - Memory: O(doc size) during render → O(chunkSize) during stream
+    /// - Best for: Small to medium documents, simple use cases
     ///
-    /// ## Progressive Mode
-    /// Streams chunks as they are rendered, with minimal buffering.
-    /// - Pros: Lower TTFB, content starts appearing immediately
-    /// - Cons: For documents with styles, `<style>` tag is placed at end of `<body>`
-    /// - Memory: O(doc size) during render, O(chunkSize) during stream
-    /// - Best for: Large documents, streaming APIs, real-time content
-    ///
-    /// ## Backpressure Mode
-    /// True progressive streaming with bounded memory via `AsyncChannel`.
-    /// - Pros: Bounded memory throughout entire process, true backpressure
+    /// ## Streaming Mode
+    /// True progressive streaming with backpressure via `AsyncChannel`.
+    /// - Pros: Bounded memory throughout, true backpressure, low TTFB
     /// - Cons: Requires `AsyncRendering` conformance
-    /// - Memory: O(chunkSize) during render, O(chunkSize) during stream
-    /// - Best for: Very large documents, memory-constrained environments
+    /// - Memory: O(chunkSize) throughout entire process
+    /// - Best for: Large documents, memory-constrained environments
+    ///
+    /// ## Academic Foundation
+    ///
+    /// The distinction between buffered and streaming modes reflects a fundamental
+    /// computer science concept: **backpressure requires suspension points**.
+    ///
+    /// - Buffered mode uses synchronous CPS-style rendering (Hughes 1989)
+    /// - Streaming mode uses CSP-style channels (Hoare 1978) with `async/await`
+    ///
+    /// You cannot achieve true backpressure in synchronous code because the producer
+    /// cannot yield control to wait for the consumer. This is why `AsyncRendering`
+    /// conformance is required for streaming mode.
     ///
     /// ## Example
     ///
     /// ```swift
-    /// // Batch: render all, then stream
-    /// for try await chunk in AsyncThrowingStream(mode: .batch) {
-    ///     div { "Hello" }
-    /// } {
-    ///     try await response.write(chunk)
+    /// // Buffered: render all, then stream chunks
+    /// for await chunk in AsyncStream(mode: .buffered) { myView } {
+    ///     await response.write(chunk)
     /// }
     ///
-    /// // Progressive: stream as we render
-    /// for try await chunk in AsyncThrowingStream(mode: .progressive) {
-    ///     div { "Hello" }
-    /// } {
-    ///     try await response.write(chunk)
-    /// }
-    ///
-    /// // Backpressure: bounded memory throughout
-    /// for await chunk in html.progressiveStream(chunkSize: 4096) {
+    /// // Streaming: true progressive with backpressure
+    /// for await chunk in myView.asyncChannel(chunkSize: 4096) {
     ///     await response.write(chunk)
     /// }
     /// ```
-    public enum StreamingMode: Sendable {
-        /// Render entire content first, then stream chunks from buffer.
-        case batch
-
-        /// Stream chunks as content renders (lower TTFB).
-        case progressive
+    ///
+    /// ## References
+    ///
+    /// - Hughes, J. (1989). "Why Functional Programming Matters" - CPS serialization
+    /// - Hoare, C.A.R. (1978). "Communicating Sequential Processes" - Channel semantics
+    /// - Kiselyov, O. (2012). "Iteratees" - Stream processing with backpressure
+    public enum StreamingMode: Sendable, Equatable {
+        /// Render entire content into memory first, then stream chunks.
+        ///
+        /// This mode works with any `HTML.View` and provides predictable behavior,
+        /// but requires O(document size) memory during the render phase.
+        case buffered
 
         /// True progressive streaming with backpressure.
         ///
         /// Memory is bounded to O(chunkSize) throughout the entire process.
-        /// Uses `AsyncChannel` to apply backpressure when the consumer is slow.
+        /// The producer suspends when the consumer is slow, preventing unbounded
+        /// memory growth.
         ///
-        /// - Note: Use via `progressiveStream(_:chunkSize:configuration:)` or
-        ///   the `.progressiveStream()` extension method on `HTML.View`.
-        case backpressure
+        /// - Important: Requires `AsyncRendering` conformance. Use `asyncChannel()`
+        ///   for the canonical streaming API with backpressure.
+        case streaming
     }
 }
