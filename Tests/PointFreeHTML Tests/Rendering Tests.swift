@@ -8,9 +8,10 @@
 //
 
 import INCITS_4_1986
-@testable import PointFreeHTML
+@testable import RenderingHTML
 import OrderedCollections
 import Testing
+import Rendering
 import Foundation
 
 @Suite("Rendering Tests")
@@ -48,7 +49,7 @@ struct RenderingTests {
 
     @Test("Empty content rendering")
     func emptyContent() throws {
-        let empty = HTMLEmpty()
+        let empty = Empty()
 
         try HTMLContext.Rendering.$current.withValue(.default) {
             let rendered = try String(empty)

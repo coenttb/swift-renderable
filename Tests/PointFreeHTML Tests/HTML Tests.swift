@@ -5,7 +5,7 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-@testable import PointFreeHTML
+@testable import RenderingHTML
 import Testing
 
 @Suite("HTML Protocol Tests")
@@ -40,7 +40,7 @@ struct HTMLTests {
     func htmlComposition() throws {
         struct ParentHTML: HTML {
             var body: some HTML {
-                HTMLGroup {
+                Group {
                     HTMLText("parent ")
                     ChildHTML()
                 }

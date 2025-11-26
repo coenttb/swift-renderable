@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("_HTMLArray Tests")
@@ -17,7 +17,7 @@ struct _HTMLArrayTests {
     @Test("_HTMLArray renders multiple elements")
     func rendersMultipleElements() throws {
         // _HTMLArray is created through HTMLBuilder with for loops
-        let html = HTMLGroup {
+        let html = Group {
             for item in ["A", "B", "C"] {
                 tag("li") {
                     HTMLText(item)
@@ -34,7 +34,7 @@ struct _HTMLArrayTests {
     @Test("_HTMLArray with empty array")
     func emptyArray() throws {
         let items: [String] = []
-        let html = HTMLGroup {
+        let html = Group {
             for item in items {
                 tag("li") {
                     HTMLText(item)
@@ -48,7 +48,7 @@ struct _HTMLArrayTests {
 
     @Test("_HTMLArray with single element")
     func singleElement() throws {
-        let html = HTMLGroup {
+        let html = Group {
             for item in ["Only"] {
                 tag("span") {
                     HTMLText(item)
@@ -65,7 +65,7 @@ struct _HTMLArrayTests {
     @Test("_HTMLArray with nested elements")
     func nestedElements() throws {
         let items = [("Title 1", "Content 1"), ("Title 2", "Content 2")]
-        let html = HTMLGroup {
+        let html = Group {
             for (title, content) in items {
                 tag("article") {
                     tag("h2") {
@@ -89,7 +89,7 @@ struct _HTMLArrayTests {
     @Test("_HTMLArray with attributes")
     func withAttributes() throws {
         let items = ["item-1", "item-2", "item-3"]
-        let html = HTMLGroup {
+        let html = Group {
             for id in items {
                 tag("div") {
                     HTMLText(id)
@@ -107,7 +107,7 @@ struct _HTMLArrayTests {
     @Test("_HTMLArray with indices")
     func withIndices() throws {
         let items = ["First", "Second", "Third"]
-        let html = HTMLGroup {
+        let html = Group {
             for (index, item) in items.enumerated() {
                 tag("div") {
                     HTMLText("\(index): \(item)")

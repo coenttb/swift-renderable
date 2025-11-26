@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 // Note: HTMLInlineStyleProtocol is an internal protocol used for type erasure.
@@ -167,7 +167,7 @@ struct HTMLInlineStyleProtocolTests {
     @Test("Conditional content with styles")
     func conditionalWithStyles() throws {
         let showFirst = true
-        let html = HTMLGroup {
+        let html = Group {
             if showFirst {
                 tag("div") {
                     HTMLText("First")
@@ -191,7 +191,7 @@ struct HTMLInlineStyleProtocolTests {
     @Test("Array of styled elements")
     func arrayOfStyledElements() throws {
         let colors = ["red", "green", "blue"]
-        let html = HTMLGroup {
+        let html = Group {
             for color in colors {
                 tag("span") {
                     HTMLText(color)

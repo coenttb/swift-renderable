@@ -5,7 +5,7 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-@testable import PointFreeHTML
+@testable import RenderingHTML
 import Testing
 
 @Suite("String Extensions Tests")
@@ -68,7 +68,7 @@ struct StringExtensionsTests {
 
     @Test("String from empty HTML")
     func stringFromEmptyHTML() throws {
-        let empty = HTMLEmpty()
+        let empty = Empty()
         let string = try String(empty)
         #expect(string.isEmpty)
     }

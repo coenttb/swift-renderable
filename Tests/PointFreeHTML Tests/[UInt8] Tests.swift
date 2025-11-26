@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("[UInt8] Tests")
@@ -28,14 +28,14 @@ struct UInt8ArrayTests {
 
     @Test("[UInt8] init from empty HTML")
     func initFromEmptyHTML() throws {
-        let html = HTMLEmpty()
+        let html = Empty()
         let bytes = [UInt8](html)
         #expect(bytes.isEmpty)
     }
 
     @Test("[UInt8] init from complex HTML")
     func initFromComplexHTML() throws {
-        let html = HTMLGroup {
+        let html = Group {
             tag("div") {
                 tag("h1") {
                     HTMLText("Title")

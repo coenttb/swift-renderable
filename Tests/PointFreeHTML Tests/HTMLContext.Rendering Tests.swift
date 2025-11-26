@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("HTMLContext.Rendering Tests")

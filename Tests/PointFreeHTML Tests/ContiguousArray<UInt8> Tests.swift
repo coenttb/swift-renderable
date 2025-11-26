@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("ContiguousArray<UInt8> Tests")
@@ -28,7 +28,7 @@ struct ContiguousArrayUInt8Tests {
 
     @Test("ContiguousArray init from empty HTML")
     func initFromEmptyHTML() throws {
-        let html = HTMLEmpty()
+        let html = Empty()
         let bytes = ContiguousArray<UInt8>(html)
         #expect(bytes.isEmpty)
     }
@@ -151,7 +151,7 @@ struct ContiguousArrayUInt8Tests {
     @Test("ContiguousArray is efficient for large documents")
     func efficientForLargeDocuments() throws {
         // Create a moderately large document
-        let html = HTMLGroup {
+        let html = Group {
             for i in 0..<100 {
                 tag("div") {
                     tag("h2") {

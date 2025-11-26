@@ -7,7 +7,7 @@
 
 import Testing
 import TestingPerformance
-@testable import PointFreeHTML
+@testable import RenderingHTML
 
 extension `Performance Tests` {
 

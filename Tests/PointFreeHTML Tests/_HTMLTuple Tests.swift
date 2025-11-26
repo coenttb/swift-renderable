@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 import Foundation
 
@@ -18,7 +18,7 @@ struct _HTMLTupleTests {
     @Test("_HTMLTuple renders multiple elements")
     func rendersMultipleElements() throws {
         // _HTMLTuple is created implicitly when you have multiple elements in a builder
-        let html = HTMLGroup {
+        let html = Group {
             tag("h1") {
                 HTMLText("Title")
             }
@@ -38,7 +38,7 @@ struct _HTMLTupleTests {
 
     @Test("_HTMLTuple with two elements")
     func twoElements() throws {
-        let html = HTMLGroup {
+        let html = Group {
             HTMLText("First")
             HTMLText("Second")
         }
@@ -49,7 +49,7 @@ struct _HTMLTupleTests {
 
     @Test("_HTMLTuple with single element")
     func singleElement() throws {
-        let html = HTMLGroup {
+        let html = Group {
             tag("div") {
                 HTMLText("Only one")
             }
@@ -92,11 +92,11 @@ struct _HTMLTupleTests {
 
     @Test("_HTMLTuple with nested groups")
     func nestedGroups() throws {
-        let html = HTMLGroup {
+        let html = Group {
             tag("header") {
                 HTMLText("Header")
             }
-            HTMLGroup {
+            Group {
                 tag("main") {
                     HTMLText("Main content")
                 }
@@ -120,7 +120,7 @@ struct _HTMLTupleTests {
 
     @Test("_HTMLTuple with mixed content types")
     func mixedContentTypes() throws {
-        let html = HTMLGroup {
+        let html = Group {
             HTMLText("Plain text")
             tag("br")
             HTMLRaw("<strong>Raw HTML</strong>")
@@ -138,7 +138,7 @@ struct _HTMLTupleTests {
 
     @Test("_HTMLTuple with void and regular elements")
     func voidAndRegularElements() throws {
-        let html = HTMLGroup {
+        let html = Group {
             tag("input")
                 .attribute("type", "text")
             tag("label") {

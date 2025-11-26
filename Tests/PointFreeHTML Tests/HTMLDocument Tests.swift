@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("HTMLDocument Tests")
@@ -82,7 +82,7 @@ struct HTMLDocumentTests {
     @Test("HTMLDocument includes doctype")
     func includesDoctype() throws {
         let document = HTMLDocument {
-            HTMLEmpty()
+            Empty()
         }
 
         let rendered = try String(document)

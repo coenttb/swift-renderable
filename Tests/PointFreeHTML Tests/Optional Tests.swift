@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("Optional Tests")
@@ -17,14 +17,14 @@ struct OptionalTests {
     @Test("Optional some renders content")
     func someRendersContent() throws {
         let optionalHTML: HTMLText? = HTMLText("Present")
-        let rendered = try String(HTMLGroup { optionalHTML })
+        let rendered = try String(Group { optionalHTML })
         #expect(rendered == "Present")
     }
 
     @Test("Optional none renders nothing")
     func noneRendersNothing() throws {
         let optionalHTML: HTMLText? = nil
-        let rendered = try String(HTMLGroup { optionalHTML })
+        let rendered = try String(Group { optionalHTML })
         #expect(rendered.isEmpty)
     }
 
@@ -36,7 +36,7 @@ struct OptionalTests {
             HTMLText("Content")
         }
 
-        let rendered = try String(HTMLGroup { optionalElement })
+        let rendered = try String(Group { optionalElement })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("Content"))
     }
@@ -45,7 +45,7 @@ struct OptionalTests {
     func optionalElementNil() throws {
         let optionalElement: HTMLElement<HTMLText>? = nil
 
-        let rendered = try String(HTMLGroup { optionalElement })
+        let rendered = try String(Group { optionalElement })
         #expect(rendered.isEmpty)
     }
 
@@ -58,7 +58,7 @@ struct OptionalTests {
 
             var body: some HTML {
                 let optionalContent: HTMLText? = showOptional ? HTMLText("Optional present") : nil
-                HTMLGroup {
+                Group {
                     tag("div") {
                         HTMLText("Always present")
                     }
@@ -79,7 +79,7 @@ struct OptionalTests {
 
             var body: some HTML {
                 let optionalContent: HTMLText? = showOptional ? HTMLText("Optional present") : nil
-                HTMLGroup {
+                Group {
                     tag("div") {
                         HTMLText("Always present")
                     }
@@ -118,20 +118,20 @@ struct OptionalTests {
 
         // Both levels resolve to the value
         if let unwrapped = outer, let content = unwrapped {
-            let rendered = try String(HTMLGroup { content })
+            let rendered = try String(Group { content })
             #expect(rendered == "Inner")
         }
     }
 
     // MARK: - Optional with Complex Types
 
-    @Test("Optional HTMLGroup")
-    func optionalHTMLGroup() throws {
-        let group: HTMLGroup<HTMLText>? = HTMLGroup {
+    @Test("Optional Group")
+    func optionalGroup() throws {
+        let group: Group<HTMLText>? = Group {
             HTMLText("Grouped content")
         }
 
-        let rendered = try String(HTMLGroup { group })
+        let rendered = try String(Group { group })
         #expect(rendered == "Grouped content")
     }
 
@@ -139,7 +139,7 @@ struct OptionalTests {
     func optionalArrayElement() throws {
         let items = ["Item 1", "Item 2", nil, "Item 4"]
 
-        let html = HTMLGroup {
+        let html = Group {
             for item in items {
                 let content: HTMLText? = item.map { HTMLText($0) }
                 content

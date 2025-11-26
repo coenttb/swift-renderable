@@ -7,8 +7,8 @@
 //  Cross-cutting tests for edge cases, boundary conditions, and unusual inputs.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("Edge Cases Tests")
@@ -19,13 +19,13 @@ struct EdgeCasesTests {
     @Test("Empty HTMLText renders nothing")
     func emptyHTMLText() throws {
         let html = HTMLText("")
-        let rendered = try String(HTMLGroup { html })
+        let rendered = try String(Group { html })
         #expect(rendered.isEmpty)
     }
 
     @Test("Empty element renders open and close tags")
     func emptyElement() throws {
-        let html = tag("div") { HTMLEmpty() }
+        let html = tag("div") { Empty() }
         let rendered = try String(html)
         #expect(rendered == "<div></div>")
     }
@@ -33,8 +33,8 @@ struct EdgeCasesTests {
     @Test("Nested empty elements")
     func nestedEmptyElements() throws {
         let html = tag("div") {
-            tag("span") { HTMLEmpty() }
-            tag("p") { HTMLEmpty() }
+            tag("span") { Empty() }
+            tag("p") { Empty() }
         }
         let rendered = try String(html)
         #expect(rendered.contains("<span></span>"))
@@ -46,21 +46,21 @@ struct EdgeCasesTests {
     @Test("Whitespace-only text is preserved")
     func whitespaceOnlyText() throws {
         let html = HTMLText("   ")
-        let rendered = try String(HTMLGroup { html })
+        let rendered = try String(Group { html })
         #expect(rendered == "   ")
     }
 
     @Test("Newlines in text are preserved")
     func newlinesPreserved() throws {
         let html = HTMLText("Line 1\nLine 2\nLine 3")
-        let rendered = try String(HTMLGroup { html })
+        let rendered = try String(Group { html })
         #expect(rendered.contains("\n"))
     }
 
     @Test("Tabs in text are preserved")
     func tabsPreserved() throws {
         let html = HTMLText("Column1\tColumn2\tColumn3")
-        let rendered = try String(HTMLGroup { html })
+        let rendered = try String(Group { html })
         #expect(rendered.contains("\t"))
     }
 
@@ -91,7 +91,7 @@ struct EdgeCasesTests {
 
     @Test("Many sibling elements")
     func manySiblingElements() throws {
-        let html = HTMLGroup {
+        let html = Group {
             for i in 0..<1000 {
                 tag("span") { HTMLText("Item \(i)") }
             }
@@ -168,7 +168,7 @@ struct EdgeCasesTests {
 
     @Test("All false conditionals")
     func allFalseConditionals() throws {
-        let html = HTMLGroup {
+        let html = Group {
             if false {
                 tag("p") { HTMLText("Never shown") }
             }
@@ -186,7 +186,7 @@ struct EdgeCasesTests {
         let b = true
         let c = true
 
-        let html = HTMLGroup {
+        let html = Group {
             if a {
                 if b {
                     if c {
@@ -204,7 +204,7 @@ struct EdgeCasesTests {
     @Test("Empty array loop")
     func emptyArrayLoop() throws {
         let items: [String] = []
-        let html = HTMLGroup {
+        let html = Group {
             for item in items {
                 tag("li") { HTMLText(item) }
             }
@@ -216,7 +216,7 @@ struct EdgeCasesTests {
     @Test("Single item loop")
     func singleItemLoop() throws {
         let items = ["Only one"]
-        let html = HTMLGroup {
+        let html = Group {
             for item in items {
                 tag("li") { HTMLText(item) }
             }
@@ -228,7 +228,7 @@ struct EdgeCasesTests {
     @Test("Loop with nil values")
     func loopWithNilValues() throws {
         let items: [String?] = ["First", nil, "Third", nil, "Fifth"]
-        let html = HTMLGroup {
+        let html = Group {
             for item in items.compactMap({ $0 }) {
                 tag("li") { HTMLText(item) }
             }
@@ -293,7 +293,7 @@ struct EdgeCasesTests {
     @Test("Raw HTML with script")
     func rawHTMLScript() throws {
         let html = HTMLRaw("<script>var x = 1 < 2 && 2 > 1;</script>")
-        let rendered = try String(HTMLGroup { html })
+        let rendered = try String(Group { html })
         #expect(rendered.contains("<script>"))
         #expect(rendered.contains("</script>"))
     }
@@ -303,8 +303,8 @@ struct EdgeCasesTests {
     @Test("Document with empty head and body")
     func emptyDocument() throws {
         let document = HTMLDocument(
-            head: { HTMLEmpty() },
-            body: { HTMLEmpty() }
+            head: { Empty() },
+            body: { Empty() }
         )
         let rendered = try String(document)
         #expect(rendered.contains("<!doctype html>"))
@@ -342,7 +342,7 @@ extension `Snapshot Tests` {
                 of: HTMLDocument {
                     tag("div") {
                         // Empty content
-                        HTMLEmpty()
+                        Empty()
                         // Whitespace
                         HTMLText("  ")
                         // Nested structure

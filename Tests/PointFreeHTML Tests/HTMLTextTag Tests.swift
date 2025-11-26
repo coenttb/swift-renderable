@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("HTMLTextTag Tests")
@@ -120,7 +120,7 @@ struct HTMLTextTagTests {
     @Test("HTMLTextTag in head")
     func inHead() throws {
         let document = HTMLDocument {
-            HTMLEmpty()
+            Empty()
         } head: {
             HTMLTextTag("title")("Document Title")
             tag("meta")

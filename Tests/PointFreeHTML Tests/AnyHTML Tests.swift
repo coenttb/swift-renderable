@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("AnyHTML Tests")
@@ -33,9 +33,9 @@ struct AnyHTMLTests {
         #expect(rendered.contains("</div>"))
     }
 
-    @Test("AnyHTML wraps HTMLEmpty")
-    func wrapsHTMLEmpty() throws {
-        let anyHTML = AnyHTML(HTMLEmpty())
+    @Test("AnyHTML wraps Empty")
+    func wrapsEmpty() throws {
+        let anyHTML = AnyHTML(Empty())
         let rendered = try String(anyHTML)
         #expect(rendered.isEmpty)
     }
@@ -62,7 +62,7 @@ struct AnyHTMLTests {
             AnyHTML(tag("span") { HTMLText("Span") })
         ]
 
-        let html = HTMLGroup {
+        let html = Group {
             for element in elements {
                 element
             }

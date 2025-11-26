@@ -1,20 +1,20 @@
 //
-//  HTMLGroupTests.swift
+//  GroupTests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLGroup Tests")
-struct HTMLGroupTests {
+@Suite("Group Tests")
+struct GroupTests {
 
-    @Test("HTMLGroup with multiple elements")
+    @Test("Group with multiple elements")
     func groupWithMultipleElements() throws {
-        let group = HTMLGroup {
+        let group = Group {
             HTMLText("first")
             HTMLText("second")
             HTMLText("third")
@@ -24,9 +24,9 @@ struct HTMLGroupTests {
         #expect(rendered == "firstsecondthird")
     }
 
-    @Test("HTMLGroup with mixed content types")
+    @Test("Group with mixed content types")
     func groupWithMixedContent() throws {
-        let group = HTMLGroup {
+        let group = Group {
             HTMLText("text")
             tag("span") {
                 HTMLText("span content")
@@ -42,21 +42,21 @@ struct HTMLGroupTests {
         #expect(rendered.contains("more text"))
     }
 
-    @Test("Empty HTMLGroup")
+    @Test("Empty Group")
     func emptyGroup() throws {
-        let group = HTMLGroup {
-            HTMLEmpty()
+        let group = Group {
+            Empty()
         }
 
         let rendered = try String(group)
         #expect(rendered.isEmpty)
     }
 
-    @Test("Nested HTMLGroups")
+    @Test("Nested Groups")
     func nestedGroups() throws {
-        let outerGroup = HTMLGroup {
+        let outerGroup = Group {
             HTMLText("outer start")
-            HTMLGroup {
+            Group {
                 HTMLText("inner1")
                 HTMLText("inner2")
             }
@@ -67,14 +67,14 @@ struct HTMLGroupTests {
         #expect(rendered == "outer startinner1inner2outer end")
     }
 
-    @Test("HTMLGroup with conditionals")
+    @Test("Group with conditionals")
     func groupWithConditionals() throws {
         struct TestHTML: HTML {
             let showFirst = true
             let showSecond = false
 
             var body: some HTML {
-                HTMLGroup {
+                Group {
                     if showFirst {
                         HTMLText("first")
                     }
@@ -91,10 +91,10 @@ struct HTMLGroupTests {
         #expect(rendered == "firstalways")
     }
 
-    @Test("HTMLGroup as transparent container")
+    @Test("Group as transparent container")
     func groupAsTransparentContainer() throws {
         let element = tag("div") {
-            HTMLGroup {
+            Group {
                 tag("p") { HTMLText("paragraph 1") }
                 tag("p") { HTMLText("paragraph 2") }
             }
@@ -113,13 +113,13 @@ struct HTMLGroupTests {
 
 extension `Snapshot Tests` {
     @Suite
-    struct HTMLGroupSnapshotTests {
-        @Test("HTMLGroup transparent container snapshot")
+    struct GroupSnapshotTests {
+        @Test("Group transparent container snapshot")
         func transparentContainerSnapshot() {
             assertInlineSnapshot(
                 of: HTMLDocument {
                     tag("div") {
-                        HTMLGroup {
+                        Group {
                             tag("h2") {
                                 HTMLText("Section Title")
                             }

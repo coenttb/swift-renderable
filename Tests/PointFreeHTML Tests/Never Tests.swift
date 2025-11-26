@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("Never Tests")
@@ -55,10 +55,10 @@ struct NeverTests {
         #expect(rendered == "Direct render")
     }
 
-    @Test("Never in HTMLEmpty body")
-    func neverInHTMLEmptyBody() throws {
-        // HTMLEmpty uses `body: Never` because it renders nothing
-        let empty = HTMLEmpty()
+    @Test("Never in Empty body")
+    func neverInEmptyBody() throws {
+        // Empty uses `body: Never` because it renders nothing
+        let empty = Empty()
         let rendered = try String(empty)
         #expect(rendered.isEmpty)
     }
@@ -82,11 +82,11 @@ struct NeverTests {
         }
 
         let text = HTMLText("test")
-        let empty = HTMLEmpty()
+        let empty = Empty()
         let raw = HTMLRaw("raw")
 
         #expect(usesHTML(text) == "HTMLText")
-        #expect(usesHTML(empty) == "HTMLEmpty")
+        #expect(usesHTML(empty) == "_Empty<HTMLContext>")  // Empty is typealias for Empty<HTMLContext>
         #expect(usesHTML(raw) == "HTMLRaw")
     }
 }

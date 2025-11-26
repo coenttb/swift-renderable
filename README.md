@@ -17,7 +17,7 @@ PointFreeHTML enables **any Swift type** to be rendered as HTML through a simple
   - RFC pattern with bytes as canonical representation
   - Optimized attribute escaping with fast-path detection
   - Capacity pre-allocation for known document sizes
-- **Declarative Syntax**: SwiftUI-like syntax with `@HTMLBuilder` result builder
+- **Declarative Syntax**: SwiftUI-like syntax with `@Builder` result builder
 - **Type Safety**: Compile-time checking prevents malformed HTML
 - **Composable Components**: Build complex UIs from reusable components
 - **Minimal Dependencies**: Core library has minimal external dependencies

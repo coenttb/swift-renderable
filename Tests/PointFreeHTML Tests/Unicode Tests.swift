@@ -7,8 +7,8 @@
 //  Cross-cutting tests for Unicode handling, internationalization, and encoding.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("Unicode Tests")

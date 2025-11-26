@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("HTMLVoidTag Tests")
@@ -180,7 +180,7 @@ struct HTMLVoidTagTests {
         let link = HTMLVoidTag("link")
 
         let document = HTMLDocument {
-            HTMLEmpty()
+            Empty()
         } head: {
             meta().attribute("charset", "utf-8")
             meta().attribute("name", "viewport").attribute("content", "width=device-width")

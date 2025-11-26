@@ -6,8 +6,8 @@
 //
 
 import Foundation
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("AsyncThrowingStream Tests")
@@ -39,7 +39,7 @@ struct AsyncThrowingStreamTests {
     func yieldsCompleteContent() async throws {
         struct MultiParagraphHTML: HTML, Sendable {
             var body: some HTML {
-                HTMLGroup {
+                Group {
                     tag("p") { HTMLText("First") }
                     tag("p") { HTMLText("Second") }
                     tag("p") { HTMLText("Third") }
@@ -189,7 +189,7 @@ struct AsyncThrowingStreamTests {
     func emptyContent() async throws {
         struct EmptyHTML: HTML, Sendable {
             var body: some HTML {
-                HTMLEmpty()
+                Empty()
             }
         }
 

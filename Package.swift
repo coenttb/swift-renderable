@@ -4,13 +4,17 @@
 import PackageDescription
 
 extension String {
-    static let pointfreeHtml: Self = "PointFreeHTML"
-    static let pointfreeHtmlTestSupport: Self = "PointFreeHTMLTestSupport"
+    static let rendering: Self = "Rendering"
+    static let renderingHTML: Self = "RenderingHTML"
+    static let renderingTestSupport: Self = "RenderingTestSupport"
+    static let renderingHTMLTestSupport: Self = "RenderingHTMLTestSupport"
 }
 
 extension Target.Dependency {
-    static var pointfreeHtml: Self { .target(name: .pointfreeHtml) }
-    static var pointfreeHtmlTestSupport: Self { .target(name: .pointfreeHtmlTestSupport) }
+    static var rendering: Self { .target(name: .rendering) }
+    static var renderingHTML: Self { .target(name: .renderingHTML) }
+    static var renderingTestSupport: Self { .target(name: .renderingTestSupport) }
+    static var renderingHTMLTestSupport: Self { .target(name: .renderingHTMLTestSupport) }
 }
 
 extension Target.Dependency {
@@ -41,8 +45,10 @@ let package = Package(
         .macCatalyst(.v18),
     ],
     products: [
-        .library(name: .pointfreeHtml, targets: [.pointfreeHtml]),
-        .library(name: .pointfreeHtmlTestSupport, targets: [.pointfreeHtmlTestSupport]),
+        .library(name: .rendering, targets: [.rendering]),
+        .library(name: .renderingHTML, targets: [.renderingHTML]),
+        .library(name: .renderingTestSupport, targets: [.renderingTestSupport]),
+        .library(name: .renderingHTMLTestSupport, targets: [.renderingHTMLTestSupport]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.2"),
@@ -54,27 +60,39 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: .pointfreeHtml,
+            name: .rendering,
+            dependencies: []
+        ),
+        .target(
+            name: .renderingHTML,
             dependencies: [
+                .rendering,
                 .product(name: "OrderedCollections", package: "swift-collections"),
                 .incits4_1986,
                 .standards,
                 .iso9899
             ]
         ),
-        .testTarget(
-            name: .pointfreeHtml.tests,
+        .target(
+            name: .renderingTestSupport,
             dependencies: [
-                .pointfreeHtml,
-                .pointfreeHtmlTestSupport,
-                .testingPerformance,
+                .rendering,
             ]
         ),
         .target(
-            name: .pointfreeHtmlTestSupport,
+            name: .renderingHTMLTestSupport,
             dependencies: [
-                .pointfreeHtml,
+                .renderingHTML,
+                .renderingTestSupport,
                 .inlineSnapshotTesting,
+            ]
+        ),
+        .testTarget(
+            name: .renderingHTML.tests,
+            dependencies: [
+                .renderingHTML,
+                .renderingHTMLTestSupport,
+                .testingPerformance,
             ]
         ),
     ],

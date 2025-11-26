@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 import Foundation
 
@@ -185,7 +185,7 @@ struct DocumentTests {
     @Test("Document with empty body")
     func emptyBody() throws {
         let document = HTMLDocument {
-            HTMLEmpty()
+            Empty()
         }
 
         let rendered = try String(document)
@@ -197,7 +197,7 @@ struct DocumentTests {
     @Test("Document with empty head")
     func emptyHead() throws {
         let document = HTMLDocument(
-            head: { HTMLEmpty() },
+            head: { Empty() },
             body: { tag("div") { HTMLText("Body") } }
         )
 

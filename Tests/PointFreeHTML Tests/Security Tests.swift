@@ -7,8 +7,8 @@
 //  Cross-cutting security tests for XSS prevention and safe HTML generation.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("Security Tests")
@@ -148,7 +148,7 @@ struct SecurityTests {
     func rawHTMLNotEscaped() throws {
         let dangerous = "<script>alert('This executes')</script>"
         let html = HTMLRaw(dangerous)
-        let rendered = try String(HTMLGroup { html })
+        let rendered = try String(Group { html })
 
         // RAW HTML IS NOT ESCAPED - THIS IS INTENTIONAL BUT DANGEROUS
         #expect(rendered.contains("<script>"))
@@ -159,7 +159,7 @@ struct SecurityTests {
         // Only trusted, sanitized content should use HTMLRaw
         let trusted = "<strong>Bold text</strong>"
         let html = HTMLRaw(trusted)
-        let rendered = try String(HTMLGroup { html })
+        let rendered = try String(Group { html })
 
         #expect(rendered.contains("<strong>"))
     }

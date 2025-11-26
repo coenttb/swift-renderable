@@ -7,8 +7,8 @@
 //  Cross-cutting integration tests that verify multiple components work together.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("Integration Tests")
@@ -372,14 +372,14 @@ struct IntegrationTests {
 
     // MARK: - Group Integration
 
-    @Test("HTMLGroup flattens nested content")
+    @Test("Group flattens nested content")
     func groupFlattening() throws {
         let html = tag("div") {
-            HTMLGroup {
-                HTMLGroup {
+            Group {
+                Group {
                     tag("span") { HTMLText("Deeply") }
                 }
-                HTMLGroup {
+                Group {
                     tag("span") { HTMLText("Nested") }
                 }
             }

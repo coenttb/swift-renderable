@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("CustomStringConvertible Tests")
@@ -93,7 +93,7 @@ struct CustomStringConvertibleTests {
     func emptyContent() {
         struct EmptyHTML: HTML, CustomStringConvertible {
             var body: some HTML {
-                HTMLEmpty()
+                Empty()
             }
         }
 

@@ -1,29 +1,29 @@
 //
-//  HTMLEmptyTests.swift
+//  EmptyTests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLEmpty Tests")
-struct HTMLEmptyTests {
+@Suite("Empty Tests")
+struct EmptyTests {
 
-    @Test("HTMLEmpty renders nothing")
+    @Test("Empty renders nothing")
     func emptyRendersNothing() throws {
-        let empty = HTMLEmpty()
+        let empty = Empty()
         let rendered = try String(empty)
         #expect(rendered.isEmpty)
     }
 
-    @Test("HTMLEmpty in composition")
+    @Test("Empty in composition")
     func emptyInComposition() throws {
-        let group = HTMLGroup {
+        let group = Group {
             HTMLText("before")
-            HTMLEmpty()
+            Empty()
             HTMLText("after")
         }
 
@@ -31,9 +31,9 @@ struct HTMLEmptyTests {
         #expect(rendered == "beforeafter")
     }
 
-    @Test("HTMLEmpty with attributes does nothing")
+    @Test("Empty with attributes does nothing")
     func emptyWithAttributes() throws {
-        let empty = HTMLEmpty()
+        let empty = Empty()
             .attribute("class", "test")
             .attribute("id", "empty")
 
@@ -41,7 +41,7 @@ struct HTMLEmptyTests {
         #expect(rendered.isEmpty)
     }
 
-    @Test("HTMLEmpty in conditional rendering")
+    @Test("Empty in conditional rendering")
     func emptyInConditional() throws {
         struct TestHTML: HTML {
             let showContent = false
@@ -50,7 +50,7 @@ struct HTMLEmptyTests {
                 if showContent {
                     HTMLText("visible")
                 } else {
-                    HTMLEmpty()
+                    Empty()
                 }
             }
         }
@@ -60,12 +60,12 @@ struct HTMLEmptyTests {
         #expect(rendered.isEmpty)
     }
 
-    @Test("Multiple HTMLEmpty elements")
+    @Test("Multiple Empty elements")
     func multipleEmpty() throws {
-        let group = HTMLGroup {
-            HTMLEmpty()
-            HTMLEmpty()
-            HTMLEmpty()
+        let group = Group {
+            Empty()
+            Empty()
+            Empty()
         }
 
         let rendered = try String(group)
@@ -77,8 +77,8 @@ struct HTMLEmptyTests {
 
 extension `Snapshot Tests` {
     @Suite
-    struct HTMLEmptySnapshotTests {
-        @Test("HTMLEmpty in conditional content snapshot")
+    struct EmptySnapshotTests {
+        @Test("Empty in conditional content snapshot")
         func emptyConditionalSnapshot() {
             let showContent = false
             let showAlternate = true
@@ -95,7 +95,7 @@ extension `Snapshot Tests` {
                                 HTMLText("Main content here")
                             }
                         } else {
-                            HTMLEmpty()
+                            Empty()
                         }
 
                         if showAlternate {
@@ -103,7 +103,7 @@ extension `Snapshot Tests` {
                                 HTMLText("Alternate content")
                             }
                         } else {
-                            HTMLEmpty()
+                            Empty()
                         }
 
                         tag("footer") {
@@ -137,7 +137,7 @@ extension `Snapshot Tests` {
             }
         }
 
-        @Test("HTMLEmpty mixed with content snapshot")
+        @Test("Empty mixed with content snapshot")
         func emptyMixedContentSnapshot() {
             assertInlineSnapshot(
                 of: HTMLDocument {
@@ -146,19 +146,19 @@ extension `Snapshot Tests` {
                             HTMLText("Article Title")
                         }
 
-                        HTMLEmpty()  // This should render nothing
+                        Empty()  // This should render nothing
 
                         tag("p") {
                             HTMLText("First paragraph of content.")
                         }
 
-                        HTMLEmpty()  // This should render nothing
+                        Empty()  // This should render nothing
 
                         tag("p") {
                             HTMLText("Second paragraph of content.")
                         }
 
-                        HTMLEmpty()  // This should render nothing
+                        Empty()  // This should render nothing
                     }
                 },
                 as: .html

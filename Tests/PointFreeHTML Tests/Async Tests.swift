@@ -7,8 +7,8 @@
 //  Cross-cutting tests for async rendering, streaming, and concurrency.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("Async Tests")
@@ -258,7 +258,7 @@ struct AsyncTests {
     func asyncEmptyContent() async {
         struct EmptyHTML: HTML, Sendable {
             var body: some HTML {
-                HTMLEmpty()
+                Empty()
             }
         }
 

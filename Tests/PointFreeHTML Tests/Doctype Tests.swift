@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("Doctype Tests")
@@ -41,7 +41,7 @@ struct DoctypeTests {
 
     @Test("Doctype with other HTML elements")
     func doctypeWithOtherElements() throws {
-        let content = HTMLGroup {
+        let content = Group {
             Doctype()
             tag("html") {
                 tag("head") {
@@ -63,7 +63,7 @@ struct DoctypeTests {
 
     @Test("Multiple doctypes")
     func multipleDoctypes() throws {
-        let content = HTMLGroup {
+        let content = Group {
             Doctype()
             Doctype()
         }

@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
 //
 
-@testable import PointFreeHTML
-import PointFreeHTMLTestSupport
+@testable import RenderingHTML
+import RenderingHTMLTestSupport
 import Testing
 
 @Suite("AsyncStream Tests")
@@ -38,7 +38,7 @@ struct AsyncStreamTests {
     func yieldsCompleteContent() async {
         struct MultiParagraphHTML: HTML, Sendable {
             var body: some HTML {
-                HTMLGroup {
+                Group {
                     tag("p") { HTMLText("First") }
                     tag("p") { HTMLText("Second") }
                     tag("p") { HTMLText("Third") }
@@ -210,7 +210,7 @@ struct AsyncStreamTests {
     func emptyContent() async {
         struct EmptyHTML: HTML, Sendable {
             var body: some HTML {
-                HTMLEmpty()
+                Empty()
             }
         }
 
