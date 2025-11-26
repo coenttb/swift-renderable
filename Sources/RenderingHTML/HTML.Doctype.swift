@@ -32,7 +32,7 @@ extension HTML {
 
         /// The body of the doctype declaration, which renders as raw HTML.
         public var body: some HTML.View {
-            HTML.Raw([UInt8].doctypeHTML)
+            HTML.Raw([UInt8].html.tag.doctype)
         }
     }
 }

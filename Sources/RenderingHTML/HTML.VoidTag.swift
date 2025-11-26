@@ -63,7 +63,7 @@ extension HTML {
         ///
         /// - Returns: An HTML void element with this tag.
         public func callAsFunction() -> HTML.Element<Empty> {
-            tag(self.rawValue) { Empty() }
+            RenderingHTML.tag(self.rawValue) { Empty() }
         }
     }
 }

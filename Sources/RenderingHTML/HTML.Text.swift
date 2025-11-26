@@ -33,11 +33,11 @@ extension HTML {
             for byte in html.text.utf8 {
                 switch byte {
                 case .ascii.ampersand:
-                    buffer.append(contentsOf: [UInt8].htmlEntityAmp)
+                    buffer.append(contentsOf: [UInt8].html.ampersand)
                 case .ascii.lessThanSign:
-                    buffer.append(contentsOf: [UInt8].htmlEntityLt)
+                    buffer.append(contentsOf: [UInt8].html.lessThan)
                 case .ascii.greaterThanSign:
-                    buffer.append(contentsOf: [UInt8].htmlEntityGt)
+                    buffer.append(contentsOf: [UInt8].html.greaterThan)
                 default:
                     buffer.append(byte)
                 }

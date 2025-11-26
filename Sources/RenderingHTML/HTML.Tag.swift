@@ -51,7 +51,7 @@ extension HTML {
         ///
         /// - Returns: An empty HTML element with this tag.
         public func callAsFunction() -> HTML.Element<Empty> {
-            tag(self.rawValue)
+            RenderingHTML.tag(self.rawValue)
         }
 
         /// Creates an HTML element with this tag and the provided content.
@@ -61,7 +61,7 @@ extension HTML {
         /// - Parameter content: A closure that returns the content for this element.
         /// - Returns: An HTML element with this tag and the provided content.
         public func callAsFunction<T: HTML.View>(@HTML.Builder _ content: () -> T) -> HTML.Element<T> {
-            tag(self.rawValue, content)
+            RenderingHTML.tag(self.rawValue, content)
         }
     }
 }

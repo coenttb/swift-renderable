@@ -172,3 +172,18 @@ extension HTML.View {
         await String(self, configuration: configuration)
     }
 }
+
+extension HTML.View {
+    /// Asynchronously render this HTML to a complete byte array.
+    ///
+    /// Convenience method that delegates to `[UInt8].init(_:configuration:)`.
+    ///
+    /// - Parameter configuration: Rendering configuration.
+    /// - Returns: Complete rendered bytes.
+    @inlinable
+    public func asyncBytes(
+        configuration: HTML.Context.Configuration? = nil
+    ) async -> [UInt8] {
+        await [UInt8].init(self, configuration: configuration)
+    }
+}

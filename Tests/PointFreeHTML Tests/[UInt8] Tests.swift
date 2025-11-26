@@ -92,35 +92,35 @@ struct UInt8ArrayTests {
 
     @Test("[UInt8] htmlEntityQuot")
     func htmlEntityQuot() {
-        let entity = [UInt8].htmlEntityQuot
+        let entity = [UInt8].html.doubleQuotationMark
         let string = String(decoding: entity, as: UTF8.self)
         #expect(string == "&quot;")
     }
 
     @Test("[UInt8] htmlEntityApos")
     func htmlEntityApos() {
-        let entity = [UInt8].htmlEntityApos
+        let entity = [UInt8].html.apostrophe
         let string = String(decoding: entity, as: UTF8.self)
         #expect(string == "&#39;")
     }
 
     @Test("[UInt8] htmlEntityAmp")
     func htmlEntityAmp() {
-        let entity = [UInt8].htmlEntityAmp
+        let entity = [UInt8].html.ampersand
         let string = String(decoding: entity, as: UTF8.self)
         #expect(string == "&amp;")
     }
 
     @Test("[UInt8] htmlEntityLt")
     func htmlEntityLt() {
-        let entity = [UInt8].htmlEntityLt
+        let entity = [UInt8].html.lessThan
         let string = String(decoding: entity, as: UTF8.self)
         #expect(string == "&lt;")
     }
 
     @Test("[UInt8] htmlEntityGt")
     func htmlEntityGt() {
-        let entity = [UInt8].htmlEntityGt
+        let entity = [UInt8].html.greaterThan
         let string = String(decoding: entity, as: UTF8.self)
         #expect(string == "&gt;")
     }

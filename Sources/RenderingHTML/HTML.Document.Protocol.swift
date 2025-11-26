@@ -77,16 +77,16 @@ extension HTML.DocumentProtocol {
         let newline = configuration.newline
 
         // <!doctype html>
-        buffer.append(contentsOf: [UInt8].doctypeHTML)
+        buffer.append(contentsOf: [UInt8].html.tag.doctype)
 
         // <html> (block element - newline before, indent content)
         buffer.append(contentsOf: newline)
-        buffer.append(contentsOf: [UInt8].htmlOpen)
+        buffer.append(contentsOf: [UInt8].html.tag.open)
 
         // <head> (block element inside html - newline + indent before)
         buffer.append(contentsOf: newline)
         buffer.append(contentsOf: indent)
-        buffer.append(contentsOf: [UInt8].headOpen)
+        buffer.append(contentsOf: [UInt8].html.tag.headOpen)
 
         // Render head content (with increased indentation)
         let oldIndentation = context.currentIndentation
@@ -102,25 +102,25 @@ extension HTML.DocumentProtocol {
             buffer.append(contentsOf: newline)
             buffer.append(contentsOf: indent)
             buffer.append(contentsOf: indent)
-            buffer.append(contentsOf: [UInt8].styleOpen)
+            buffer.append(contentsOf: [UInt8].html.tag.styleOpen)
             // Stylesheet content (starts with newline, has proper indentation)
             buffer.append(contentsOf: stylesheetBytes)
             // </style> as block element: newline + indent before closing
             buffer.append(contentsOf: newline)
             buffer.append(contentsOf: indent)
             buffer.append(contentsOf: indent)
-            buffer.append(contentsOf: [UInt8].styleClose)
+            buffer.append(contentsOf: [UInt8].html.tag.styleClose)
         }
 
         // </head> (newline + indent before closing)
         buffer.append(contentsOf: newline)
         buffer.append(contentsOf: indent)
-        buffer.append(contentsOf: [UInt8].headClose)
+        buffer.append(contentsOf: [UInt8].html.tag.headClose)
 
         // <body> (block element inside html)
         buffer.append(contentsOf: newline)
         buffer.append(contentsOf: indent)
-        buffer.append(contentsOf: [UInt8].bodyOpen)
+        buffer.append(contentsOf: [UInt8].html.tag.bodyOpen)
 
         // Append pre-rendered body bytes (already has proper indentation)
         buffer.append(contentsOf: bodyBuffer)
@@ -128,11 +128,11 @@ extension HTML.DocumentProtocol {
         // </body> (newline + indent before closing)
         buffer.append(contentsOf: newline)
         buffer.append(contentsOf: indent)
-        buffer.append(contentsOf: [UInt8].bodyClose)
+        buffer.append(contentsOf: [UInt8].html.tag.bodyClose)
 
         // </html> (newline before closing, no indent since it's root)
         buffer.append(contentsOf: newline)
-        buffer.append(contentsOf: [UInt8].htmlClose)
+        buffer.append(contentsOf: [UInt8].html.tag.close)
 
         // Restore indentation
         context.currentIndentation = oldIndentation
@@ -176,7 +176,7 @@ extension HTML.DocumentProtocol where Self: Sendable {
 extension HTML.DocumentProtocol {
     /// Asynchronously render this document to a complete byte array.
     ///
-    /// Convenience method that delegates to `[UInt8].init(document:configuration:)`.
+    /// Convenience method that delegates to `[UInt8].html.init(document:configuration:)`.
     ///
     /// - Parameter configuration: Rendering configuration.
     /// - Returns: Complete rendered bytes.

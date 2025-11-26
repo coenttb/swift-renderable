@@ -9,7 +9,7 @@ import Rendering
 
 // MARK: - RFC Pattern: String Derived from Bytes
 
-extension String {
+extension StringProtocol {
     /// Creates a String from rendered HTML content.
     ///
     /// This is a **derived transformation** in the RFC pattern, where String
@@ -61,23 +61,23 @@ extension String {
     ///
     /// - ``ContiguousArray/init(_:)-swift.method``: Canonical byte transformation
     /// - ``Array/init(_:)-swift.method``: Array convenience wrapper
-    public init<Encoding>(
+    public init(
         html: some HTML.View,
-        as encoding: Encoding.Type = UTF8.self
-    ) throws(HTML.Context.Configuration.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
-        let bytes = ContiguousArray(html)
-        self = String(decoding: bytes, as: encoding)
+        configuration: HTML.Context.Configuration? = nil
+    ) throws(HTML.Context.Configuration.Error) {
+        let bytes = ContiguousArray(html, configuration: configuration)
+        self = Self(decoding: bytes, as: UTF8.self)
     }
 
-    public init<Encoding>(
+    public init(
         _ html: some HTML.View,
-        as encoding: Encoding.Type = UTF8.self
-    ) throws(HTML.Context.Configuration.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
-        self = try .init(html: html, as: encoding)
+        configuration: HTML.Context.Configuration? = nil
+    ) throws(HTML.Context.Configuration.Error) {
+        self = try .init(html: html, configuration: configuration)
     }
 }
 
-extension String {
+extension StringProtocol {
     /// Asynchronously render HTML to a String.
     ///
     /// This is the authoritative implementation for async HTML string rendering.
@@ -98,11 +98,11 @@ extension String {
         configuration: HTML.Context.Configuration? = nil
     ) async {
         let bytes = await [UInt8](html, configuration: configuration)
-        self = String(decoding: bytes, as: UTF8.self)
+        self = Self(decoding: bytes, as: UTF8.self)
     }
 }
 
-extension String {
+extension StringProtocol {
     /// Asynchronously render an HTML document to a String.
     ///
     /// This is the authoritative implementation for async document string rendering.
@@ -122,7 +122,7 @@ extension String {
         document: T,
         configuration: HTML.Context.Configuration? = nil
     ) async {
-        let bytes = await [UInt8](document: document, configuration: configuration)
-        self = String(decoding: bytes, as: UTF8.self)
+        let bytes = await [UInt8].init(document: document, configuration: configuration)
+        self = Self(decoding: bytes, as: UTF8.self)
     }
 }

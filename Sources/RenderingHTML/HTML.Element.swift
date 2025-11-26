@@ -75,15 +75,15 @@ extension HTML {
                     for byte in value.utf8 {
                         switch byte {
                         case .ascii.dquote:
-                            buffer.append(contentsOf: [UInt8].htmlEntityQuot)
+                            buffer.append(contentsOf: [UInt8].html.doubleQuotationMark)
                         case .ascii.apostrophe:
-                            buffer.append(contentsOf: [UInt8].htmlEntityApos)
+                            buffer.append(contentsOf: [UInt8].html.apostrophe)
                         case .ascii.ampersand:
-                            buffer.append(contentsOf: [UInt8].htmlEntityAmp)
+                            buffer.append(contentsOf: [UInt8].html.ampersand)
                         case .ascii.lessThanSign:
-                            buffer.append(contentsOf: [UInt8].htmlEntityLt)
+                            buffer.append(contentsOf: [UInt8].html.lessThan)
                         case .ascii.greaterThanSign:
-                            buffer.append(contentsOf: [UInt8].htmlEntityGt)
+                            buffer.append(contentsOf: [UInt8].html.greaterThan)
                         default:
                             buffer.append(byte)
                         }

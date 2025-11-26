@@ -48,7 +48,7 @@ extension HTML {
         /// - Parameter content: The text content for this element.
         /// - Returns: An HTML element with this tag and the provided text content.
         public func callAsFunction(_ content: String = "") -> HTML.Element<HTML.Text> {
-            tag(self.rawValue) { HTML.Text(content) }
+            RenderingHTML.tag(self.rawValue) { HTML.Text(content) }
         }
 
         /// Creates an HTML element with this tag and dynamically generated text content.
@@ -56,7 +56,7 @@ extension HTML {
         /// - Parameter content: A closure that returns the text content for this element.
         /// - Returns: An HTML element with this tag and the provided text content.
         public func callAsFunction(_ content: () -> String) -> HTML.Element<HTML.Text> {
-            tag(self.rawValue) { HTML.Text(content()) }
+            RenderingHTML.tag(self.rawValue) { HTML.Text(content()) }
         }
     }
 }
