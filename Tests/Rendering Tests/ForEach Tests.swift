@@ -17,44 +17,72 @@ struct `ForEach Tests` {
     func `ForEach iterates over array`() {
         let items = ["a", "b", "c"]
         let forEach = ForEach(items) { item in
-            Raw(item)
+            TestElement(id: item)
         }
-        #expect(forEach.content.value.count == 3)
-        #expect(forEach.content.value[0].bytes == Array("a".utf8))
-        #expect(forEach.content.value[1].bytes == Array("b".utf8))
-        #expect(forEach.content.value[2].bytes == Array("c".utf8))
+        #expect(forEach.content.elements.count == 3)
+        #expect(forEach.content.elements[0].id == "a")
+        #expect(forEach.content.elements[1].id == "b")
+        #expect(forEach.content.elements[2].id == "c")
     }
 
     @Test
     func `ForEach with empty collection`() {
         let items: [String] = []
         let forEach = ForEach(items) { item in
-            Raw(item)
+            TestElement(id: item)
         }
-        #expect(forEach.content.value.isEmpty)
+        #expect(forEach.content.elements.isEmpty)
     }
 
     // MARK: - With Different Collection Types
 
     @Test
     func `ForEach with range`() {
-        let forEach = ForEach(Array(1...3)) { num in
-            Raw("\(num)")
+        let forEach = ForEach(1...3) { num in
+            TestElement(id: "\(num)")
         }
-        #expect(forEach.content.value.count == 3)
-        #expect(forEach.content.value[0].bytes == Array("1".utf8))
-        #expect(forEach.content.value[1].bytes == Array("2".utf8))
-        #expect(forEach.content.value[2].bytes == Array("3".utf8))
+        #expect(forEach.content.elements.count == 3)
+        #expect(forEach.content.elements[0].id == "1")
+        #expect(forEach.content.elements[1].id == "2")
+        #expect(forEach.content.elements[2].id == "3")
+    }
+
+    // MARK: - Content Access
+
+    @Test
+    func `ForEach content returns _Array`() {
+        let forEach = ForEach(["x"]) { item in
+            TestElement(id: item)
+        }
+        #expect(forEach.content.elements.count == 1)
     }
 
     // MARK: - Sendable
 
     @Test
     func `ForEach is Sendable when content is Sendable`() {
-        let forEach = ForEach(["test"]) { Raw($0) }
+        let forEach = ForEach(["test"]) { item in
+            TestElement(id: item)
+        }
         Task {
             _ = forEach.content
         }
-        #expect(true) // Compile-time check
+        #expect(Bool(true)) // Compile-time check
     }
+}
+
+// MARK: - Test Helpers
+
+private struct TestElement: Rendering, Sendable {
+    let id: String
+    typealias Context = Void
+    typealias Content = Never
+
+    var body: Never { fatalError() }
+
+    static func _render<Buffer: RangeReplaceableCollection>(
+        _ markup: TestElement,
+        into buffer: inout Buffer,
+        context: inout Void
+    ) where Buffer.Element == UInt8 {}
 }

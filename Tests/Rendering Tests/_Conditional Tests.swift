@@ -15,10 +15,10 @@ struct `_Conditional Tests` {
 
     @Test
     func `_Conditional first branch`() {
-        let conditional = _Conditional<Raw, Raw>(.first(Raw("first")))
-        switch conditional.value {
-        case .first(let raw):
-            #expect(raw.bytes == Array("first".utf8))
+        let conditional = _Conditional<TestElement, TestElement>.first(TestElement(id: "first"))
+        switch conditional {
+        case .first(let element):
+            #expect(element.id == "first")
         case .second:
             Issue.record("Expected first branch")
         }
@@ -28,34 +28,23 @@ struct `_Conditional Tests` {
 
     @Test
     func `_Conditional second branch`() {
-        let conditional = _Conditional<Raw, Raw>(.second(Raw("second")))
-        switch conditional.value {
+        let conditional = _Conditional<TestElement, TestElement>.second(TestElement(id: "second"))
+        switch conditional {
         case .first:
             Issue.record("Expected second branch")
-        case .second(let raw):
-            #expect(raw.bytes == Array("second".utf8))
+        case .second(let element):
+            #expect(element.id == "second")
         }
     }
 
     // MARK: - Type Safety
 
     @Test
-    func `_Conditional with different types`() {
-        struct TypeA: Rendering {
-            typealias Context = Never
-            typealias Content = Never
-            var body: Never { fatalError() }
-        }
-        struct TypeB: Rendering {
-            typealias Context = Never
-            typealias Content = Never
-            var body: Never { fatalError() }
-        }
-
-        let conditional = _Conditional<TypeA, TypeB>(.first(TypeA()))
-        switch conditional.value {
-        case .first:
-            #expect(true)
+    func `_Conditional can have different branch types`() {
+        let conditional = _Conditional<TestElement, OtherElement>.first(TestElement(id: "test"))
+        switch conditional {
+        case .first(let element):
+            #expect(element.id == "test")
         case .second:
             Issue.record("Expected first branch")
         }
@@ -64,11 +53,40 @@ struct `_Conditional Tests` {
     // MARK: - Sendable
 
     @Test
-    func `_Conditional is Sendable when both types are Sendable`() {
-        let conditional = _Conditional<Raw, Raw>(.first(Raw("test")))
+    func `_Conditional is Sendable when both branches are Sendable`() {
+        let conditional = _Conditional<TestElement, TestElement>.first(TestElement(id: "test"))
         Task {
-            _ = conditional.value
+            _ = conditional
         }
-        #expect(true) // Compile-time check
+        #expect(Bool(true)) // Compile-time check
     }
+}
+
+// MARK: - Test Helpers
+
+private struct TestElement: Rendering, Sendable {
+    let id: String
+    typealias Context = Void
+    typealias Content = Never
+
+    init(id: String = "") { self.id = id }
+    var body: Never { fatalError() }
+
+    static func _render<Buffer: RangeReplaceableCollection>(
+        _ markup: TestElement,
+        into buffer: inout Buffer,
+        context: inout Void
+    ) where Buffer.Element == UInt8 {}
+}
+
+private struct OtherElement: Rendering, Sendable {
+    typealias Context = Void
+    typealias Content = Never
+    var body: Never { fatalError() }
+
+    static func _render<Buffer: RangeReplaceableCollection>(
+        _ markup: OtherElement,
+        into buffer: inout Buffer,
+        context: inout Void
+    ) where Buffer.Element == UInt8 {}
 }

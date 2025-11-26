@@ -96,6 +96,13 @@ let package = Package(
             ]
         ),
         .testTarget(
+            name: .rendering.tests,
+            dependencies: [
+                .rendering,
+                .renderingTestSupport,
+            ]
+        ),
+        .testTarget(
             name: .renderingHTML.tests,
             dependencies: [
                 .renderingHTML,

@@ -116,7 +116,9 @@ extension RangeReplaceableCollection<UInt8> {
         Document._render(document, into: &buffer, context: &context)
         self = buffer
     }
+}
 
+extension RangeReplaceableCollection<UInt8> {
     /// Asynchronously render an HTML document to a byte collection.
     ///
     /// - Parameters:

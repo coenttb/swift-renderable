@@ -8,42 +8,59 @@
 @testable import Rendering
 import Testing
 
+// Note: _Array requires Element: Rendering, so we use a test helper type.
+// Full rendering behavior tests are in domain-specific test modules.
+
 @Suite
 struct `_Array Tests` {
 
-    // MARK: - Initialization
+    // MARK: - Structure
 
     @Test
-    func `_Array init with elements`() {
-        let array = _Array([Raw("a"), Raw("b"), Raw("c")])
-        #expect(array.value.count == 3)
+    func `_Array can hold elements`() {
+        let array = _Array([TestElement(), TestElement(), TestElement()])
+        #expect(array.elements.count == 3)
     }
 
     @Test
-    func `_Array init with empty array`() {
-        let array = _Array<Raw>([])
-        #expect(array.value.isEmpty)
+    func `_Array can be empty`() {
+        let array = _Array<TestElement>([])
+        #expect(array.elements.isEmpty)
     }
 
-    // MARK: - Value Access
-
     @Test
-    func `_Array value property returns underlying array`() {
-        let elements = [Raw("x"), Raw("y")]
+    func `_Array elements property returns underlying array`() {
+        let elements = [TestElement(), TestElement()]
         let array = _Array(elements)
-        #expect(array.value.count == 2)
-        #expect(array.value[0].bytes == Array("x".utf8))
-        #expect(array.value[1].bytes == Array("y".utf8))
+        #expect(array.elements.count == 2)
     }
 
     // MARK: - Sendable
 
     @Test
     func `_Array is Sendable when Element is Sendable`() {
-        let array = _Array([Raw("test")])
+        let array = _Array([TestElement()])
         Task {
-            _ = array.value
+            _ = array.elements
         }
-        #expect(true) // Compile-time check
+        #expect(Bool(true)) // Compile-time check
+    }
+}
+
+// MARK: - Test Helpers
+
+/// A minimal Rendering type for testing _Array
+private struct TestElement: Rendering, Sendable {
+    typealias Context = Void
+    typealias Content = Never
+
+    var body: Never { fatalError() }
+
+    static func _render<Buffer: RangeReplaceableCollection>(
+        _ markup: TestElement,
+        into buffer: inout Buffer,
+        context: inout Void
+    ) where Buffer.Element == UInt8 {
+        // No-op
     }
 }
