@@ -1,37 +1,20 @@
 // swift-tools-version:6.2
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 extension String {
-    static let rendering: Self = "Rendering"
-    static let renderingHTML: Self = "Rendering HTML"
-    static let renderingTestSupport: Self = "Rendering TestSupport"
-    static let renderingHTMLTestSupport: Self = "Rendering HTML TestSupport"
+    static let renderable: Self = "Renderable"
+    static let renderableTestSupport: Self = "Renderable TestSupport"
 }
 
 extension Target.Dependency {
-    static var rendering: Self { .target(name: .rendering) }
-    static var renderingHTML: Self { .target(name: .renderingHTML) }
-    static var renderingTestSupport: Self { .target(name: .renderingTestSupport) }
-    static var renderingHTMLTestSupport: Self { .target(name: .renderingHTMLTestSupport) }
+    static var renderable: Self { .target(name: .renderable) }
+    static var renderableTestSupport: Self { .target(name: .renderableTestSupport) }
 }
 
 extension Target.Dependency {
     static var inlineSnapshotTesting: Self {
         .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing")
-    }
-    static var incits4_1986: Self {
-        .product(name: "INCITS 4 1986", package: "swift-incits-4-1986")
-    }
-    static var iso9899: Self {
-        .product(name: "ISO 9899", package: "swift-iso-9899")
-    }
-    static var standards: Self {
-        .product(name: "Standards", package: "swift-standards")
-    }
-    static var testingPerformance: Self {
-        .product(name: "TestingPerformance", package: "swift-testing-performance")
     }
     static var asyncAlgorithms: Self {
         .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
@@ -39,7 +22,7 @@ extension Target.Dependency {
 }
 
 let package = Package(
-    name: "pointfree-html",
+    name: "swift-renderable",
     platforms: [
         .iOS(.v18),
         .macOS(.v15),
@@ -48,66 +31,32 @@ let package = Package(
         .macCatalyst(.v18),
     ],
     products: [
-        .library(name: .rendering, targets: [.rendering]),
-        .library(name: .renderingHTML, targets: [.renderingHTML]),
-        .library(name: .renderingTestSupport, targets: [.renderingTestSupport]),
-        .library(name: .renderingHTMLTestSupport, targets: [.renderingHTMLTestSupport]),
+        .library(name: .renderable, targets: [.renderable]),
+        .library(name: .renderableTestSupport, targets: [.renderableTestSupport]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms.git", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.2"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.3"),
-        .package(url: "https://github.com/swift-standards/swift-incits-4-1986", from: "0.1.0"),
-        .package(url: "https://github.com/swift-standards/swift-standards", from: "0.1.0"),
-        .package(url: "https://github.com/swift-standards/swift-iso-9899", from: "0.1.0"),
-        .package(url: "https://github.com/coenttb/swift-testing-performance", from: "0.1.0"),
     ],
     targets: [
         .target(
-            name: .rendering,
+            name: .renderable,
             dependencies: [
                 .asyncAlgorithms,
             ]
         ),
         .target(
-            name: .renderingHTML,
+            name: .renderableTestSupport,
             dependencies: [
-                .rendering,
-                .asyncAlgorithms,
-                .product(name: "OrderedCollections", package: "swift-collections"),
-                .incits4_1986,
-                .standards,
-                .iso9899
-            ]
-        ),
-        .target(
-            name: .renderingTestSupport,
-            dependencies: [
-                .rendering,
-                .inlineSnapshotTesting,
-            ]
-        ),
-        .target(
-            name: .renderingHTMLTestSupport,
-            dependencies: [
-                .renderingHTML,
-                .renderingTestSupport,
+                .renderable,
                 .inlineSnapshotTesting,
             ]
         ),
         .testTarget(
-            name: .rendering.tests,
+            name: .renderable.tests,
             dependencies: [
-                .rendering,
-                .renderingTestSupport,
-            ]
-        ),
-        .testTarget(
-            name: .renderingHTML.tests,
-            dependencies: [
-                .renderingHTML,
-                .renderingHTMLTestSupport,
-                .testingPerformance,
+                .renderable,
+                .renderableTestSupport,
             ]
         ),
     ],
@@ -116,7 +65,6 @@ let package = Package(
 
 extension String {
     var tests: Self { self + " Tests" }
-    var foundation: Self { self + " Foundation" }
 }
 
 for target in package.targets where ![.system, .binary, .plugin].contains(target.type) {
@@ -124,6 +72,6 @@ for target in package.targets where ![.system, .binary, .plugin].contains(target
     target.swiftSettings = existing + [
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
-        .enableUpcomingFeature("MemberImportVisibility")
+        .enableUpcomingFeature("MemberImportsByDefault")
     ]
 }
