@@ -63,16 +63,6 @@ extension HTML.AnyView {
 extension AnyRendering: Rendering where Context == HTML.Context {
     public typealias Content = Never
 
-    public static func _render<Buffer: RangeReplaceableCollection>(
-        _ html: AnyRendering<HTML.Context>,
-        into buffer: inout Buffer,
-        context: inout HTML.Context
-    ) where Buffer.Element == UInt8 {
-        var contiguousBuffer = ContiguousArray<UInt8>()
-        html.render(into: &contiguousBuffer, context: &context)
-        buffer.append(contentsOf: contiguousBuffer)
-    }
-
     public var body: Never { fatalError() }
 }
 

@@ -12,6 +12,11 @@
 ///
 /// Note: This is a simple struct. Domain-specific modules (like RenderingHTML)
 /// provide the `Rendering` conformance with the appropriate `Context` type.
-public struct Empty: Sendable {
+public struct Empty {
     public init() {}
 }
+
+extension Empty: Sendable {}
+extension Empty: Hashable {}
+extension Empty: Equatable {}
+extension Empty: Codable {}

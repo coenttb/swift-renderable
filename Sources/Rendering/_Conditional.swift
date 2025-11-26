@@ -38,3 +38,6 @@ where First.Context == Second.Context {
 }
 
 extension _Conditional: Sendable where First: Sendable, Second: Sendable {}
+extension _Conditional: Hashable where First: Hashable, Second: Hashable {}
+extension _Conditional: Equatable where First: Equatable, Second: Equatable {}
+extension _Conditional: Codable where First: Codable, Second: Codable {}

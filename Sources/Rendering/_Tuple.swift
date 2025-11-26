@@ -23,3 +23,6 @@ public struct _Tuple<each Content> {
 }
 
 extension _Tuple: Sendable where repeat each Content: Sendable {}
+//extension _Tuple: Hashable where repeat each Content: Hashable {}
+//extension _Tuple: Equatable where repeat each Content: Equatable {}
+//extension _Tuple: Codable where repeat each Content: Codable {}

@@ -255,10 +255,15 @@ struct `AsyncStream Tests` {
 extension `Performance Tests` {
     @Suite
     struct AsyncStreamPerformance {
-        @Test(.disabled("Performance test - enable manually"))
+        @Test(
+//            .disabled("Performance test - enable manually")
+        )
         func largeContentStreaming() async {
+            let itemCount = 100_0000
+
             struct ListHTML: HTML.View, Sendable {
                 let items: [String]
+
                 var body: some HTML.View {
                     tag("ul") {
                         for item in items {
@@ -270,14 +275,29 @@ extension `Performance Tests` {
                 }
             }
 
-            let items = (0..<1000).map { "Item \($0)" }
+            print("Creating \(itemCount) items...")
+            let items = (0..<itemCount).map { "Item \($0)" }
+            print("Created items, starting render...")
+
             let html = ListHTML(items: items)
 
             var totalBytes = 0
-            for await chunk in AsyncStream(chunkSize: 4096) { html } {
+            var chunkCount = 0
+            let startTime = ContinuousClock.now
+
+            // Use progressive mode to stream chunks as they render (lower TTFB)
+            for await chunk in AsyncStream(mode: .progressive, chunkSize: 4096) { html } {
                 totalBytes += chunk.count
+                chunkCount += 1
+
+                // Print progress every 1000 chunks
+                if chunkCount % 1000 == 0 {
+                    print("Progress: \(chunkCount) chunks, \(totalBytes) bytes")
+                }
             }
 
+            let elapsed = ContinuousClock.now - startTime
+            print("Completed: \(itemCount) items, \(totalBytes) bytes, \(chunkCount) chunks in \(elapsed)")
             #expect(totalBytes > 0)
         }
     }
