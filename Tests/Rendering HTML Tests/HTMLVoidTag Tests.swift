@@ -16,21 +16,21 @@ struct `HTMLVoidTag Tests` {
 
     @Test
     func `HTMLVoidTag string initialization`() throws {
-        let voidTag = HTML.VoidTag("br")
+        let voidTag = HTML.Tag.Void("br")
         #expect(voidTag.rawValue == "br")
     }
 
     @Test
     func `HTMLVoidTag string literal initialization`() throws {
-        let voidTag: HTML.VoidTag = "hr"
+        let voidTag: HTML.Tag.Void = "hr"
         #expect(voidTag.rawValue == "hr")
     }
 
     // MARK: - All Tags
 
     @Test
-    func `HTML.VoidTag.allTags contains expected tags`() {
-        let allTags = HTML.VoidTag.allTags
+    func `HTML.Tag.Void.allTags contains expected tags`() {
+        let allTags = HTML.Tag.Void.allTags
         #expect(allTags.contains("area"))
         #expect(allTags.contains("base"))
         #expect(allTags.contains("br"))
@@ -48,15 +48,15 @@ struct `HTMLVoidTag Tests` {
     }
 
     @Test
-    func `HTML.VoidTag.allTags has correct count`() {
-        #expect(HTML.VoidTag.allTags.count == 16)
+    func `HTML.Tag.Void.allTags has correct count`() {
+        #expect(HTML.Tag.Void.allTags.count == 16)
     }
 
     // MARK: - Call As Function
 
     @Test
     func `HTMLVoidTag creates self-closing element`() throws {
-        let br = HTML.VoidTag("br")
+        let br = HTML.Tag.Void("br")
         let element = br()
         let rendered = try String(element)
         #expect(rendered.contains("<br"))
@@ -67,21 +67,21 @@ struct `HTMLVoidTag Tests` {
 
     @Test
     func `HTMLVoidTag br element`() throws {
-        let br = HTML.VoidTag("br")
+        let br = HTML.Tag.Void("br")
         let rendered = try String(br())
         #expect(rendered.contains("<br>"))
     }
 
     @Test
     func `HTMLVoidTag hr element`() throws {
-        let hr = HTML.VoidTag("hr")
+        let hr = HTML.Tag.Void("hr")
         let rendered = try String(hr())
         #expect(rendered.contains("<hr>"))
     }
 
     @Test
     func `HTMLVoidTag img element`() throws {
-        let img = HTML.VoidTag("img")
+        let img = HTML.Tag.Void("img")
         let element = img()
             .attribute("src", "/image.jpg")
             .attribute("alt", "Description")
@@ -95,7 +95,7 @@ struct `HTMLVoidTag Tests` {
 
     @Test
     func `HTMLVoidTag input element`() throws {
-        let input = HTML.VoidTag("input")
+        let input = HTML.Tag.Void("input")
         let element = input()
             .attribute("type", "text")
             .attribute("name", "username")
@@ -109,7 +109,7 @@ struct `HTMLVoidTag Tests` {
 
     @Test
     func `HTMLVoidTag meta element`() throws {
-        let meta = HTML.VoidTag("meta")
+        let meta = HTML.Tag.Void("meta")
         let element = meta()
             .attribute("charset", "utf-8")
 
@@ -120,7 +120,7 @@ struct `HTMLVoidTag Tests` {
 
     @Test
     func `HTMLVoidTag link element`() throws {
-        let link = HTML.VoidTag("link")
+        let link = HTML.Tag.Void("link")
         let element = link()
             .attribute("rel", "stylesheet")
             .attribute("href", "/styles.css")
@@ -135,7 +135,7 @@ struct `HTMLVoidTag Tests` {
 
     @Test
     func `HTMLVoidTag with multiple attributes`() throws {
-        let input = HTML.VoidTag("input")
+        let input = HTML.Tag.Void("input")
         let element = input()
             .attribute("type", "email")
             .attribute("name", "email")
@@ -155,8 +155,8 @@ struct `HTMLVoidTag Tests` {
 
     @Test
     func `HTMLVoidTag in form`() throws {
-        let input = HTML.VoidTag("input")
-        let br = HTML.VoidTag("br")
+        let input = HTML.Tag.Void("input")
+        let br = HTML.Tag.Void("br")
 
         let html = tag("form") {
             tag("label") { HTML.Text("Name:") }
@@ -176,8 +176,8 @@ struct `HTMLVoidTag Tests` {
 
     @Test
     func `HTMLVoidTag in head`() throws {
-        let meta = HTML.VoidTag("meta")
-        let link = HTML.VoidTag("link")
+        let meta = HTML.Tag.Void("meta")
+        let link = HTML.Tag.Void("link")
 
         let document = HTML.Document {
             Empty()
@@ -201,8 +201,8 @@ extension `Snapshot Tests` {
     struct HTMLVoidTagSnapshotTests {
         @Test
         func `HTMLVoidTag form elements snapshot`() {
-            let input = HTML.VoidTag("input")
-            let br = HTML.VoidTag("br")
+            let input = HTML.Tag.Void("input")
+            let br = HTML.Tag.Void("br")
 
             assertInlineSnapshot(
                 of: HTML.Document {

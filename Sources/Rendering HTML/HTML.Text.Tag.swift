@@ -1,5 +1,5 @@
 //
-//  HTML.Text.Tag.swift
+//  HTML.Tag.Text.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -7,10 +7,10 @@
 
 import Rendering
 
-extension HTML.Text {
+extension HTML.Tag {
     /// Represents an HTML tag that typically contains text content.
     ///
-    /// `HTML.Text.Tag` is a specialization of HTML tags for elements that primarily
+    /// `HTML.Tag.Text` is a specialization of HTML tags for elements that primarily
     /// contain text content, such as `title`, `option`, and `textarea`. It provides
     /// a simpler API for setting text content.
     ///
@@ -25,7 +25,7 @@ extension HTML.Text {
     /// // Title with dynamic text
     /// let dynamicTitle = title { getPageTitle() }
     /// ```
-    public struct Tag: ExpressibleByStringLiteral {
+    public struct Text: ExpressibleByStringLiteral {
         /// The name of the HTML tag.
         public let rawValue: String
 

@@ -25,8 +25,8 @@ struct `HTML.Tag Tests` {
     }
 
     @Test
-    func `HTML.Text.Tag for text content`() throws {
-        let textTag = HTML.Text.Tag("span") {
+    func `HTML.Tag.Text for text content`() throws {
+        let textTag = HTML.Tag.Text("span") {
             "text content"
         }
 
@@ -38,7 +38,7 @@ struct `HTML.Tag Tests` {
 
     @Test
     func `HTMLVoidTag self-closing`() throws {
-        let voidTag = HTML.VoidTag("br")()
+        let voidTag = HTML.Tag.Void("br")()
 
         let rendered = try String(HTML.Document { voidTag })
         #expect(rendered.contains("<br"))
@@ -48,7 +48,7 @@ struct `HTML.Tag Tests` {
 
     @Test
     func `HTMLVoidTag with attributes`() throws {
-        let voidTag = HTML.VoidTag("input")()
+        let voidTag = HTML.Tag.Void("input")()
             .attribute("type", "text")
             .attribute("name", "username")
 
@@ -97,17 +97,17 @@ extension `Snapshot Tests` {
                     tag("main") {
                         HTML.Tag("header") {
                             HTML.Tag("nav") {
-                                HTML.Text.Tag("h1") {
+                                HTML.Tag.Text("h1") {
                                     "Site Navigation"
                                 }
                                 HTML.Tag("ul") {
                                     HTML.Tag("li") {
-                                        HTML.Text.Tag("a") {
+                                        HTML.Tag.Text("a") {
                                             "Home"
                                         }
                                     }
                                     HTML.Tag("li") {
-                                        HTML.Text.Tag("a") {
+                                        HTML.Tag.Text("a") {
                                             "About"
                                         }
                                     }
@@ -116,10 +116,10 @@ extension `Snapshot Tests` {
                         }
 
                         HTML.Tag("section") {
-                            HTML.Text.Tag("h2") {
+                            HTML.Tag.Text("h2") {
                                 "Main Content"
                             }
-                            HTML.Text.Tag("p") {
+                            HTML.Tag.Text("p") {
                                 "This demonstrates semantic HTML structure using HTML.Tag components."
                             }
                         }
@@ -165,23 +165,23 @@ extension `Snapshot Tests` {
                 of: HTML.Document {
                     HTML.Tag("form") {
                         HTML.Tag("fieldset") {
-                            HTML.Text.Tag("legend") {
+                            HTML.Tag.Text("legend") {
                                 "Contact Information"
                             }
 
-                            HTML.VoidTag("input")()
+                            HTML.Tag.Void("input")()
                                 .attribute("type", "text")
                                 .attribute("name", "name")
                                 .attribute("placeholder", "Your Name")
 
-                            HTML.VoidTag("br")()
+                            HTML.Tag.Void("br")()
 
-                            HTML.VoidTag("input")()
+                            HTML.Tag.Void("input")()
                                 .attribute("type", "email")
                                 .attribute("name", "email")
                                 .attribute("placeholder", "Your Email")
 
-                            HTML.VoidTag("hr")()
+                            HTML.Tag.Void("hr")()
 
                             HTML.Tag("button") {
                                 HTML.Text("Submit Form")

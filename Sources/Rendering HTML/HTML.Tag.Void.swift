@@ -1,5 +1,5 @@
 //
-//  HTML.VoidTag.swift
+//  HTML.Tag.Void.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -7,10 +7,10 @@
 
 public import Rendering
 
-extension HTML {
+extension HTML.Tag {
     /// Represents an HTML void element that cannot contain content.
     ///
-    /// `HTML.VoidTag` is a specialization of HTML tags for elements that are
+    /// `HTML.Tag.Void` is a specialization of HTML tags for elements that are
     /// self-closing and cannot contain content, such as `img`, `br`, and `input`.
     ///
     /// Example:
@@ -21,7 +21,7 @@ extension HTML {
     /// // Create a line break
     /// let lineBreak = br()
     /// ```
-    public struct VoidTag: ExpressibleByStringLiteral {
+    public struct Void: ExpressibleByStringLiteral {
         /// A set of all HTML void element tag names.
         public static let allTags: Set<String> = [
             "area",

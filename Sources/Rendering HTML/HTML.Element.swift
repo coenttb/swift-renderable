@@ -110,7 +110,7 @@ extension HTML {
             }
 
             // Add closing tag unless it's a void element
-            if !HTML.VoidTag.allTags.contains(html.tag) {
+            if !HTML.Tag.Void.allTags.contains(html.tag) {
                 if htmlIsBlock && !isPreElement {
                     buffer.append(contentsOf: context.configuration.newline)
                     buffer.append(contentsOf: context.currentIndentation)
