@@ -9,16 +9,19 @@
 ///
 /// This struct assembles the different parts of an HTML document (head, stylesheet, body)
 /// into a complete HTML document with proper structure.
-struct Document<Head: HTML>: HTML {
+struct Document<
+    Bytes: Collection,
+    Head: HTML
+>: HTML where Bytes.Element == UInt8 {
     /// The head content for the document.
     let head: Head
 
     /// Collected stylesheet bytes to be included in the document head.
     /// Stored as bytes to avoid String allocation round-trip.
-    let stylesheetBytes: ContiguousArray<UInt8>
+    let stylesheetBytes: Bytes
 
     /// Pre-rendered bytes for the document body.
-    let bodyBytes: ContiguousArray<UInt8>
+    let bodyBytes: Bytes
 
     /// The body content of the document, which assembles the complete HTML structure.
     var body: some HTML {
@@ -30,9 +33,11 @@ struct Document<Head: HTML>: HTML {
             // Add the head section with metadata and styles
             HTMLTag("head") {
                 head
-                HTMLTag("style") {
-                    // Use HTMLRaw for stylesheet bytes - CSS doesn't need HTML escaping
-                    HTMLRaw(stylesheetBytes)
+                if !stylesheetBytes.isEmpty {
+                    HTMLTag("style") {
+                        // Use HTMLRaw for stylesheet bytes - CSS doesn't need HTML escaping
+                        HTMLRaw(stylesheetBytes)
+                    }
                 }
             }
 

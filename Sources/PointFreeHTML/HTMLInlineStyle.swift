@@ -140,7 +140,7 @@ public struct HTMLInlineStyle<Content: HTML>: HTML {
             // Add to stylesheet if not present
             let key = StyleKey(style.atRule, selector)
             if context.styles[key] == nil {
-                context.styles[key] = "\(style.property):\(style.value)"
+                context.styles[key] = style.property + ":" + style.value
             }
 
             classComponents.append(className)

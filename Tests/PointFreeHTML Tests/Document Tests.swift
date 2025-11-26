@@ -48,8 +48,24 @@ struct DocumentTests {
         #expect(rendered.contains("<title>Page Title</title>"))
     }
 
-    @Test("Document includes style tag")
+    @Test("Document includes style tag when styles present")
     func includesStyleTag() throws {
+        let document = HTMLDocument {
+            tag("div") {
+                HTMLText("Content")
+            }
+            .inlineStyle("color", "red")
+        }
+
+        let rendered = try String(document)
+
+        #expect(rendered.contains("<style>"))
+        #expect(rendered.contains("</style>"))
+        #expect(rendered.contains("color:red"))
+    }
+
+    @Test("Document omits style tag when no styles")
+    func omitsStyleTagWhenNoStyles() throws {
         let document = HTMLDocument {
             tag("div") {
                 HTMLText("Content")
@@ -58,8 +74,7 @@ struct DocumentTests {
 
         let rendered = try String(document)
 
-        #expect(rendered.contains("<style>"))
-        #expect(rendered.contains("</style>"))
+        #expect(!rendered.contains("<style>"))
     }
 
     // MARK: - Body Content
@@ -189,7 +204,9 @@ struct DocumentTests {
         let rendered = try String(document)
 
         #expect(rendered.contains("<head>"))
-        #expect(rendered.contains("<style>"))
+        #expect(rendered.contains("</head>"))
+        // No style tag when no styles are used
+        #expect(!rendered.contains("<style>"))
     }
 
     // MARK: - Complex Documents

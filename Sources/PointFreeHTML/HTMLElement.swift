@@ -57,9 +57,9 @@ public struct HTMLElement<Content: HTML>: HTML {
     ) where Buffer.Element == UInt8 {
         // Special handling for pre elements to preserve formatting
         let isPreElement = html.tag == "pre"
-        
+        let htmlIsBlock = html.isBlock
         // Add newline and indentation for block elements
-        if html.isBlock {
+        if htmlIsBlock {
             buffer.append(contentsOf: context.configuration.newline)
             buffer.append(contentsOf: context.currentIndentation)
         }
@@ -108,7 +108,7 @@ public struct HTMLElement<Content: HTML>: HTML {
                 context.currentIndentation = oldIndentation
             }
             context.attributes.removeAll()
-            if html.isBlock && !isPreElement {
+            if htmlIsBlock && !isPreElement {
                 context.currentIndentation += context.configuration.indentation
             }
             Content._render(content, into: &buffer, context: &context)
@@ -116,7 +116,7 @@ public struct HTMLElement<Content: HTML>: HTML {
         
         // Add closing tag unless it's a void element
         if !HTMLVoidTag.allTags.contains(html.tag) {
-            if html.isBlock && !isPreElement {
+            if htmlIsBlock && !isPreElement {
                 buffer.append(contentsOf: context.configuration.newline)
                 buffer.append(contentsOf: context.currentIndentation)
             }

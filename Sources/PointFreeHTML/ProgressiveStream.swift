@@ -79,10 +79,15 @@ struct ChunkingBuffer: RangeReplaceableCollection {
 
     @usableFromInline
     mutating func flushIfNeeded() {
-        while buffer.count >= chunkSize {
-            let chunk = buffer.prefix(chunkSize)
-            flush(ArraySlice(chunk))
-            buffer.removeFirst(chunkSize)
+        // Use offset tracking to avoid O(n²) from repeated removeFirst calls
+        var offset = 0
+        while buffer.count - offset >= chunkSize {
+            let end = offset + chunkSize
+            flush(buffer[offset..<end])
+            offset = end
+        }
+        if offset > 0 {
+            buffer.removeFirst(offset)  // Single O(n) operation at end
         }
     }
 
