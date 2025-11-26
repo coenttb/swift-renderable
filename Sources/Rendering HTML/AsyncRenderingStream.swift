@@ -88,11 +88,18 @@ public actor AsyncRenderingStream: AsyncRenderingStreamProtocol {
     }
 
     /// Flush any full chunks to the channel.
+    ///
+    /// Uses offset-based iteration to avoid O(n²) behavior from repeated
+    /// `removeFirst()` calls. Only performs a single `removeFirst()` at the end.
     private func flushFullChunks() async {
-        while buffer.count >= chunkSize {
-            let chunk = ArraySlice(buffer.prefix(chunkSize))
-            await channel.send(chunk)  // Backpressure: suspends until consumed
-            buffer.removeFirst(chunkSize)
+        var offset = 0
+        while buffer.count - offset >= chunkSize {
+            let end = offset + chunkSize
+            await channel.send(ArraySlice(buffer[offset..<end]))  // Backpressure: suspends until consumed
+            offset = end
+        }
+        if offset > 0 {
+            buffer.removeFirst(offset)
         }
     }
 

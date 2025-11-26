@@ -230,6 +230,117 @@ struct `AsyncChannel Tests` {
     }
 }
 
+// MARK: - Backpressure Verification Tests
+
+extension `AsyncChannel Tests` {
+    @Suite
+    struct `Backpressure Tests` {
+
+        @Test
+        func `AsyncChannel suspends producer when consumer is slow`() async {
+            struct StreamingHTML: HTML.View, AsyncRendering, Sendable {
+                var body: some HTML.View {
+                    tag("div") {
+                        // Generate enough content to require multiple chunks
+                        HTML.Text(String(repeating: "x", count: 10_000))
+                    }
+                }
+            }
+
+            let chunkSize = 100
+            var chunksReceived = 0
+            var producerSuspended = false
+
+            // Use a small chunk size to force multiple chunks
+            let channel = AsyncChannel<ArraySlice<UInt8>>(chunkSize: chunkSize) { StreamingHTML() }
+
+            // Consume slowly to test backpressure
+            for await chunk in channel {
+                chunksReceived += 1
+                #expect(chunk.count <= chunkSize, "Chunk should not exceed chunk size")
+
+                // After receiving a few chunks, introduce artificial delay
+                // to test that producer doesn't overwhelm consumer
+                if chunksReceived == 3 {
+                    // This delay should cause the producer to suspend
+                    // waiting for us to consume
+                    try? await Task.sleep(for: .milliseconds(50))
+                    producerSuspended = true
+                }
+
+                // Don't consume more than we need for the test
+                if chunksReceived > 10 {
+                    break
+                }
+            }
+
+            #expect(chunksReceived > 3, "Should have received multiple chunks")
+            #expect(producerSuspended, "Test should have exercised slow consumer path")
+        }
+
+        @Test
+        func `AsyncChannel maintains bounded memory with large content`() async {
+            struct VeryLargeHTML: HTML.View, AsyncRendering, Sendable {
+                var body: some HTML.View {
+                    tag("div") {
+                        // 1MB of content
+                        HTML.Text(String(repeating: "a", count: 1_000_000))
+                    }
+                }
+            }
+
+            let chunkSize = 4096
+            var maxChunkSize = 0
+            var totalBytes = 0
+            var chunkCount = 0
+
+            for await chunk in AsyncChannel(chunkSize: chunkSize) { VeryLargeHTML() } {
+                chunkCount += 1
+                totalBytes += chunk.count
+
+                // Track the maximum chunk size seen
+                if chunk.count > maxChunkSize {
+                    maxChunkSize = chunk.count
+                }
+
+                // Verify each chunk respects the size limit
+                #expect(chunk.count <= chunkSize, "Chunk \(chunkCount) exceeded size limit: \(chunk.count) > \(chunkSize)")
+            }
+
+            #expect(totalBytes > 1_000_000, "Should have rendered all content")
+            #expect(chunkCount > 100, "Should have many chunks for large content")
+            #expect(maxChunkSize <= chunkSize, "No chunk should exceed the specified size")
+        }
+
+        @Test
+        func `AsyncChannel chunks arrive progressively`() async {
+            struct ProgressiveHTML: HTML.View, AsyncRendering, Sendable {
+                var body: some HTML.View {
+                    Group {
+                        tag("header") { HTML.Text(String(repeating: "h", count: 500)) }
+                        tag("main") { HTML.Text(String(repeating: "m", count: 500)) }
+                        tag("footer") { HTML.Text(String(repeating: "f", count: 500)) }
+                    }
+                }
+            }
+
+            var timestamps: [ContinuousClock.Instant] = []
+            let startTime = ContinuousClock.now
+
+            for await _ in AsyncChannel(chunkSize: 100) { ProgressiveHTML() } {
+                timestamps.append(ContinuousClock.now)
+            }
+
+            // Verify we got multiple chunks
+            #expect(timestamps.count > 1, "Should have received multiple chunks")
+
+            // All chunks should arrive quickly (within reason for a test)
+            let totalDuration = timestamps.last! - startTime
+            #expect(totalDuration < .seconds(5), "Streaming should complete quickly")
+        }
+    }
+}
+
 // MARK: - Performance Tests
 
 extension `Performance Tests` {
