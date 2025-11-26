@@ -8,7 +8,6 @@
 @testable import Rendering_HTML
 import Rendering_HTML_TestSupport
 import Testing
-import Foundation
 
 @Suite
 struct `_Tuple Tests` {

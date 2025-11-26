@@ -1,5 +1,5 @@
 //
-//  AsyncRenderingStream Tests.swift
+//  AsyncRenderableStream Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
@@ -10,26 +10,26 @@ import Testing
 import AsyncAlgorithms
 
 @Suite
-struct `AsyncRenderingStream Tests` {
+struct `AsyncRenderableStream Tests` {
 
     // MARK: - Basic Functionality
 
     @Test
-    func `AsyncRenderingStream can be created with default chunk size`() async {
+    func `AsyncRenderableStream can be created with default chunk size`() async {
         let stream = AsyncRenderingStream()
         _ = stream // Verify it compiles
         #expect(Bool(true))
     }
 
     @Test
-    func `AsyncRenderingStream can be created with custom chunk size`() async {
+    func `AsyncRenderableStream can be created with custom chunk size`() async {
         let stream = AsyncRenderingStream(chunkSize: 100)
         _ = stream // Verify it compiles
         #expect(Bool(true))
     }
 
     @Test
-    func `AsyncRenderingStream can be created with external channel`() async {
+    func `AsyncRenderableStream can be created with external channel`() async {
         let channel = AsyncChannel<ArraySlice<UInt8>>()
         let stream = AsyncRenderingStream(channel: channel, chunkSize: 1024)
         _ = stream // Verify it compiles
@@ -39,7 +39,7 @@ struct `AsyncRenderingStream Tests` {
     // MARK: - Write and Consume
 
     @Test
-    func `AsyncRenderingStream writes and finishes`() async {
+    func `AsyncRenderableStream writes and finishes`() async {
         let stream = AsyncRenderingStream(chunkSize: 10)
 
         Task {
@@ -57,7 +57,7 @@ struct `AsyncRenderingStream Tests` {
     }
 
     @Test
-    func `AsyncRenderingStream chunks at specified size`() async {
+    func `AsyncRenderableStream chunks at specified size`() async {
         let chunkSize = 5
         let stream = AsyncRenderingStream(chunkSize: chunkSize)
 
@@ -77,7 +77,7 @@ struct `AsyncRenderingStream Tests` {
     }
 
     @Test
-    func `AsyncRenderingStream handles partial final chunk`() async {
+    func `AsyncRenderableStream handles partial final chunk`() async {
         let chunkSize = 5
         let stream = AsyncRenderingStream(chunkSize: chunkSize)
 
@@ -99,7 +99,7 @@ struct `AsyncRenderingStream Tests` {
     // MARK: - Single Byte Write
 
     @Test
-    func `AsyncRenderingStream can write single bytes`() async {
+    func `AsyncRenderableStream can write single bytes`() async {
         let stream = AsyncRenderingStream(chunkSize: 3)
 
         Task {
@@ -122,7 +122,7 @@ struct `AsyncRenderingStream Tests` {
     // MARK: - Empty Stream
 
     @Test
-    func `AsyncRenderingStream handles empty content`() async {
+    func `AsyncRenderableStream handles empty content`() async {
         let stream = AsyncRenderingStream(chunkSize: 10)
 
         Task {
@@ -140,7 +140,7 @@ struct `AsyncRenderingStream Tests` {
     // MARK: - Multiple Writes
 
     @Test
-    func `AsyncRenderingStream handles multiple writes`() async {
+    func `AsyncRenderableStream handles multiple writes`() async {
         let stream = AsyncRenderingStream(chunkSize: 100)
 
         Task {
@@ -162,7 +162,7 @@ struct `AsyncRenderingStream Tests` {
     // MARK: - Chunks Property
 
     @Test
-    func `AsyncRenderingStream chunks property returns AsyncChannel`() async {
+    func `AsyncRenderableStream chunks property returns AsyncChannel`() async {
         let stream = AsyncRenderingStream()
         let _: AsyncChannel<ArraySlice<UInt8>> = stream.chunks
         #expect(Bool(true)) // Compile-time check
@@ -171,7 +171,7 @@ struct `AsyncRenderingStream Tests` {
     // MARK: - Sendable
 
     @Test
-    func `AsyncRenderingStream is Sendable`() async {
+    func `AsyncRenderableStream is Sendable`() async {
         let stream = AsyncRenderingStream()
         Task {
             await stream.write("test".utf8)

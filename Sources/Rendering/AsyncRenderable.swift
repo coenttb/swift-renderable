@@ -1,38 +1,26 @@
 //
-//  AsyncRendering.swift
+//  AsyncRenderable.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
-
-/// A protocol for async rendering streams that accept bytes with backpressure.
-///
-/// Conforming types provide an async `write` method that may suspend to apply
-/// backpressure when the consumer is slower than the producer.
-public protocol AsyncRenderingStreamProtocol: Sendable {
-    /// Write bytes to the stream, potentially suspending for backpressure.
-    func write(_ bytes: some Sequence<UInt8> & Sendable) async
-
-    /// Write a single byte to the stream.
-    func write(_ byte: UInt8) async
-}
 
 /// A protocol for types that support async rendering with backpressure.
 ///
 /// The async rendering path allows suspension at element boundaries,
 /// enabling true progressive streaming where memory is bounded to O(chunkSize).
 ///
-/// Types conforming to `AsyncRendering` must also conform to `Rendering`.
+/// Types conforming to `AsyncRenderable` must also conform to `Rendering`.
 /// The async path is used for progressive streaming scenarios where backpressure
 /// is needed to prevent unbounded memory growth.
 ///
 /// ## Example
 ///
 /// ```swift
-/// extension MyView: AsyncRendering {
+/// extension MyView: AsyncRenderable {
 ///     static func _renderAsync(
 ///         _ markup: Self,
-///         into stream: some AsyncRenderingStreamProtocol,
+///         into stream: some AsyncRenderableStreamProtocol,
 ///         context: inout Context
 ///     ) async {
 ///         await stream.write("<div>".utf8)
@@ -41,7 +29,7 @@ public protocol AsyncRenderingStreamProtocol: Sendable {
 ///     }
 /// }
 /// ```
-public protocol AsyncRendering: Rendering {
+public protocol AsyncRenderable: Renderable {
     /// Async render that can suspend at element boundaries.
     ///
     /// - Parameters:
@@ -55,7 +43,7 @@ public protocol AsyncRendering: Rendering {
     ) async
 }
 
-extension AsyncRendering where Content: AsyncRendering, Content.Context == Context {
+extension AsyncRenderable where Content: AsyncRenderable, Content.Context == Context {
     /// Default implementation that delegates to the content's async render method.
     @inlinable
     public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
@@ -67,7 +55,7 @@ extension AsyncRendering where Content: AsyncRendering, Content.Context == Conte
     }
 }
 
-extension AsyncRendering where Content: Rendering, Content.Context == Context {
+extension AsyncRenderable where Content: Renderable, Content.Context == Context {
     /// Fallback implementation that recursively renders the body asynchronously.
     ///
     /// This fallback traverses the view tree by getting the body and dispatching
@@ -92,26 +80,26 @@ extension AsyncRendering where Content: Rendering, Content.Context == Context {
 
 /// Dynamically dispatch async rendering based on runtime type conformance.
 ///
-/// This function checks if the body type conforms to `AsyncRendering` at runtime
+/// This function checks if the body type conforms to `AsyncRenderable` at runtime
 /// and dispatches accordingly. This is necessary because opaque types (`some HTML.View`)
-/// erase the `AsyncRendering` conformance at compile time.
+/// erase the `AsyncRenderable` conformance at compile time.
 ///
 /// - Note: If the context type cast fails (which should not happen in well-formed
 ///   code), a debug assertion will fire to aid in debugging. In release builds,
 ///   the function falls back to sync rendering to maintain correctness.
 @inlinable
-public func _renderAsyncDynamic<T: Rendering, Stream: AsyncRenderingStreamProtocol>(
+public func _renderAsyncDynamic<T: Renderable, Stream: AsyncRenderingStreamProtocol>(
     _ markup: T,
     into stream: Stream,
     context: inout T.Context
 ) async {
-    // Check if T conforms to AsyncRendering at runtime
-    if let asyncType = T.self as? any AsyncRendering.Type {
+    // Check if T conforms to AsyncRenderable at runtime
+    if let asyncType = T.self as? any AsyncRenderable.Type {
         // Open the existential to call _renderAsync with proper context handling
         var anyContext: Any = context
         var didRender = false
 
-        func callRender<A: AsyncRendering>(_ type: A.Type) async {
+        func callRender<A: AsyncRenderable>(_ type: A.Type) async {
             guard let typedMarkup = markup as? A else {
                 assertionFailure("""
                     _renderAsyncDynamic: Failed to cast markup of type \(T.self) to \(A.self). \
@@ -122,7 +110,7 @@ public func _renderAsyncDynamic<T: Rendering, Stream: AsyncRenderingStreamProtoc
             guard var typedContext = anyContext as? A.Context else {
                 assertionFailure("""
                     _renderAsyncDynamic: Failed to cast context of type \(T.Context.self) to \(A.Context.self). \
-                    Context mutations may be lost. Ensure AsyncRendering types use compatible Context types.
+                    Context mutations may be lost. Ensure AsyncRenderable types use compatible Context types.
                     """)
                 return
             }
@@ -149,7 +137,7 @@ public func _renderAsyncDynamic<T: Rendering, Stream: AsyncRenderingStreamProtoc
             await stream.write(buffer)
         }
     } else {
-        // True leaf node without AsyncRendering conformance - sync render
+        // True leaf node without AsyncRenderable conformance - sync render
         var buffer: [UInt8] = []
         T._render(markup, into: &buffer, context: &context)
         await stream.write(buffer)

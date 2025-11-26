@@ -28,12 +28,12 @@ extension Group: Hashable where Content: Hashable {}
 extension Group: Equatable where Content: Equatable {}
 extension Group: Codable where Content: Codable {}
 
-extension Group: Rendering where Content: Rendering {
+extension Group: Renderable where Content: Renderable {
     public typealias Context = Content.Context
 
     public var body: Content { content }
 }
 
-extension Group: AsyncRendering where Content: AsyncRendering {
+extension Group: AsyncRenderable where Content: AsyncRenderable {
     // Uses default implementation from protocol extension (delegates to body)
 }

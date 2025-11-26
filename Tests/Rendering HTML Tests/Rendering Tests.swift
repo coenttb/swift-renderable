@@ -7,12 +7,12 @@
 //  Tests for HTML rendering functionality (formerly HTMLPrinter).
 //
 
+import Foundation
 import INCITS_4_1986
 @testable import Rendering_HTML
 import OrderedCollections
 import Testing
 import Rendering
-import Foundation
 
 @Suite
 struct `Rendering Tests` {

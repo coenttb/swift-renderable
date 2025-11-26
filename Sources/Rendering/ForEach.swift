@@ -25,7 +25,7 @@
 ///
 /// - Note: This component works around a bug in `buildArray` that causes
 ///   build failures when the element is `some Rendering`.
-public struct ForEach<Content: Rendering> {
+public struct ForEach<Content: Renderable> {
     /// The array of content generated from the collection.
     public let content: _Array<Content>
 
@@ -42,7 +42,7 @@ public struct ForEach<Content: Rendering> {
     }
 }
 
-extension ForEach: Rendering {
+extension ForEach: Renderable {
     public typealias Context = Content.Context
 
     /// The body of this component, which is the array of content.

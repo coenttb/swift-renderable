@@ -9,7 +9,7 @@
 ///
 /// This type is used internally by result builders to handle
 /// arrays of elements, such as those created by `for` loops.
-public struct _Array<Element: Rendering>: Rendering {
+public struct _Array<Element: Renderable>: Renderable {
     public typealias Content = Never
     public typealias Context = Element.Context
 
@@ -41,7 +41,7 @@ extension _Array: Hashable where Element: Hashable {}
 extension _Array: Equatable where Element: Equatable {}
 extension _Array: Codable where Element: Codable {}
 
-extension _Array: AsyncRendering where Element: AsyncRendering {
+extension _Array: AsyncRenderable where Element: AsyncRenderable {
     /// Async renders all elements in the array, yielding at element boundaries.
     ///
     /// This is a key yield point for progressive streaming - each element

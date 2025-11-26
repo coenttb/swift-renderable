@@ -18,7 +18,7 @@
 ///     var body: some Rendering { ... }
 /// }
 /// ```
-public protocol Rendering {
+public protocol Renderable {
     /// The type of content that this rendering type contains.
     /// For terminal types that implement their own `_render`, use `Never`.
     associatedtype Content
@@ -42,7 +42,7 @@ public protocol Rendering {
     ) where Buffer.Element == UInt8
 }
 
-extension Rendering where Content: Rendering, Content.Context == Context {
+extension Renderable where Content: Renderable, Content.Context == Context {
     /// Default implementation that delegates to the body's render method.
     @inlinable
     @_disfavoredOverload

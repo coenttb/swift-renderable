@@ -74,7 +74,7 @@ extension HTML.Text: ExpressibleByStringInterpolation {}
 
 // MARK: - Async Rendering
 
-extension HTML.Text: AsyncRendering {
+extension HTML.Text: AsyncRenderable {
     /// Async renders the text content with proper HTML escaping.
     public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
         _ html: Self,

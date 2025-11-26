@@ -9,7 +9,7 @@
 ///
 /// This type is used internally by result builders to handle
 /// conditional content created by `if`/`else` statements.
-public enum _Conditional<First: Rendering, Second: Rendering>: Rendering
+public enum _Conditional<First: Renderable, Second: Renderable>: Renderable
 where First.Context == Second.Context {
     public typealias Content = Never
     public typealias Context = First.Context
@@ -42,7 +42,7 @@ extension _Conditional: Hashable where First: Hashable, Second: Hashable {}
 extension _Conditional: Equatable where First: Equatable, Second: Equatable {}
 extension _Conditional: Codable where First: Codable, Second: Codable {}
 
-extension _Conditional: AsyncRendering where First: AsyncRendering, Second: AsyncRendering {
+extension _Conditional: AsyncRenderable where First: AsyncRenderable, Second: AsyncRenderable {
     /// Async renders either the first or second component based on the case.
     public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
         _ markup: Self,

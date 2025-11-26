@@ -10,7 +10,7 @@ public import Rendering
 // Extend the _Tuple type from Rendering module to conform to HTML.View
 // Note: _Tuple is a top-level type exported from the Rendering module.
 // Users can access it as _Tuple<Content...> directly, not through HTML._Tuple.
-extension _Tuple: Rendering where repeat each Content: HTML.View {
+extension _Tuple: Renderable where repeat each Content: HTML.View {
     public typealias Context = HTML.Context
     public typealias Content = Never
     public var body: Never { fatalError() }
@@ -31,13 +31,13 @@ extension _Tuple: Rendering where repeat each Content: HTML.View {
 
 extension _Tuple: HTML.View where repeat each Content: HTML.View {}
 
-extension _Tuple: AsyncRendering where repeat each Content: AsyncRendering, repeat each Content: HTML.View {
+extension _Tuple: AsyncRenderable where repeat each Content: AsyncRenderable, repeat each Content: HTML.View {
     public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
         _ html: Self,
         into stream: Stream,
         context: inout HTML.Context
     ) async {
-        func render<T: AsyncRendering>(_ element: T) async where T.Context == HTML.Context {
+        func render<T: AsyncRenderable>(_ element: T) async where T.Context == HTML.Context {
             let oldAttributes = context.attributes
             defer { context.attributes = oldAttributes }
             await T._renderAsync(element, into: stream, context: &context)

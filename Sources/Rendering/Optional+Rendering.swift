@@ -6,7 +6,7 @@
 //
 
 /// Allows optional values to be used in rendering contexts.
-extension Optional: Rendering where Wrapped: Rendering {
+extension Optional: Renderable where Wrapped: Renderable {
     public typealias Context = Wrapped.Context
     public typealias Content = Never
 
@@ -24,7 +24,7 @@ extension Optional: Rendering where Wrapped: Rendering {
     public var body: Never { fatalError() }
 }
 
-extension Optional: AsyncRendering where Wrapped: AsyncRendering {
+extension Optional: AsyncRenderable where Wrapped: AsyncRenderable {
     /// Async renders the optional element if it exists.
     public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
         _ markup: Self,

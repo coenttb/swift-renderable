@@ -60,7 +60,7 @@ extension HTML.AnyView {
 }
 
 // Keep AnyRendering conformance for interoperability
-extension AnyRendering: Rendering where Context == HTML.Context {
+extension AnyRendering: Renderable where Context == HTML.Context {
     public typealias Content = Never
 
     public var body: Never { fatalError() }

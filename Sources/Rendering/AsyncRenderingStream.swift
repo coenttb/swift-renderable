@@ -1,5 +1,5 @@
 //
-//  AsyncRenderingStream.swift
+//  AsyncRenderableStream.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
@@ -16,13 +16,13 @@ public import AsyncAlgorithms
 /// ## Backpressure
 ///
 /// Unlike `AsyncStream` which can buffer unbounded data when the consumer
-/// is slow, `AsyncRenderingStream` applies backpressure by suspending the
+/// is slow, `AsyncRenderableStream` applies backpressure by suspending the
 /// producer until chunks are consumed. This ensures memory is bounded.
 ///
 /// ## Usage
 ///
 /// ```swift
-/// let stream = AsyncRenderingStream(chunkSize: 4096)
+/// let stream = AsyncRenderableStream(chunkSize: 4096)
 ///
 /// // Producer task
 /// Task {
