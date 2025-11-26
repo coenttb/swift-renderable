@@ -37,3 +37,6 @@ public struct _Array<Element: Rendering>: Rendering {
 }
 
 extension _Array: Sendable where Element: Sendable {}
+extension _Array: Hashable where Element: Hashable {}
+extension _Array: Equatable where Element: Equatable {}
+extension _Array: Codable where Element: Codable {}

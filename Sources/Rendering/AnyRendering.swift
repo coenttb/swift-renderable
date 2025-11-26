@@ -23,12 +23,12 @@
 ///
 /// Note: This is a simple struct. Domain-specific modules (like RenderingHTML)
 /// provide the `Rendering` conformance with the appropriate `Context` type.
-public struct AnyRendering<Context>: @unchecked Sendable {
+public struct AnyRendering<Context, Bytes>: @unchecked Sendable where Bytes: RangeReplaceableCollection, Bytes.Element == UInt8 {
     /// The type-erased base content.
     public let base: any Rendering
 
     /// The render function captured from the concrete type.
-    private let renderFunction: (inout ContiguousArray<UInt8>, inout Context) -> Void
+    private let renderFunction: (inout Bytes, inout Context) -> Void
 
     /// Creates a type-erased wrapper around the given rendering content.
     ///
@@ -45,7 +45,7 @@ public struct AnyRendering<Context>: @unchecked Sendable {
     /// - Parameters:
     ///   - buffer: The buffer to render into.
     ///   - context: The rendering context.
-    public func render(into buffer: inout ContiguousArray<UInt8>, context: inout Context) {
+    public func render(into buffer: inout Bytes, context: inout Context) {
         renderFunction(&buffer, &context)
     }
 }
