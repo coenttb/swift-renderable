@@ -6,7 +6,6 @@
 //
 
 public import AsyncAlgorithms
-import Rendering
 
 /// An actor-based stream that accepts bytes and sends chunks with backpressure.
 ///

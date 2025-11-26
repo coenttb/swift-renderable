@@ -5,8 +5,6 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-import Rendering
-
 /// An actor-based buffer that yields chunks asynchronously during rendering.
 ///
 /// This enables true progressive streaming where chunks are delivered to consumers
