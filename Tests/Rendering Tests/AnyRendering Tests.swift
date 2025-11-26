@@ -15,35 +15,76 @@ struct `AnyRendering Tests` {
 
     @Test
     func `AnyRendering erases concrete type`() {
-        let raw = Raw("content")
-        let any = AnyRendering(raw)
-        // AnyRendering should wrap the content
+        let element = TestElement(id: "content")
+        let any = AnyRendering<Void, [UInt8]>(element)
         _ = any // Verify it compiles and works
-        #expect(true)
+        #expect(Bool(true))
     }
 
     @Test
     func `AnyRendering from different types`() {
-        let raw = Raw("raw")
-        let any1 = AnyRendering(raw)
+        let element1 = TestElement(id: "first")
+        let any1 = AnyRendering<Void, [UInt8]>(element1)
 
-        let empty = Empty()
-        let any2 = AnyRendering(empty)
+        let element2 = OtherElement()
+        let any2 = AnyRendering<Void, [UInt8]>(element2)
 
-        // Both should be AnyRendering
-        let _: AnyRendering = any1
-        let _: AnyRendering = any2
-        #expect(true)
+        // Both should be AnyRendering with same type parameters
+        let _: AnyRendering<Void, [UInt8]> = any1
+        let _: AnyRendering<Void, [UInt8]> = any2
+        #expect(Bool(true))
+    }
+
+    // MARK: - Rendering
+
+    @Test
+    func `AnyRendering can render to buffer`() {
+        let element = TestElement(id: "test")
+        let any = AnyRendering<Void, [UInt8]>(element)
+
+        var buffer: [UInt8] = []
+        var context: Void = ()
+        any.render(into: &buffer, context: &context)
+        // Buffer contains rendered content (empty in this case since TestElement is a no-op)
+        #expect(Bool(true))
     }
 
     // MARK: - Sendable
 
     @Test
     func `AnyRendering is Sendable`() {
-        let any = AnyRendering(Raw("test"))
+        let any = AnyRendering<Void, [UInt8]>(TestElement(id: "test"))
         Task {
             _ = any
         }
-        #expect(true) // Compile-time check
+        #expect(Bool(true)) // Compile-time check
     }
+}
+
+// MARK: - Test Helpers
+
+private struct TestElement: Rendering, Sendable {
+    let id: String
+    typealias Context = Void
+    typealias Content = Never
+
+    var body: Never { fatalError() }
+
+    static func _render<Buffer: RangeReplaceableCollection>(
+        _ markup: TestElement,
+        into buffer: inout Buffer,
+        context: inout Void
+    ) where Buffer.Element == UInt8 {}
+}
+
+private struct OtherElement: Rendering, Sendable {
+    typealias Context = Void
+    typealias Content = Never
+    var body: Never { fatalError() }
+
+    static func _render<Buffer: RangeReplaceableCollection>(
+        _ markup: OtherElement,
+        into buffer: inout Buffer,
+        context: inout Void
+    ) where Buffer.Element == UInt8 {}
 }

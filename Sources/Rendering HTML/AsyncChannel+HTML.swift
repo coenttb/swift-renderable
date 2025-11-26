@@ -5,7 +5,6 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-public import AsyncAlgorithms
 import Rendering
 
 extension AsyncChannel<ArraySlice<UInt8>> {
@@ -112,48 +111,5 @@ extension AsyncChannel<ArraySlice<UInt8>> {
             await Document._renderAsync(document, into: stream, context: &context)
             await stream.finish()
         }
-    }
-}
-
-// MARK: - Convenience Extensions
-
-extension HTML.View where Self: AsyncRendering & Sendable {
-    /// Stream this HTML with true progressive rendering and backpressure.
-    ///
-    /// This method provides memory-bounded streaming throughout the entire
-    /// render-to-stream process.
-    ///
-    /// ## Usage
-    ///
-    /// ```swift
-    /// for await chunk in html.asyncChannel(chunkSize: 4096) {
-    ///     await response.write(chunk)
-    /// }
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - chunkSize: Size of chunks to yield (default 4096).
-    ///   - configuration: Optional rendering configuration.
-    /// - Returns: An async sequence of byte chunks with backpressure.
-    public func asyncChannel(
-        chunkSize: Int = 4096,
-        configuration: HTML.Context.Configuration? = nil
-    ) -> AsyncChannel<ArraySlice<UInt8>> {
-        AsyncChannel(chunkSize: chunkSize, configuration: configuration) { self }
-    }
-}
-
-extension HTML.DocumentProtocol where Self: AsyncRendering & Sendable {
-    /// Stream this document with true progressive rendering and backpressure.
-    ///
-    /// - Parameters:
-    ///   - chunkSize: Size of chunks to yield (default 4096).
-    ///   - configuration: Optional rendering configuration.
-    /// - Returns: An async sequence of byte chunks with backpressure.
-    public func asyncChannel(
-        chunkSize: Int = 4096,
-        configuration: HTML.Context.Configuration? = nil
-    ) -> AsyncChannel<ArraySlice<UInt8>> {
-        AsyncChannel(chunkSize: chunkSize, configuration: configuration) { self }
     }
 }

@@ -11,25 +11,53 @@ import Testing
 @Suite
 struct `Rendering Tests` {
 
-    // MARK: - Protocol Conformance
+    // MARK: - Protocol Structure
 
     @Test
-    func `Rendering protocol has required associated types`() {
-        // Verify the protocol structure exists
-        // This is a compile-time test - if it compiles, the protocol is correctly defined
-        func requiresRendering<T: Rendering>(_ type: T.Type) {}
-        requiresRendering(Raw.self)
+    func `Rendering protocol exists`() {
+        // Verify the protocol type exists
+        let _: any Rendering.Type = TestRendering.self
+        #expect(Bool(true))
     }
 
     @Test
-    func `Rendering protocol _render method signature`() {
-        // The _render static method should be available
-        struct TestView: Rendering {
-            typealias Context = Never
-            typealias Content = Never
-            var body: Never { fatalError() }
-        }
-        // Compile-time verification that the type conforms
-        let _: any Rendering.Type = TestView.self
+    func `AsyncRendering protocol exists`() {
+        // Verify the async protocol type exists
+        let _: any AsyncRendering.Type = TestRendering.self
+        #expect(Bool(true))
+    }
+
+    @Test
+    func `AsyncRenderingStreamProtocol exists`() {
+        // Verify the stream protocol exists
+        func requiresStreamProtocol<T: AsyncRenderingStreamProtocol>(_ type: T.Type) {}
+        requiresStreamProtocol(AsyncRenderingStream.self)
+        #expect(Bool(true))
+    }
+}
+
+// MARK: - Test Helpers
+
+/// A minimal Rendering implementation for testing protocol structure
+private struct TestRendering: Rendering, AsyncRendering {
+    typealias Context = Void
+    typealias Content = Never
+
+    var body: Never { fatalError() }
+
+    static func _render<Buffer: RangeReplaceableCollection>(
+        _ markup: TestRendering,
+        into buffer: inout Buffer,
+        context: inout Void
+    ) where Buffer.Element == UInt8 {
+        // No-op for testing
+    }
+
+    static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ markup: TestRendering,
+        into stream: Stream,
+        context: inout Void
+    ) async {
+        // No-op for testing
     }
 }

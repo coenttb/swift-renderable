@@ -5,7 +5,6 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-import AsyncAlgorithms
 @testable import Rendering_HTML
 import Rendering_HTML_TestSupport
 import Testing
@@ -185,47 +184,6 @@ struct `AsyncChannel Tests` {
         #expect(result.contains("<li>"))
         #expect(result.contains("Item 1"))
         #expect(result.contains("Item 2"))
-    }
-
-    // MARK: - Convenience Method
-
-    @Test
-    func `asyncChannel convenience method`() async {
-        struct ConvenienceHTML: HTML.View, AsyncRendering, Sendable {
-            var body: some HTML.View {
-                tag("div") {
-                    HTML.Text("Via convenience")
-                }
-            }
-        }
-
-        var allBytes: [UInt8] = []
-        for await chunk in ConvenienceHTML().asyncChannel() {
-            allBytes.append(contentsOf: chunk)
-        }
-
-        let result = String(decoding: allBytes, as: UTF8.self)
-        #expect(result.contains("Via convenience"))
-    }
-
-    @Test
-    func `asyncChannel with configuration`() async {
-        struct StyledHTML: HTML.View, AsyncRendering, Sendable {
-            var body: some HTML.View {
-                tag("div") {
-                    HTML.Text("Styled")
-                }
-                .inlineStyle("margin", "0")
-            }
-        }
-
-        var allBytes: [UInt8] = []
-        for await chunk in StyledHTML().asyncChannel(configuration: .email) {
-            allBytes.append(contentsOf: chunk)
-        }
-
-        let result = String(decoding: allBytes, as: UTF8.self)
-        #expect(result.contains("margin"))
     }
 }
 
@@ -485,7 +443,7 @@ extension `Performance Tests` {
             let startTime = ContinuousClock.now
 
             // Use backpressure mode for bounded memory
-            for await chunk in html.asyncChannel(chunkSize: 4096) {
+            for await chunk in AsyncChannel { html } {
                 if chunkCount == 0 {
                     print("Time3: \(ContinuousClock.now)")
                 }

@@ -16,7 +16,7 @@ struct `Raw Tests` {
     @Test
     func `Raw init from String`() {
         let raw = Raw("hello")
-        #expect(raw.bytes == Array("hello".utf8))
+        #expect(Array(raw.bytes) == Array("hello".utf8))
     }
 
     @Test
@@ -29,45 +29,37 @@ struct `Raw Tests` {
     func `Raw init from UInt8 array`() {
         let bytes: [UInt8] = [72, 105] // "Hi"
         let raw = Raw(bytes)
-        #expect(raw.bytes == bytes)
+        #expect(Array(raw.bytes) == bytes)
     }
 
     @Test
     func `Raw init from StaticString`() {
         let raw = Raw("static")
-        #expect(raw.bytes == Array("static".utf8))
+        #expect(Array(raw.bytes) == Array("static".utf8))
     }
 
-    // MARK: - Unicode Support
+    // MARK: - Bytes Access
 
     @Test
-    func `Raw preserves unicode`() {
+    func `Raw bytes returns ContiguousArray`() {
+        let raw = Raw("test")
+        let bytes = raw.bytes
+        #expect(bytes is ContiguousArray<UInt8>)
+        #expect(Array(bytes) == Array("test".utf8))
+    }
+
+    // MARK: - Unicode
+
+    @Test
+    func `Raw preserves unicode content`() {
         let raw = Raw("Hello 世界 🌍")
-        let expected = Array("Hello 世界 🌍".utf8)
-        #expect(raw.bytes == expected)
+        #expect(Array(raw.bytes) == Array("Hello 世界 🌍".utf8))
     }
 
     @Test
-    func `Raw preserves emoji`() {
-        let raw = Raw("🎉🎊🎈")
-        let expected = Array("🎉🎊🎈".utf8)
-        #expect(raw.bytes == expected)
-    }
-
-    // MARK: - Special Characters
-
-    @Test
-    func `Raw preserves HTML characters unescaped`() {
-        let raw = Raw("<div>&amp;</div>")
-        let expected = Array("<div>&amp;</div>".utf8)
-        #expect(raw.bytes == expected)
-    }
-
-    @Test
-    func `Raw preserves newlines and whitespace`() {
-        let raw = Raw("line1\nline2\ttab")
-        let expected = Array("line1\nline2\ttab".utf8)
-        #expect(raw.bytes == expected)
+    func `Raw preserves special characters`() {
+        let raw = Raw("<script>alert('xss')</script>")
+        #expect(Array(raw.bytes) == Array("<script>alert('xss')</script>".utf8))
     }
 
     // MARK: - Sendable
@@ -78,6 +70,6 @@ struct `Raw Tests` {
         Task {
             _ = raw.bytes
         }
-        #expect(true) // Compile-time check
+        #expect(Bool(true)) // Compile-time check
     }
 }

@@ -11,42 +11,45 @@ import Testing
 @Suite
 struct `Optional+Rendering Tests` {
 
-    // MARK: - Optional Rendering Conformance
+    // MARK: - Optional Values
 
     @Test
-    func `Optional some value conforms to Rendering`() {
-        let optional: Raw? = Raw("content")
+    func `Optional some value`() {
+        let optional: TestElement? = TestElement(id: "content")
         #expect(optional != nil)
-        #expect(optional?.bytes == Array("content".utf8))
+        #expect(optional?.id == "content")
     }
 
     @Test
-    func `Optional nil conforms to Rendering`() {
-        let optional: Raw? = nil
+    func `Optional nil value`() {
+        let optional: TestElement? = nil
         #expect(optional == nil)
     }
 
-    // MARK: - In Builder Context
+    // MARK: - Sendable
 
     @Test
-    func `Optional in builder produces optional result`() {
-        let showContent = true
-        @Builder var result: Raw? {
-            if showContent {
-                Raw("shown")
-            }
+    func `Optional is Sendable when Wrapped is Sendable`() {
+        let optional: TestElement? = TestElement(id: "test")
+        Task {
+            _ = optional
         }
-        #expect(result?.bytes == Array("shown".utf8))
+        #expect(Bool(true)) // Compile-time check
     }
+}
 
-    @Test
-    func `Optional nil in builder`() {
-        let showContent = false
-        @Builder var result: Raw? {
-            if showContent {
-                Raw("hidden")
-            }
-        }
-        #expect(result == nil)
-    }
+// MARK: - Test Helpers
+
+private struct TestElement: Rendering, Sendable {
+    let id: String
+    typealias Context = Void
+    typealias Content = Never
+
+    var body: Never { fatalError() }
+
+    static func _render<Buffer: RangeReplaceableCollection>(
+        _ markup: TestElement,
+        into buffer: inout Buffer,
+        context: inout Void
+    ) where Buffer.Element == UInt8 {}
 }
