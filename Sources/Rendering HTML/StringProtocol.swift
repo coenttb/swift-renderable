@@ -62,18 +62,11 @@ extension StringProtocol {
     /// - ``ContiguousArray/init(_:)-swift.method``: Canonical byte transformation
     /// - ``Array/init(_:)-swift.method``: Array convenience wrapper
     public init(
-        html: some HTML.View,
+        _ html: some HTML.View,
         configuration: HTML.Context.Configuration? = nil
     ) throws(HTML.Context.Configuration.Error) {
         let bytes = ContiguousArray(html, configuration: configuration)
         self = Self(decoding: bytes, as: UTF8.self)
-    }
-
-    public init(
-        _ html: some HTML.View,
-        configuration: HTML.Context.Configuration? = nil
-    ) throws(HTML.Context.Configuration.Error) {
-        self = try .init(html: html, configuration: configuration)
     }
 }
 
@@ -94,10 +87,10 @@ extension StringProtocol {
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
     public init<T: HTML.View>(
-        _ html: T,
+        _ view: T,
         configuration: HTML.Context.Configuration? = nil
     ) async {
-        let bytes = await [UInt8](html, configuration: configuration)
+        let bytes = await [UInt8](view, configuration: configuration)
         self = Self(decoding: bytes, as: UTF8.self)
     }
 }
@@ -119,10 +112,10 @@ extension StringProtocol {
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
     public init<T: HTML.DocumentProtocol>(
-        document: T,
+        _ document: T,
         configuration: HTML.Context.Configuration? = nil
     ) async {
-        let bytes = await [UInt8].init(document: document, configuration: configuration)
+        let bytes = await [UInt8](document, configuration: configuration)
         self = Self(decoding: bytes, as: UTF8.self)
     }
 }

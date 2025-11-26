@@ -1,8 +1,8 @@
 //
-//  ProgressiveStream.swift
+//  File.swift
 //  pointfree-html
 //
-//  True progressive streaming - flushes chunks as content renders.
+//  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
 import Rendering
@@ -99,57 +99,6 @@ struct ChunkingBuffer: RangeReplaceableCollection {
         if !buffer.isEmpty {
             flush(ArraySlice(buffer))
             buffer.removeAll(keepingCapacity: true)
-        }
-    }
-}
-
-// MARK: - Progressive Streaming for HTML Fragments
-
-extension AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
-    /// Progressive streaming for HTML fragments.
-    ///
-    /// This streams chunks as they are rendered, providing true progressive
-    /// delivery with minimal buffering. Each chunk is yielded as soon as
-    /// the buffer fills, enabling Time To First Byte (TTFB) optimization.
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let content = div {
-    ///     for item in largeDataset {
-    ///         p { item.description }
-    ///     }
-    /// }
-    ///
-    /// for try await chunk in AsyncThrowingStream(progressive: content, chunkSize: 1024) {
-    ///     try await response.write(chunk)
-    /// }
-    /// ```
-    ///
-    /// - Note: This method is for HTML fragments only. For complete documents
-    ///   with styles, use `init(progressiveDocument:)`.
-    ///
-    /// - Parameters:
-    ///   - html: The HTML content to stream.
-    ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
-    ///   - configuration: Rendering configuration. Uses default if nil.
-    public init<T: HTML.View & Sendable>(
-        progressive html: T,
-        chunkSize: Int = 4096,
-        configuration: HTML.Context.Configuration? = nil
-    ) {
-        let config = configuration ?? .default
-        self.init { continuation in
-            Task { @Sendable in
-                var context = HTML.Context(config)
-                var buffer = ChunkingBuffer(chunkSize: chunkSize) { chunk in
-                    continuation.yield(chunk)
-                }
-                
-                T._render(html, into: &buffer, context: &context)
-                buffer.flushRemaining()
-                continuation.finish()
-            }
         }
     }
 }

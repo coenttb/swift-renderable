@@ -26,7 +26,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var chunks: [ArraySlice<UInt8>] = []
-        for try await chunk in AsyncThrowingStream(TestHTML(), chunkSize: 4096) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 4096) { TestHTML() } {
             chunks.append(chunk)
         }
 
@@ -48,7 +48,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(MultiParagraphHTML(), chunkSize: 4096) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 4096) { MultiParagraphHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -71,7 +71,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var chunks: [ArraySlice<UInt8>] = []
-        for try await chunk in AsyncThrowingStream(LongContentHTML(), chunkSize: 100) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 100) { LongContentHTML() } {
             chunks.append(chunk)
             // Each chunk should be at most 100 bytes
             #expect(chunk.count <= 100)
@@ -92,7 +92,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var chunkCount = 0
-        for try await _ in AsyncThrowingStream(SimpleHTML()) {
+        for try await _ in AsyncThrowingStream { SimpleHTML() } {
             chunkCount += 1
         }
 
@@ -114,7 +114,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(document: HTML.Document { StyledHTML() }, configuration: .email) {
+        for try await chunk in AsyncThrowingStream(configuration: .email) { HTML.Document { StyledHTML() } } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -133,7 +133,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(SpanHTML(), configuration: nil) {
+        for try await chunk in AsyncThrowingStream(configuration: nil) { SpanHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -152,7 +152,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(document: document, chunkSize: 4096) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 4096) { document } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -174,7 +174,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(document: document, chunkSize: 4096) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 4096) { document } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -194,7 +194,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(EmptyHTML(), chunkSize: 4096) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 4096) { EmptyHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -217,7 +217,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(NestedHTML(), chunkSize: 4096) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 4096) { NestedHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -241,7 +241,7 @@ struct `AsyncThrowingStream Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(AttributedHTML(), chunkSize: 4096) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 4096) { AttributedHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -264,7 +264,7 @@ struct `AsyncThrowingStream Tests` {
 
         let task = Task {
             var count = 0
-            for try await _ in AsyncThrowingStream(LongContentHTML(), chunkSize: 100) {
+            for try await _ in AsyncThrowingStream(chunkSize: 100) { LongContentHTML() } {
                 count += 1
                 if count > 5 {
                     throw CancellationError()
@@ -298,7 +298,7 @@ struct `Progressive Streaming Tests` {
         }
 
         var chunks: [ArraySlice<UInt8>] = []
-        for try await chunk in AsyncThrowingStream(progressive: LargeHTML(), chunkSize: 1000) {
+        for try await chunk in AsyncThrowingStream(mode: .progressive, chunkSize: 1000) { LargeHTML() } {
             chunks.append(chunk)
         }
 
@@ -321,7 +321,7 @@ struct `Progressive Streaming Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(progressiveDocument: document, chunkSize: 4096) {
+        for try await chunk in AsyncThrowingStream(mode: .progressive, chunkSize: 4096) { document } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -355,7 +355,7 @@ struct `Progressive Streaming Tests` {
 
         let html = SimpleHTML()
         var allBytes: [UInt8] = []
-        for try await chunk in html.progressiveStream(chunkSize: 4096) {
+        for try await chunk in html.asyncThrowingStream(mode: .progressive, chunkSize: 4096) {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -371,7 +371,7 @@ struct `Progressive Streaming Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in document.progressiveDocumentStream(chunkSize: 4096) {
+        for try await chunk in document.asyncThrowingStream(mode: .progressive, chunkSize: 4096) {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -389,7 +389,7 @@ struct `Progressive Streaming Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncStream(progressive: SimpleHTML(), chunkSize: 4096) {
+        for await chunk in AsyncStream(chunkSize: 4096, SimpleHTML.init) {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -423,7 +423,7 @@ extension `Performance Tests` {
             let html = ListHTML(items: items)
 
             var totalBytes = 0
-            for try await chunk in AsyncThrowingStream(html, chunkSize: 4096) {
+            for try await chunk in AsyncThrowingStream(chunkSize: 4096) { html } {
                 totalBytes += chunk.count
             }
 

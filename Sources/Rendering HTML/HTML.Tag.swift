@@ -98,67 +98,94 @@ public func tag<T: HTML.View>(
 
 extension HTML.Tag {
     /// <!doctype html>
-    package static let doctype: [UInt8] = [
-        .ascii.lessThanSign, .ascii.exclamationPoint,
-        .ascii.d, .ascii.o, .ascii.c, .ascii.t, .ascii.y, .ascii.p, .ascii.e,
-        .ascii.space,
-        .ascii.h, .ascii.t, .ascii.m, .ascii.l,
-        .ascii.greaterThanSign
-    ]
+    @inlinable
+    public static var doctype: [UInt8] {
+        [
+            .ascii.lessThanSign, .ascii.exclamationPoint,
+            .ascii.d, .ascii.o, .ascii.c, .ascii.t, .ascii.y, .ascii.p, .ascii.e,
+            .ascii.space,
+            .ascii.h, .ascii.t, .ascii.m, .ascii.l,
+            .ascii.greaterThanSign
+        ]
+    }
 
     /// <html>
-    package static let open: [UInt8] = [
-        .ascii.lessThanSign,
-        .ascii.h, .ascii.t, .ascii.m, .ascii.l,
-        .ascii.greaterThanSign
-    ]
+    @inlinable
+    public static var open: [UInt8] {
+        [
+            .ascii.lessThanSign,
+            .ascii.h, .ascii.t, .ascii.m, .ascii.l,
+            .ascii.greaterThanSign
+        ]
+    }
 
     /// </html>
-    package static let close: [UInt8] = [
-        .ascii.lessThanSign, .ascii.slant,
-        .ascii.h, .ascii.t, .ascii.m, .ascii.l,
-        .ascii.greaterThanSign
-    ]
+    @inlinable
+    public static var close: [UInt8] {
+        [
+            .ascii.lessThanSign, .ascii.slant,
+            .ascii.h, .ascii.t, .ascii.m, .ascii.l,
+            .ascii.greaterThanSign
+        ]
+    }
 
     /// <head>
-    package static let headOpen: [UInt8] = [
-        .ascii.lessThanSign,
-        .ascii.h, .ascii.e, .ascii.a, .ascii.d,
-        .ascii.greaterThanSign
-    ]
+    @inlinable
+    public static var headOpen: [UInt8] {
+        [
+            .ascii.lessThanSign,
+            .ascii.h, .ascii.e, .ascii.a, .ascii.d,
+            .ascii.greaterThanSign
+        ]
+    }
 
     /// </head>
-    package static let headClose: [UInt8] = [
-        .ascii.lessThanSign, .ascii.slant,
-        .ascii.h, .ascii.e, .ascii.a, .ascii.d,
-        .ascii.greaterThanSign
-    ]
+    @inlinable
+    public static var headClose: [UInt8] {
+        [
+            .ascii.lessThanSign, .ascii.slant,
+            .ascii.h, .ascii.e, .ascii.a, .ascii.d,
+            .ascii.greaterThanSign
+        ]
+    }
 
     /// <body>
-    package static let bodyOpen: [UInt8] = [
-        .ascii.lessThanSign,
-        .ascii.b, .ascii.o, .ascii.d, .ascii.y,
-        .ascii.greaterThanSign
-    ]
+    @inlinable
+    public static var bodyOpen: [UInt8] {
+        [
+            .ascii.lessThanSign,
+            .ascii.b, .ascii.o, .ascii.d, .ascii.y,
+            .ascii.greaterThanSign
+        ]
+    }
 
     /// </body>
-    package static let bodyClose: [UInt8] = [
-        .ascii.lessThanSign, .ascii.slant,
-        .ascii.b, .ascii.o, .ascii.d, .ascii.y,
-        .ascii.greaterThanSign
-    ]
+    @inlinable
+    public static var bodyClose: [UInt8] {
+        [
+            .ascii.lessThanSign, .ascii.slant,
+            .ascii.b, .ascii.o, .ascii.d, .ascii.y,
+            .ascii.greaterThanSign
+        ]
+    }
 
     /// <style>
-    package static let styleOpen: [UInt8] = [
-        .ascii.lessThanSign,
-        .ascii.s, .ascii.t, .ascii.y, .ascii.l, .ascii.e,
-        .ascii.greaterThanSign
-    ]
+    @inlinable
+    public static var styleOpen: [UInt8] {
+        [
+            .ascii.lessThanSign,
+            .ascii.s, .ascii.t, .ascii.y, .ascii.l, .ascii.e,
+            .ascii.greaterThanSign
+        ]
+    }
 
     /// </style>
-    package static let styleClose: [UInt8] = [
-        .ascii.lessThanSign, .ascii.slant,
-        .ascii.s, .ascii.t, .ascii.y, .ascii.l, .ascii.e,
-        .ascii.greaterThanSign
-    ]
+    @inlinable
+    public static var styleClose: [UInt8] {
+        [
+            .ascii.lessThanSign, .ascii.slant,
+            .ascii.s, .ascii.t, .ascii.y, .ascii.l, .ascii.e,
+            .ascii.greaterThanSign
+        ]
+    }
 }

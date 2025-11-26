@@ -82,7 +82,7 @@ struct `[UInt8] Tests` {
                 HTML.Text("Document content")
             }
         }
-        let bytes = await [UInt8](document: document)
+        let bytes = await [UInt8](document)
         let string = String(decoding: bytes, as: UTF8.self)
         #expect(string.contains("<!doctype html>"))
         #expect(string.contains("Document content"))

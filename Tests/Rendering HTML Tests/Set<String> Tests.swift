@@ -10,124 +10,100 @@ import Rendering_HTML_TestSupport
 import Testing
 
 @Suite
-struct `Set<String> Tests` {
+struct `HTML.Tag.Inline Tests` {
 
     // MARK: - Inline Tags
 
     @Test
-    func `inlineTags contains expected elements`() {
-        let inlineTags = Set<String>.inlineTags
-
+    func `Inline enum contains expected elements`() {
         // Text formatting
-        #expect(inlineTags.contains("b"))
-        #expect(inlineTags.contains("i"))
-        #expect(inlineTags.contains("strong"))
-        #expect(inlineTags.contains("em"))
-        #expect(inlineTags.contains("u"))
-        #expect(inlineTags.contains("s"))
-        #expect(inlineTags.contains("small"))
-        #expect(inlineTags.contains("mark"))
+        #expect(HTML.Tag.Inline(rawValue: "b") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "i") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "strong") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "em") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "u") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "s") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "small") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "mark") != nil)
 
         // Code and technical
-        #expect(inlineTags.contains("code"))
-        #expect(inlineTags.contains("kbd"))
-        #expect(inlineTags.contains("samp"))
-        #expect(inlineTags.contains("var"))
+        #expect(HTML.Tag.Inline(rawValue: "code") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "kbd") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "samp") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "var") != nil)
 
         // Links and references
-        #expect(inlineTags.contains("a"))
-        #expect(inlineTags.contains("abbr"))
-        #expect(inlineTags.contains("cite"))
-        #expect(inlineTags.contains("q"))
-        #expect(inlineTags.contains("dfn"))
+        #expect(HTML.Tag.Inline(rawValue: "a") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "abbr") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "cite") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "q") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "dfn") != nil)
 
         // Edits
-        #expect(inlineTags.contains("del"))
-        #expect(inlineTags.contains("ins"))
+        #expect(HTML.Tag.Inline(rawValue: "del") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "ins") != nil)
 
         // Form elements (inline)
-        #expect(inlineTags.contains("button"))
-        #expect(inlineTags.contains("input"))
-        #expect(inlineTags.contains("label"))
-        #expect(inlineTags.contains("select"))
-        #expect(inlineTags.contains("textarea"))
-        #expect(inlineTags.contains("output"))
+        #expect(HTML.Tag.Inline(rawValue: "button") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "input") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "label") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "select") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "textarea") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "output") != nil)
 
         // Media
-        #expect(inlineTags.contains("img"))
+        #expect(HTML.Tag.Inline(rawValue: "img") != nil)
 
         // Other
-        #expect(inlineTags.contains("br"))
-        #expect(inlineTags.contains("span"))
-        #expect(inlineTags.contains("script"))
-        #expect(inlineTags.contains("time"))
+        #expect(HTML.Tag.Inline(rawValue: "br") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "span") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "script") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "time") != nil)
     }
 
     @Test
-    func `inlineTags does not contain block elements`() {
-        let inlineTags = Set<String>.inlineTags
-
-        // Block elements should NOT be in inlineTags
-        #expect(!inlineTags.contains("div"))
-        #expect(!inlineTags.contains("p"))
-        #expect(!inlineTags.contains("h1"))
-        #expect(!inlineTags.contains("h2"))
-        #expect(!inlineTags.contains("h3"))
-        #expect(!inlineTags.contains("section"))
-        #expect(!inlineTags.contains("article"))
-        #expect(!inlineTags.contains("header"))
-        #expect(!inlineTags.contains("footer"))
-        #expect(!inlineTags.contains("nav"))
-        #expect(!inlineTags.contains("aside"))
-        #expect(!inlineTags.contains("main"))
-        #expect(!inlineTags.contains("ul"))
-        #expect(!inlineTags.contains("ol"))
-        #expect(!inlineTags.contains("li"))
-        #expect(!inlineTags.contains("table"))
-        #expect(!inlineTags.contains("tr"))
-        #expect(!inlineTags.contains("td"))
-        #expect(!inlineTags.contains("th"))
-        #expect(!inlineTags.contains("form"))
-        #expect(!inlineTags.contains("fieldset"))
-        #expect(!inlineTags.contains("blockquote"))
-        #expect(!inlineTags.contains("pre"))
+    func `Inline enum does not contain block elements`() {
+        // Block elements should NOT be recognized as inline
+        #expect(HTML.Tag.Inline(rawValue: "div") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "p") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "h1") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "h2") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "h3") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "section") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "article") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "header") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "footer") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "nav") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "aside") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "main") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "ul") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "ol") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "li") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "table") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "tr") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "td") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "th") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "form") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "fieldset") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "blockquote") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "pre") == nil)
     }
 
     @Test
-    func `inlineTags has expected count`() {
-        let inlineTags = Set<String>.inlineTags
-        // Based on the source file, there should be ~35 inline tags
-        #expect(inlineTags.count > 30)
-        #expect(inlineTags.count < 40)
-    }
-
-    // MARK: - Set Operations
-
-    @Test
-    func `inlineTags contains operation`() {
-        let inlineTags = Set<String>.inlineTags
-
-        #expect(inlineTags.contains("span"))
-        #expect(!inlineTags.contains("div"))
-    }
-
-    @Test
-    func `inlineTags is immutable definition`() {
-        // Each access should return the same set
-        let tags1 = Set<String>.inlineTags
-        let tags2 = Set<String>.inlineTags
-        #expect(tags1 == tags2)
+    func `Inline allCases has expected count`() {
+        let allCases = HTML.Tag.Inline.allCases
+        // Based on the enum definition, there should be ~35 inline tags
+        #expect(allCases.count > 30)
+        #expect(allCases.count < 40)
     }
 
     // MARK: - Usage in Rendering
 
     @Test
-    func `inlineTags used for formatting decisions`() {
-        // This tests how inlineTags would be used in HTML.Element rendering
-        let inlineTags = Set<String>.inlineTags
-
+    func `Inline used for formatting decisions`() {
+        // This tests how HTML.Tag.Inline would be used in HTML.Element rendering
         func isInlineTag(_ tag: String) -> Bool {
-            inlineTags.contains(tag)
+            HTML.Tag.Inline(rawValue: tag) != nil
         }
 
         // Inline elements
@@ -144,18 +120,24 @@ struct `Set<String> Tests` {
     // MARK: - Edge Cases
 
     @Test
-    func `inlineTags with case sensitivity`() {
-        let inlineTags = Set<String>.inlineTags
-
+    func `Inline with case sensitivity`() {
         // HTML tags are lowercase
-        #expect(inlineTags.contains("span"))
-        #expect(!inlineTags.contains("SPAN"))
-        #expect(!inlineTags.contains("Span"))
+        #expect(HTML.Tag.Inline(rawValue: "span") != nil)
+        #expect(HTML.Tag.Inline(rawValue: "SPAN") == nil)
+        #expect(HTML.Tag.Inline(rawValue: "Span") == nil)
     }
 
     @Test
-    func `inlineTags with empty string`() {
-        let inlineTags = Set<String>.inlineTags
-        #expect(!inlineTags.contains(""))
+    func `Inline with empty string`() {
+        #expect(HTML.Tag.Inline(rawValue: "") == nil)
+    }
+
+    @Test
+    func `Inline rawValues match case names`() {
+        for tag in HTML.Tag.Inline.allCases {
+            // Each case's rawValue should be a valid HTML tag name
+            #expect(!tag.rawValue.isEmpty)
+            #expect(tag.rawValue == tag.rawValue.lowercased())
+        }
     }
 }

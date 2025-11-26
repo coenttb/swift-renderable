@@ -34,13 +34,13 @@ extension RangeReplaceableCollection<UInt8> {
     ///   - html: The HTML content to render to bytes
     ///   - configuration: Rendering configuration. Uses current task-local or default if nil.
     @inlinable
-    public init(
-        _ html: some HTML.View,
+    public init<View: HTML.View>(
+        _ view: View,
         configuration: HTML.Context.Configuration? = nil
     ) {
         var buffer = Self()
         var context = HTML.Context(configuration ?? .current)
-        type(of: html)._render(html, into: &buffer, context: &context)
+        View._render(view, into: &buffer, context: &context)
         self = buffer
     }
 }
@@ -79,30 +79,15 @@ extension RangeReplaceableCollection<UInt8> {
     ///   - html: The HTML content to render.
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
-    public init(
-        html: some HTML.View,
+    public init<View: HTML.View>(
+        _ view: View,
         configuration: HTML.Context.Configuration? = nil
     ) async {
         await Task.yield()
         var buffer = Self()
         var context = HTML.Context(configuration ?? .current)
-        type(of: html)._render(html, into: &buffer, context: &context)
+        View._render(view, into: &buffer, context: &context)
         self = buffer
-    }
-
-    /// Asynchronously render HTML to a byte collection.
-    ///
-    /// Convenience overload that accepts HTML as the first unlabeled parameter.
-    ///
-    /// - Parameters:
-    ///   - html: The HTML content to render.
-    ///   - configuration: Rendering configuration. Uses default if nil.
-    @inlinable
-    public init(
-        _ html: some HTML.View,
-        configuration: HTML.Context.Configuration? = nil
-    ) async {
-        await self.init(html: html, configuration: configuration)
     }
 }
 
@@ -115,13 +100,13 @@ extension RangeReplaceableCollection<UInt8> {
     ///   - document: The HTML document to render.
     ///   - configuration: Rendering configuration. Uses current task-local or default if nil.
     @inlinable
-    public init(
-        document: some HTML.DocumentProtocol,
+    public init<Document: HTML.DocumentProtocol>(
+        _ document: Document,
         configuration: HTML.Context.Configuration? = nil
     ) {
         var buffer = Self()
         var context = HTML.Context(configuration ?? .current)
-        type(of: document)._render(document, into: &buffer, context: &context)
+        Document._render(document, into: &buffer, context: &context)
         self = buffer
     }
 
@@ -131,14 +116,14 @@ extension RangeReplaceableCollection<UInt8> {
     ///   - document: The HTML document to render.
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
-    public init(
-        document: some HTML.DocumentProtocol,
+    public init<Document: HTML.DocumentProtocol>(
+        _ document: Document,
         configuration: HTML.Context.Configuration? = nil
     ) async {
         await Task.yield()
         var buffer = Self()
         var context = HTML.Context(configuration ?? .current)
-        type(of: document)._render(document, into: &buffer, context: &context)
+        Document._render(document, into: &buffer, context: &context)
         self = buffer
     }
 }

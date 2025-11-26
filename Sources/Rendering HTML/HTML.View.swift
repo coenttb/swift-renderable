@@ -94,23 +94,9 @@ extension HTML.View {
     }
 }
 
-extension HTML.View where Self: Sendable {
-    /// Stream this HTML as async byte chunks (throwing).
-    ///
-    /// Convenience method that delegates to `AsyncThrowingStream.init(_:chunkSize:configuration:)`.
-    ///
-    /// - Parameters:
-    ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
-    ///   - rendering: Rendering configuration. Uses default if nil.
-    /// - Returns: An AsyncThrowingStream yielding byte chunks.
-    @inlinable
-    public func asyncStream(
-        chunkSize: Int = 4096,
-        rendering: HTML.Context.Configuration? = nil
-    ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
-        AsyncThrowingStream(self, chunkSize: chunkSize, configuration: rendering)
-    }
-}
+// Streaming extensions for HTML.View are defined in:
+// - AsyncStream.swift (asyncStream)
+// - AsyncThrowingStream.swift (asyncThrowingStream)
 
 /// Extension to add attribute capabilities to all HTML elements.
 extension HTML.View {

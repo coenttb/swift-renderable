@@ -182,6 +182,19 @@ extension HTML {
     }
 }
 
+extension HTML.InlineStyle: Sendable where Content: Sendable {}
+
+// Make HTML.InlineStyle conform to the protocol
+extension HTML.InlineStyle: HTMLInlineStyleProtocol {
+    func extractStyles() -> [HTML.Style] {
+        return styles
+    }
+
+    func extractContent() -> any HTML.View {
+        return content
+    }
+}
+
 /// Extension to add inline styling capabilities to all HTML elements.
 extension HTML.View {
     /// Applies a CSS style property to an HTML element.
@@ -221,7 +234,9 @@ extension HTML.View {
             pseudo: pseudo
         )
     }
+}
 
+extension HTML.View {
     @_disfavoredOverload
     public func inlineStyle(
         _ property: String,
@@ -239,51 +254,5 @@ extension HTML.View {
             pseudo: pseudo
         )
     }
-
-    // For backwards compatibility. Also for future to transform the Media type into an AtRule.
-    @available(*, deprecated, message: "change 'pre' to 'selector'")
-    @_disfavoredOverload
-    public func inlineStyle(
-        _ property: String,
-        _ value: String?,
-        media mediaQuery: HTML.AtRule.Media? = nil,
-        pre selector: HTML.Selector? = nil,
-        pseudo: HTML.Pseudo? = nil
-    ) -> HTML.InlineStyle<Self> {
-        HTML.InlineStyle(
-            content: self,
-            property: property,
-            value: value,
-            atRule: mediaQuery,
-            selector: selector,
-            pseudo: pseudo
-        )
-    }
 }
-
-extension HTML {
-    /// Represents a CSS style with its property, value, and selectors.
-    ///
-    /// Used internally for tracking styles and generating deterministic class names.
-    package struct Style: Hashable, Sendable {
-        let property: String
-        let value: String
-        let atRule: HTML.AtRule?
-        let selector: HTML.Selector?
-        let pseudo: HTML.Pseudo?
-    }
-}
-
-// Make HTML.InlineStyle conform to the protocol
-extension HTML.InlineStyle: HTMLInlineStyleProtocol {
-    func extractStyles() -> [HTML.Style] {
-        return styles
-    }
-
-    func extractContent() -> any HTML.View {
-        return content
-    }
-}
-
-extension HTML.InlineStyle: Sendable where Content: Sendable {}
 

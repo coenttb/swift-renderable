@@ -116,7 +116,7 @@ struct `Async Tests` {
         let html = TestHTML()
         var allBytes: [UInt8] = []
 
-        for try await chunk in AsyncThrowingStream(html, chunkSize: 50) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 50) { html } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -139,7 +139,7 @@ struct `Async Tests` {
         let html = TestHTML()
         var allBytes: [UInt8] = []
 
-        for await chunk in AsyncStream(html, chunkSize: 10) {
+        for await chunk in AsyncStream(chunkSize: 10) { html } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -165,7 +165,7 @@ struct `Async Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(document: document, chunkSize: 100) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 100) { document } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -193,7 +193,7 @@ struct `Async Tests` {
         let html = LargeHTML()
         let task = Task {
             var chunks = 0
-            for try await _ in AsyncThrowingStream(html, chunkSize: 100) {
+            for try await _ in AsyncThrowingStream(chunkSize: 100) { html } {
                 chunks += 1
                 if chunks > 10 {
                     throw CancellationError()
@@ -222,7 +222,7 @@ struct `Async Tests` {
 
         let html = StyledHTML()
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(html, chunkSize: 1024) {
+        for try await chunk in AsyncThrowingStream(chunkSize: 1024) { html } {
             allBytes.append(contentsOf: chunk)
         }
 

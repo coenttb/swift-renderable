@@ -47,17 +47,17 @@ extension HTML.Context {
         @TaskLocal public static var current: Self = .default
 
         /// Whether to add `!important` to all CSS rules.
-        package let forceImportant: Bool
+        public let forceImportant: Bool
 
         /// The bytes to use for indentation.
         ///
         /// Stored as bytes to avoid UTF-8 conversion overhead during rendering.
-        package let indentation: [UInt8]
+        public let indentation: [UInt8]
 
         /// The bytes to use for newlines.
         ///
         /// Stored as bytes to avoid UTF-8 conversion overhead during rendering.
-        package let newline: [UInt8]
+        public let newline: [UInt8]
 
         /// Reserved capacity for the byte buffer (in bytes).
         ///
@@ -68,7 +68,7 @@ extension HTML.Context {
         /// - Small documents (< 1KB): 512 bytes
         /// - Medium documents (1-10KB): 4096 bytes
         /// - Large documents (> 10KB): 16384 bytes
-        package let reservedCapacity: Int
+        public let reservedCapacity: Int
 
         /// Creates a custom HTML rendering configuration.
         ///

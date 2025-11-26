@@ -132,7 +132,7 @@ extension HTML {
         /// Block-level elements are rendered with newlines and indentation,
         /// while inline elements are rendered without them.
         private var isBlock: Bool {
-            !Set<String>.inlineTags.contains(tag)
+            HTML.Tag.Inline(rawValue: tag) == nil
         }
     }
 }

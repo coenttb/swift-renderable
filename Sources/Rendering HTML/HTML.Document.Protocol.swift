@@ -139,39 +139,11 @@ extension HTML.DocumentProtocol {
     }
 }
 
-extension HTML.DocumentProtocol where Self: Sendable {
-    /// Stream this HTML document as async byte chunks (throwing).
-    ///
-    /// Convenience method that delegates to `AsyncThrowingStream.init(document:chunkSize:configuration:)`.
-    ///
-    /// - Parameters:
-    ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
-    ///   - configuration: Rendering configuration. Uses default if nil.
-    /// - Returns: An AsyncThrowingStream yielding byte chunks.
-    @inlinable
-    public func asyncDocumentStream(
-        chunkSize: Int = 4096,
-        configuration: HTML.Context.Configuration? = nil
-    ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
-        AsyncThrowingStream(document: self, chunkSize: chunkSize, configuration: configuration)
-    }
 
-    /// Stream this HTML document as async byte chunks (non-throwing).
-    ///
-    /// Convenience method that delegates to `AsyncStream.init(document:chunkSize:configuration:)`.
-    ///
-    /// - Parameters:
-    ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
-    ///   - configuration: Rendering configuration. Uses default if nil.
-    /// - Returns: An AsyncStream yielding byte chunks.
-    @inlinable
-    public func asyncDocumentStreamNonThrowing(
-        chunkSize: Int = 4096,
-        configuration: HTML.Context.Configuration? = nil
-    ) -> AsyncStream<ArraySlice<UInt8>> {
-        AsyncStream(document: self, chunkSize: chunkSize, configuration: configuration)
-    }
-}
+
+
+
+
 
 extension HTML.DocumentProtocol {
     /// Asynchronously render this document to a complete byte array.
@@ -184,7 +156,7 @@ extension HTML.DocumentProtocol {
     public func asyncDocumentBytes(
         configuration: HTML.Context.Configuration? = nil
     ) async -> [UInt8] {
-        await [UInt8](document: self, configuration: configuration)
+        await [UInt8](self, configuration: configuration)
     }
 
     /// Asynchronously render this document to a String.
@@ -197,34 +169,10 @@ extension HTML.DocumentProtocol {
     public func asyncDocumentString(
         configuration: HTML.Context.Configuration? = nil
     ) async -> String {
-        await String(document: self, configuration: configuration)
+        await String(self, configuration: configuration)
     }
 }
 
-extension HTML.DocumentProtocol {
-    /// Renders this HTML document to bytes.
-    ///
-    /// This method creates a printer with the current configuration and
-    /// renders the HTML document into it, then returns the resulting bytes.
-    ///
-    /// - Returns: A buffer of bytes representing the rendered HTML document.
-    ///
-    /// - Warning: This method is deprecated. Use the RFC pattern initialization instead:
-    ///   ```swift
-    ///   // Old (deprecated)
-    ///   let bytes = document.render()
-    ///
-    ///   // New (RFC pattern - zero-copy)
-    ///   let bytes = ContiguousArray(document)
-    ///
-    ///   // Or for String output
-    ///   let string = try String(document)
-    ///   ```
-    @available(*, deprecated, message: "Use ContiguousArray(html) or String(html) instead. The RFC pattern makes bytes canonical and String derived.")
-    public func render() -> ContiguousArray<UInt8> {
-        var buffer: ContiguousArray<UInt8> = []
-        var context = HTML.Context(HTML.Context.Configuration.current)
-        Self._render(self, into: &buffer, context: &context)
-        return buffer
-    }
-}
+// Streaming extensions for HTML.DocumentProtocol are defined in:
+// - AsyncStream.swift (asyncStream)
+// - AsyncThrowingStream.swift (asyncThrowingStream)
