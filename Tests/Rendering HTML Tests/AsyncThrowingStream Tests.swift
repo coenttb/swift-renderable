@@ -298,7 +298,7 @@ struct `Progressive Streaming Tests` {
         }
 
         var chunks: [ArraySlice<UInt8>] = []
-        for try await chunk in AsyncThrowingStream(mode: .progressive, chunkSize: 1000) { LargeHTML() } {
+        for try await chunk in AsyncThrowingStream(mode: .streaming, chunkSize: 1000) { LargeHTML() } {
             chunks.append(chunk)
         }
 
@@ -321,7 +321,7 @@ struct `Progressive Streaming Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(mode: .progressive, chunkSize: 4096) { document } {
+        for try await chunk in AsyncThrowingStream(mode: .streaming, chunkSize: 4096) { document } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -355,7 +355,7 @@ struct `Progressive Streaming Tests` {
 
         let html = SimpleHTML()
         var allBytes: [UInt8] = []
-        for try await chunk in html.asyncThrowingStream(mode: .progressive, chunkSize: 4096) {
+        for try await chunk in html.asyncThrowingStream(mode: .streaming, chunkSize: 4096) {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -371,7 +371,7 @@ struct `Progressive Streaming Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for try await chunk in document.asyncThrowingStream(mode: .progressive, chunkSize: 4096) {
+        for try await chunk in document.asyncThrowingStream(mode: .streaming, chunkSize: 4096) {
             allBytes.append(contentsOf: chunk)
         }
 

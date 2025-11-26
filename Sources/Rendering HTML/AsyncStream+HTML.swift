@@ -12,35 +12,33 @@ extension AsyncStream<ArraySlice<UInt8>> {
     ///
     /// ## Streaming Modes
     ///
-    /// - **Batch**: Renders entire HTML first, then streams chunks. Simple and predictable.
-    /// - **Progressive**: Streams chunks as content renders. Lower Time To First Byte.
+    /// - **Buffered**: Renders entire HTML first, then streams chunks. Simple and predictable.
+    /// - **Streaming**: For true backpressure, use `asyncChannel()` instead.
     ///
     /// ## Example
     ///
     /// ```swift
-    /// // Batch mode (default)
+    /// // Buffered mode (default)
     /// for await chunk in AsyncStream(chunkSize: 4096) {
     ///     div { "Hello" }
     /// } {
     ///     await response.write(chunk)
     /// }
     ///
-    /// // Progressive mode
-    /// for await chunk in AsyncStream(mode: .progressive, chunkSize: 4096) {
-    ///     div { "Hello" }
-    /// } {
+    /// // For true streaming with backpressure, use asyncChannel:
+    /// for await chunk in myView.asyncChannel(chunkSize: 4096) {
     ///     await response.write(chunk)
     /// }
     /// ```
     ///
     /// - Parameters:
-    ///   - mode: Streaming mode. Default is `.batch`.
+    ///   - mode: Streaming mode. Default is `.buffered`.
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
     ///   - view: The HTML content to stream.
     @inlinable
     public init<View: HTML.View & Sendable>(
-        mode: HTML.StreamingMode = .batch,
+        mode: HTML.StreamingMode = .buffered,
         chunkSize: Int = 4096,
         configuration: HTML.Context.Configuration? = nil,
         @HTML.Builder _ view: () -> View
@@ -49,7 +47,7 @@ extension AsyncStream<ArraySlice<UInt8>> {
         let config = configuration ?? .default
 
         switch mode {
-        case .batch:
+        case .buffered:
             self.init { continuation in
                 Task { @Sendable in
                     var buffer: [UInt8] = []
@@ -73,9 +71,10 @@ extension AsyncStream<ArraySlice<UInt8>> {
                 }
             }
 
-        case .progressive, .backpressure:
-            // Note: .backpressure with true backpressure is handled via progressiveStream().
-            // For AsyncStream, fall back to progressive mode.
+        case .streaming:
+            // Note: AsyncStream cannot provide true backpressure.
+            // For true streaming with backpressure, use asyncChannel() instead.
+            // This falls back to chunked buffered mode.
             self.init { continuation in
                 Task { @Sendable in
                     var context = HTML.Context(config)
@@ -97,17 +96,17 @@ extension AsyncStream<ArraySlice<UInt8>> {
     ///
     /// ## Streaming Modes
     ///
-    /// - **Batch**: Renders entire document first (styles in `<head>`), then streams chunks.
-    /// - **Progressive**: Streams as content renders, with styles at end of `<body>` (valid HTML5).
+    /// - **Buffered**: Renders entire document first (styles in `<head>`), then streams chunks.
+    /// - **Streaming**: For true backpressure, use `asyncChannel()` instead.
     ///
     /// - Parameters:
-    ///   - mode: Streaming mode. Default is `.batch`.
+    ///   - mode: Streaming mode. Default is `.buffered`.
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
     ///   - document: The HTML document to stream.
     @inlinable
     public init<Document: HTML.DocumentProtocol & Sendable>(
-        mode: HTML.StreamingMode = .batch,
+        mode: HTML.StreamingMode = .buffered,
         chunkSize: Int = 4096,
         configuration: HTML.Context.Configuration? = nil,
         @HTML.Builder _ document: () -> Document
@@ -116,7 +115,7 @@ extension AsyncStream<ArraySlice<UInt8>> {
         let config = configuration ?? .default
 
         switch mode {
-        case .batch:
+        case .buffered:
             self.init { continuation in
                 Task { @Sendable in
                     var buffer: [UInt8] = []
@@ -140,9 +139,10 @@ extension AsyncStream<ArraySlice<UInt8>> {
                 }
             }
 
-        case .progressive, .backpressure:
-            // Note: .backpressure with true backpressure is handled via progressiveStream().
-            // For AsyncStream, fall back to progressive mode.
+        case .streaming:
+            // Note: AsyncStream cannot provide true backpressure.
+            // For true streaming with backpressure, use asyncChannel() instead.
+            // This falls back to chunked buffered mode with progressive style emission.
             self.init { continuation in
                 Task { @Sendable in
                     var context = HTML.Context(config)
@@ -197,13 +197,13 @@ extension HTML.View where Self: Sendable {
     /// Stream this HTML as async byte chunks (non-throwing).
     ///
     /// - Parameters:
-    ///   - mode: Streaming mode. Default is `.batch`.
+    ///   - mode: Streaming mode. Default is `.buffered`.
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
     /// - Returns: An AsyncStream yielding byte chunks.
     @inlinable
     public func asyncStream(
-        mode: HTML.StreamingMode = .batch,
+        mode: HTML.StreamingMode = .buffered,
         chunkSize: Int = 4096,
         configuration: HTML.Context.Configuration? = nil
     ) -> AsyncStream<ArraySlice<UInt8>> {
@@ -217,13 +217,13 @@ extension HTML.DocumentProtocol where Self: Sendable {
     /// Stream this document as async byte chunks (non-throwing).
     ///
     /// - Parameters:
-    ///   - mode: Streaming mode. Default is `.batch`.
+    ///   - mode: Streaming mode. Default is `.buffered`.
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
     /// - Returns: An AsyncStream yielding byte chunks.
     @inlinable
     public func asyncStream(
-        mode: HTML.StreamingMode = .batch,
+        mode: HTML.StreamingMode = .buffered,
         chunkSize: Int = 4096,
         configuration: HTML.Context.Configuration? = nil
     ) -> AsyncStream<ArraySlice<UInt8>> {

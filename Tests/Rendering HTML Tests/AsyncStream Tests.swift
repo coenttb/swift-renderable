@@ -285,8 +285,8 @@ extension `Performance Tests` {
             var chunkCount = 0
             let startTime = ContinuousClock.now
 
-            // Use progressive mode to stream chunks as they render (lower TTFB)
-            for await chunk in AsyncStream(mode: .backpressure, chunkSize: 4096) { html } {
+            // Use streaming mode (note: AsyncStream can't provide true backpressure)
+            for await chunk in AsyncStream(mode: .streaming, chunkSize: 4096) { html } {
                 totalBytes += chunk.count
                 chunkCount += 1
 
