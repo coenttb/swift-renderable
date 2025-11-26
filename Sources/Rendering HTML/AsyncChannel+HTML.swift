@@ -56,6 +56,19 @@ extension AsyncChannel<ArraySlice<UInt8>> {
         let config = configuration ?? .current
         let channel = self
 
+        // IMPORTANT: Task.detached is required here for concurrent producer/consumer.
+        //
+        // Why not `async init`?
+        // - AsyncChannel.send() suspends until a consumer reads (backpressure)
+        // - If we made this init async and awaited rendering inline, send() would
+        //   suspend waiting for a consumer that can't start until init completes
+        // - Result: DEADLOCK
+        //
+        // With Task.detached:
+        // - init returns immediately with the channel
+        // - Producer runs concurrently in background
+        // - Consumer can start iterating while producer is still rendering
+        // - Backpressure works: send() suspends producer when consumer is slow
         Task.detached {
             let stream = AsyncRenderingStream(channel: channel, chunkSize: chunkSize)
             var context = HTML.Context(config)
@@ -91,6 +104,8 @@ extension AsyncChannel<ArraySlice<UInt8>> {
         let config = configuration ?? .current
         let channel = self
 
+        // IMPORTANT: Task.detached is required here for concurrent producer/consumer.
+        // See the HTML.View init above for detailed explanation.
         Task.detached {
             let stream = AsyncRenderingStream(channel: channel, chunkSize: chunkSize)
             var context = HTML.Context(config)

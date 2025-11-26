@@ -21,24 +21,27 @@ struct `Async Tests` {
         struct TestHTML: HTML.View, Sendable {
             var body: some HTML.View {
                 tag("div") {
-                    tag("h1") { HTML.Text("Title") }
+                    tag("h1") { HTML.Text("Header1") }
                     tag("p") { HTML.Text("Content") }
                 }
             }
         }
 
-        let html = TestHTML()
-        let syncResult = String(decoding: html.bytes, as: UTF8.self)
-        let asyncResult = await String(html)
+        let html = HTML.Document { TestHTML() } head: {
+            tag("title") { HTML.Text("Title") }
+        }
+        let syncResult = { String(decoding: [UInt8](html, configuration: .pretty), as: UTF8.self) }()
+        let asyncResult = await String(html, configuration: .pretty)
 
         #expect(syncResult == asyncResult)
+        print(syncResult)
     }
 
     @Test
     func `Async bytes matches sync bytes`() async {
         let html = tag("p") { HTML.Text("Test content") }
-        let syncBytes = html.bytes
-        let asyncBytes = await html.asyncBytes()
+        let syncBytes = { [UInt8](html) }()
+        let asyncBytes = await [UInt8](html)
 
         #expect(syncBytes == asyncBytes)
     }
@@ -201,7 +204,7 @@ struct `Async Tests` {
         }
 
         let html = EmptyHTML()
-        let result = await html.asyncBytes()
+        let result = await [UInt8](html)
 
         #expect(result.isEmpty)
     }

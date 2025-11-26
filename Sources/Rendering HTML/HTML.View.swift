@@ -99,52 +99,6 @@ extension HTML.AsyncView {
 }
 
 
-// MARK: - UInt8.Streaming Compatible
-
-// Note: HTML.View provides the same `serialize(into:)` method signature as `UInt8.Streaming`
-// from swift-standards, enabling interoperability. Concrete HTML types that are Sendable
-// can add `UInt8.Streaming` conformance if needed for composition with other streaming types.
-
-extension HTML.View {
-    /// Serialize this HTML to bytes using the streaming protocol.
-    ///
-    /// This method enables HTML to be used with any `UInt8.Streaming` consumer,
-    /// allowing composition with RFC types and other streaming content.
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let html = div { p { "Hello" } }
-    ///
-    /// // Direct buffer writing
-    /// var buffer: [UInt8] = []
-    /// html.serialize(into: &buffer)
-    ///
-    /// // Or get bytes directly
-    /// let bytes = html.bytes
-    /// ```
-    @inlinable
-    public func serialize<Buffer: RangeReplaceableCollection>(
-        into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        var context = HTML.Context()
-        Self._render(self, into: &buffer, context: &context)
-    }
-
-    /// Get the serialized bytes of this HTML.
-    ///
-    /// Convenience property that creates a buffer and serializes into it.
-    @inlinable
-    public var bytes: [UInt8] {
-        var buffer: [UInt8] = []
-        serialize(into: &buffer)
-        return buffer
-    }
-}
-
-// Streaming extensions for HTML.View are defined in:
-// - AsyncChannel+HTML.swift (streaming with backpressure)
-
 /// Extension to add attribute capabilities to all HTML elements.
 extension HTML.View {
     /// Adds a custom attribute to an HTML element.
@@ -191,20 +145,6 @@ extension HTML.View {
     }
 }
 
-extension HTML.View {
-    /// Asynchronously render this HTML to a complete byte array.
-    ///
-    /// Convenience method that delegates to `[UInt8].init(_:configuration:)`.
-    ///
-    /// - Parameter configuration: Rendering configuration.
-    /// - Returns: Complete rendered bytes.
-    @inlinable
-    public func asyncBytes(
-        configuration: HTML.Context.Configuration? = nil
-    ) async -> [UInt8] {
-        await [UInt8].init(self, configuration: configuration)
-    }
-}
 
 /// Provides a default `description` implementation for HTML types that also conform to `CustomStringConvertible`.
 ///
@@ -225,6 +165,10 @@ extension HTML.View {
 /// ```
 extension CustomStringConvertible where Self: HTML.View {
     public var description: String {
-        String(decoding: self.bytes, as: UTF8.self)
+        do {
+            return try String(self)
+        } catch {
+            return ""
+        }
     }
 }

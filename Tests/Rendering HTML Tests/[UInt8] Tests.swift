@@ -132,7 +132,7 @@ struct `[UInt8] Tests` {
         let html = tag("article") {
             HTML.Text("Async bytes content")
         }
-        let bytes = await html.asyncBytes()
+        let bytes = await [UInt8](html)
         let string = String(decoding: bytes, as: UTF8.self)
         #expect(string.contains("<article>"))
         #expect(string.contains("Async bytes content"))
@@ -143,7 +143,7 @@ struct `[UInt8] Tests` {
         let html = tag("section") {
             HTML.Text("Configured bytes")
         }
-        let bytes = await html.asyncBytes(configuration: .pretty)
+        let bytes = await [UInt8](html, configuration: .pretty)
         let string = String(decoding: bytes, as: UTF8.self)
         #expect(string.contains("<section>"))
     }
