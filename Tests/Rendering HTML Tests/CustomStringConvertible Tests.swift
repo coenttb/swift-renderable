@@ -43,7 +43,7 @@ struct `CustomStringConvertible Tests` {
 
         let html = TestHTML()
         let description = html.description
-        let fromBytes = String(decoding: html.bytes, as: UTF8.self)
+        let fromBytes = String(decoding: [UInt8](html), as: UTF8.self)
 
         #expect(description == fromBytes)
     }

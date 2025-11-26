@@ -26,7 +26,7 @@ struct `AsyncChannel Tests` {
         }
 
         var chunks: [ArraySlice<UInt8>] = []
-        for await chunk in AsyncChannel(chunkSize: 4096) { TestHTML() } {
+        for await chunk in AsyncChannel { TestHTML() } {
             chunks.append(chunk)
         }
 
@@ -48,7 +48,7 @@ struct `AsyncChannel Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncChannel(chunkSize: 4096) { MultiParagraphHTML() } {
+        for await chunk in AsyncChannel { MultiParagraphHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -73,7 +73,6 @@ struct `AsyncChannel Tests` {
         var chunks: [ArraySlice<UInt8>] = []
         for await chunk in AsyncChannel(chunkSize: 100) { LongContentHTML() } {
             chunks.append(chunk)
-            // Each chunk should be at most 100 bytes
             #expect(chunk.count <= 100)
         }
 
@@ -92,7 +91,7 @@ struct `AsyncChannel Tests` {
         }
 
         var chunkCount = 0
-        for await _ in AsyncChannel(chunkSize: 4096) { SimpleHTML() } {
+        for await _ in AsyncChannel { SimpleHTML() } {
             chunkCount += 1
         }
 
@@ -154,7 +153,7 @@ struct `AsyncChannel Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncChannel(chunkSize: 4096) { EmptyHTML() } {
+        for await chunk in AsyncChannel { EmptyHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -177,7 +176,7 @@ struct `AsyncChannel Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncChannel(chunkSize: 4096) { NestedHTML() } {
+        for await chunk in AsyncChannel { NestedHTML() } {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -201,7 +200,7 @@ struct `AsyncChannel Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in ConvenienceHTML().asyncChannel(chunkSize: 4096) {
+        for await chunk in ConvenienceHTML().asyncChannel() {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -221,12 +220,120 @@ struct `AsyncChannel Tests` {
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in StyledHTML().asyncChannel(chunkSize: 4096, configuration: .email) {
+        for await chunk in StyledHTML().asyncChannel(configuration: .email) {
             allBytes.append(contentsOf: chunk)
         }
 
         let result = String(decoding: allBytes, as: UTF8.self)
         #expect(result.contains("margin"))
+    }
+}
+
+// MARK: - Concurrent Producer/Consumer Tests
+
+extension `AsyncChannel Tests` {
+    @Suite
+    struct `Concurrency Tests` {
+
+        /// This test verifies that the producer runs concurrently with the consumer.
+        ///
+        /// With correct `Task.detached` implementation:
+        /// - AsyncChannel init returns immediately
+        /// - Producer starts rendering in background
+        /// - Consumer iterates while producer is still producing
+        /// - First chunk arrives while rendering is still in progress
+        ///
+        /// With incorrect `async init` implementation:
+        /// - Rendering completes entirely during init
+        /// - All chunks are buffered before iteration starts
+        /// - This defeats the purpose of streaming (memory is O(doc) not O(chunk))
+        /// - WORSE: It causes a DEADLOCK because channel.send() suspends waiting
+        ///   for a consumer, but the consumer can't start until init completes
+        @Test
+        func `Producer and consumer run concurrently`() async {
+            // Use an actor to safely track state across concurrent tasks
+            actor RenderingState {
+                var producerStarted = false
+                var producerFinished = false
+                var firstChunkReceivedWhileProducerRunning = false
+
+                func markProducerStarted() { producerStarted = true }
+                func markProducerFinished() { producerFinished = true }
+                func checkAndMarkFirstChunk() -> Bool {
+                    if producerStarted && !producerFinished {
+                        firstChunkReceivedWhileProducerRunning = true
+                        return true
+                    }
+                    return false
+                }
+                func getResult() -> (started: Bool, finished: Bool, concurrent: Bool) {
+                    (producerStarted, producerFinished, firstChunkReceivedWhileProducerRunning)
+                }
+            }
+
+            let state = RenderingState()
+
+            // HTML that takes noticeable time to render
+            struct SlowRenderingHTML: HTML.View, AsyncRendering, Sendable {
+                let state: RenderingState
+
+                var body: some HTML.View {
+                    tag("div") {
+                        // Generate substantial content that takes time to render
+                        HTML.Text(String(repeating: "x", count: 100_000))
+                    }
+                }
+
+                // Custom async render that signals when it starts/finishes
+                static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+                    _ html: SlowRenderingHTML,
+                    into stream: Stream,
+                    context: inout HTML.Context
+                ) async {
+                    await html.state.markProducerStarted()
+
+                    // Render the actual content
+                    await HTML.Element<HTML.Text>._renderAsync(
+                        html.body as! HTML.Element<HTML.Text>,
+                        into: stream,
+                        context: &context
+                    )
+
+                    await html.state.markProducerFinished()
+                }
+            }
+
+            let html = SlowRenderingHTML(state: state)
+            var chunkCount = 0
+
+            // With Task.detached: channel returns immediately, producer runs concurrently
+            // With async init: this line blocks until ALL rendering is done (DEADLOCK!)
+            for await chunk in AsyncChannel(chunkSize: 1000) { html } {
+                chunkCount += 1
+
+                // Check if we received this chunk while producer was still running
+                if chunkCount == 1 {
+                    _ = await state.checkAndMarkFirstChunk()
+                }
+
+                // Don't need to consume everything for this test
+                if chunkCount >= 5 {
+                    break
+                }
+            }
+
+            let result = await state.getResult()
+
+            // The key assertion: with correct implementation, we should receive
+            // chunks while the producer is still running (concurrent execution)
+            #expect(result.started, "Producer should have started")
+            #expect(result.concurrent, """
+                First chunk should arrive while producer is still running.
+                This indicates concurrent producer/consumer execution.
+                If this fails, the AsyncChannel init is blocking until rendering completes,
+                which defeats the purpose of streaming with backpressure.
+                """)
+        }
     }
 }
 
