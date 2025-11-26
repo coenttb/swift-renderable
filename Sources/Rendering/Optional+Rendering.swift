@@ -23,3 +23,15 @@ extension Optional: Rendering where Wrapped: Rendering {
     /// This type uses direct rendering and doesn't have a body.
     public var body: Never { fatalError() }
 }
+
+extension Optional: AsyncRendering where Wrapped: AsyncRendering {
+    /// Async renders the optional element if it exists.
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ markup: Self,
+        into stream: Stream,
+        context: inout Wrapped.Context
+    ) async {
+        guard let markup else { return }
+        await Wrapped._renderAsync(markup, into: stream, context: &context)
+    }
+}

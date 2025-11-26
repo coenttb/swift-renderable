@@ -40,3 +40,19 @@ extension _Array: Sendable where Element: Sendable {}
 extension _Array: Hashable where Element: Hashable {}
 extension _Array: Equatable where Element: Equatable {}
 extension _Array: Codable where Element: Codable {}
+
+extension _Array: AsyncRendering where Element: AsyncRendering {
+    /// Async renders all elements in the array, yielding at element boundaries.
+    ///
+    /// This is a key yield point for progressive streaming - each element
+    /// is rendered and flushed before moving to the next.
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ markup: Self,
+        into stream: Stream,
+        context: inout Element.Context
+    ) async {
+        for element in markup.elements {
+            await Element._renderAsync(element, into: stream, context: &context)
+        }
+    }
+}

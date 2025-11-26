@@ -33,3 +33,7 @@ extension Group: Rendering where Content: Rendering {
 
     public var body: Content { content }
 }
+
+extension Group: AsyncRendering where Content: AsyncRendering {
+    // Uses default implementation from protocol extension (delegates to body)
+}

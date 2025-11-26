@@ -50,6 +50,29 @@ extension HTML.View {
     }
 }
 
+// MARK: - Async Rendering
+
+extension HTML {
+    /// A protocol for HTML views that support async rendering with backpressure.
+    ///
+    /// Async rendering allows suspension at element boundaries, enabling true
+    /// progressive streaming where memory is bounded to O(chunkSize).
+    public protocol AsyncView: HTML.View, AsyncRendering where Content: AsyncRendering {}
+}
+
+extension HTML.AsyncView {
+    /// Default implementation delegates to content's async render method.
+    @inlinable
+    @_disfavoredOverload
+    public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
+        _ html: Self,
+        into stream: Stream,
+        context: inout HTML.Context
+    ) async {
+        await Content._renderAsync(html.body, into: stream, context: &context)
+    }
+}
+
 
 // MARK: - UInt8.Streaming Compatible
 
