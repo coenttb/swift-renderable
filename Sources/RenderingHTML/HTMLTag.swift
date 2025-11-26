@@ -49,7 +49,7 @@ public struct HTMLTag: ExpressibleByStringLiteral {
     /// This allows using tags as functions, e.g. `div()`.
     ///
     /// - Returns: An empty HTML element with this tag.
-    public func callAsFunction() -> HTMLElement<_Empty<HTMLContext>> {
+    public func callAsFunction() -> HTMLElement<Empty> {
         tag(self.rawValue)
     }
 

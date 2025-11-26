@@ -25,6 +25,19 @@ public import Rendering
 ///     }
 /// }
 /// ```
-public typealias Empty = _Empty<HTMLContext>
+extension Empty: Rendering {
+    public typealias Content = Never
+    public typealias Context = HTMLContext
 
-extension Empty: HTML where Context == HTMLContext {}
+    public static func _render<Buffer: RangeReplaceableCollection>(
+        _ markup: Empty,
+        into buffer: inout Buffer,
+        context: inout HTMLContext
+    ) where Buffer.Element == UInt8 {
+        // Produces no output
+    }
+
+    public var body: Never { fatalError() }
+}
+
+extension Empty: HTML {}

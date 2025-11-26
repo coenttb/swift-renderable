@@ -61,7 +61,7 @@ public struct HTMLVoidTag: ExpressibleByStringLiteral {
     /// Creates an HTML void element with this tag.
     ///
     /// - Returns: An HTML void element with this tag.
-    public func callAsFunction() -> HTMLElement<_Empty<HTMLContext>> {
-        tag(self.rawValue) { _Empty<HTMLContext>() }
+    public func callAsFunction() -> HTMLElement<Empty> {
+        tag(self.rawValue) { Empty() }
     }
 }

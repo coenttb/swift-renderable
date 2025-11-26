@@ -39,13 +39,6 @@ public enum Builder {
         _Array(components)
     }
 
-    /// Creates an empty HTML component when no content is provided.
-    ///
-    /// - Returns: An empty HTML component.
-    public static func buildBlock<Context>() -> _Empty<Context> {
-        .init()
-    }
-
     /// Passes through a single content component unchanged.
     ///
     /// - Parameter content: The HTML component to pass through.

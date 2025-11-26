@@ -119,6 +119,13 @@ public import Rendering
 
 
 extension Builder {
+    /// Creates an empty HTML component when no content is provided.
+    ///
+    /// - Returns: An empty HTML component.
+    public static func buildBlock() -> Empty {
+        Empty()
+    }
+
     /// Converts a text expression to HTML text.
     ///
     /// - Parameter expression: The HTML text to convert.
