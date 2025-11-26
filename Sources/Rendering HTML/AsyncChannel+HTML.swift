@@ -11,31 +11,36 @@ import Rendering
 extension AsyncChannel<ArraySlice<UInt8>> {
     /// Stream HTML with true progressive rendering and backpressure.
     ///
-    /// This initializer provides memory-bounded streaming throughout the entire
-    /// render-to-stream process using `AsyncChannel` for backpressure.
+    /// This is the canonical way to stream HTML when you need bounded memory.
     /// The producer suspends when the consumer is slow, ensuring memory
-    /// usage is bounded to O(chunkSize) at all times.
+    /// usage is bounded to O(chunkSize) throughout the entire process.
     ///
-    /// ## Memory Bounds
+    /// ## When to Use
     ///
-    /// Unlike batch or progressive modes that may accumulate the entire document
-    /// in memory before streaming, backpressure mode maintains bounded memory:
+    /// Use `AsyncChannel` when:
+    /// - Streaming large documents to HTTP clients
+    /// - Memory usage must be bounded regardless of document size
+    /// - You want true backpressure (producer waits for slow consumers)
     ///
-    /// | Mode | During Render | During Stream |
-    /// |------|---------------|---------------|
-    /// | batch | O(doc size) | O(chunkSize) |
-    /// | progressive | O(doc size) | O(chunkSize) |
-    /// | **backpressure** | **O(chunkSize)** | **O(chunkSize)** |
+    /// Use `[UInt8](html)` instead when:
+    /// - You need the complete document (e.g., PDF generation)
+    /// - The document is small
+    /// - Simplicity is preferred over streaming
     ///
-    /// ## Example
+    /// ## Canonical Usage
     ///
     /// ```swift
-    /// for await chunk in AsyncChannel(chunkSize: 4096) {
-    ///     div { "Hello" }
-    /// } {
+    /// for await chunk in AsyncChannel { myView } {
     ///     await response.write(chunk)
     /// }
     /// ```
+    ///
+    /// ## Memory Characteristics
+    ///
+    /// | Pattern | Memory |
+    /// |---------|--------|
+    /// | `[UInt8](html)` | O(doc size) |
+    /// | `AsyncChannel { html }` | **O(chunkSize)** |
     ///
     /// - Parameters:
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
@@ -63,14 +68,11 @@ extension AsyncChannel<ArraySlice<UInt8>> {
 extension AsyncChannel<ArraySlice<UInt8>> {
     /// Stream an HTML document with true progressive rendering and backpressure.
     ///
-    /// ## Example
+    /// ## Canonical Usage
     ///
     /// ```swift
-    /// for await chunk in AsyncChannel(chunkSize: 4096) {
-    ///     HTML.Document {
-    ///         div { "Hello" }
-    ///     }
-    /// } {
+    /// let document = HTML.Document { div { "Hello" } }
+    /// for await chunk in AsyncChannel { document } {
     ///     await response.write(chunk)
     /// }
     /// ```

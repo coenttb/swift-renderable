@@ -10,28 +10,35 @@ public import Rendering
 extension RangeReplaceableCollection<UInt8> {
     /// Creates a byte collection from rendered HTML.
     ///
-    /// This unified initializer works with any `RangeReplaceableCollection<UInt8>`,
-    /// including `[UInt8]`, `ContiguousArray<UInt8>`, and `Data`.
+    /// This is the canonical way to render HTML to bytes when you need the
+    /// complete document. Works with any `RangeReplaceableCollection<UInt8>`.
     ///
-    /// ## Performance
+    /// ## When to Use
     ///
-    /// - For maximum performance, use `ContiguousArray<UInt8>` which provides
-    ///   contiguous memory layout and cache-friendly access patterns
-    /// - `[UInt8]` (Array) is nearly as fast for most use cases
-    /// - ~3,500 documents/second (~280µs per complete HTML document)
+    /// Use `[UInt8](html)` when:
+    /// - You need the complete document (e.g., PDF generation)
+    /// - The document is small to medium sized
+    /// - Simplicity is preferred over streaming
     ///
-    /// ## Example
+    /// Use `AsyncChannel { html }` instead when:
+    /// - Streaming large documents to HTTP clients
+    /// - Memory usage must be bounded regardless of document size
+    ///
+    /// ## Canonical Usage
     ///
     /// ```swift
-    /// let html = div { h1 { "Hello, World!" } }
-    ///
-    /// // Works with any RangeReplaceableCollection<UInt8>
-    /// let array: [UInt8] = .init(html: html)
-    /// let contiguous: ContiguousArray<UInt8> = .init(html: html)
+    /// let bytes = [UInt8](myView)
     /// ```
     ///
+    /// ## Memory Characteristics
+    ///
+    /// | Pattern | Memory |
+    /// |---------|--------|
+    /// | `[UInt8](html)` | O(doc size) |
+    /// | `AsyncChannel { html }` | O(chunkSize) |
+    ///
     /// - Parameters:
-    ///   - html: The HTML content to render to bytes
+    ///   - view: The HTML content to render to bytes
     ///   - configuration: Rendering configuration. Uses current task-local or default if nil.
     @inlinable
     public init<View: HTML.View>(

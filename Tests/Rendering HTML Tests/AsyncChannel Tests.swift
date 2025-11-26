@@ -347,7 +347,7 @@ extension `Performance Tests` {
     @Suite
     struct AsyncChannelPerformance {
         @Test(
-//            .disabled("Performance test - enable manually")
+            .disabled("Performance test - enable manually")
         )
         func largeContentStreaming() async {
             let itemCount = 1_000_0000
