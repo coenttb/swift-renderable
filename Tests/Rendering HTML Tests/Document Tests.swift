@@ -8,11 +8,6 @@
 @testable import Rendering_HTML
 import Rendering_HTML_TestSupport
 import Testing
-import Foundation
-
-// Note: Document is an internal type, so we test it through HTMLDocument
-// which uses Document internally. These tests focus on the document structure
-// and assembly behavior that Document provides.
 
 @Suite
 struct `Document Tests` {

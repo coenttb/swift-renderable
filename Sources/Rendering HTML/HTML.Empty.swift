@@ -30,7 +30,7 @@ extension HTML {
     public typealias Empty = RenderingEmpty
 }
 
-extension HTML.Empty: Rendering {
+extension HTML.Empty: Renderable {
     public typealias Content = Never
     public typealias Context = HTML.Context
 
@@ -47,7 +47,7 @@ extension HTML.Empty: Rendering {
 
 extension HTML.Empty: HTML.View {}
 
-extension HTML.Empty: AsyncRendering {
+extension HTML.Empty: AsyncRenderable {
     /// Async renders nothing (empty content).
     public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
         _ markup: Empty,

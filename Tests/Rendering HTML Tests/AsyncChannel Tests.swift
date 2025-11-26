@@ -16,7 +16,7 @@ struct `AsyncChannel Tests` {
 
     @Test
     func `AsyncChannel streams HTML content`() async {
-        struct TestHTML: HTML.View, AsyncRendering, Sendable {
+        struct TestHTML: HTML.View, AsyncRenderable, Sendable {
             var body: some HTML.View {
                 tag("div") {
                     HTML.Text("Hello, World!")
@@ -36,7 +36,7 @@ struct `AsyncChannel Tests` {
 
     @Test
     func `AsyncChannel yields complete content`() async {
-        struct MultiParagraphHTML: HTML.View, AsyncRendering, Sendable {
+        struct MultiParagraphHTML: HTML.View, AsyncRenderable, Sendable {
             var body: some HTML.View {
                 Group {
                     tag("p") { HTML.Text("First") }
@@ -61,7 +61,7 @@ struct `AsyncChannel Tests` {
 
     @Test
     func `AsyncChannel respects chunk size`() async {
-        struct LongContentHTML: HTML.View, AsyncRendering, Sendable {
+        struct LongContentHTML: HTML.View, AsyncRenderable, Sendable {
             var body: some HTML.View {
                 tag("div") {
                     HTML.Text(String(repeating: "a", count: 1000))
@@ -81,7 +81,7 @@ struct `AsyncChannel Tests` {
 
     @Test
     func `AsyncChannel with default chunk size`() async {
-        struct SimpleHTML: HTML.View, AsyncRendering, Sendable {
+        struct SimpleHTML: HTML.View, AsyncRenderable, Sendable {
             var body: some HTML.View {
                 tag("div") {
                     HTML.Text("Content")
@@ -102,7 +102,7 @@ struct `AsyncChannel Tests` {
 
     @Test
     func `AsyncChannel with custom configuration`() async {
-        struct StyledHTML: HTML.View, AsyncRendering, Sendable {
+        struct StyledHTML: HTML.View, AsyncRenderable, Sendable {
             var body: some HTML.View {
                 tag("div") {
                     HTML.Text("Content")
@@ -124,7 +124,7 @@ struct `AsyncChannel Tests` {
 
     @Test
     func `AsyncChannel with nil configuration uses default`() async {
-        struct SpanHTML: HTML.View, AsyncRendering, Sendable {
+        struct SpanHTML: HTML.View, AsyncRenderable, Sendable {
             var body: some HTML.View {
                 tag("span") {
                     HTML.Text("Test")
@@ -145,7 +145,7 @@ struct `AsyncChannel Tests` {
 
     @Test
     func `AsyncChannel with empty content`() async {
-        struct EmptyHTML: HTML.View, AsyncRendering, Sendable {
+        struct EmptyHTML: HTML.View, AsyncRenderable, Sendable {
             var body: some HTML.View {
                 Empty()
             }
@@ -163,7 +163,7 @@ struct `AsyncChannel Tests` {
 
     @Test
     func `AsyncChannel with nested elements`() async {
-        struct NestedHTML: HTML.View, AsyncRendering, Sendable {
+        struct NestedHTML: HTML.View, AsyncRenderable, Sendable {
             var body: some HTML.View {
                 tag("div") {
                     tag("ul") {
@@ -232,7 +232,7 @@ extension `AsyncChannel Tests` {
             let state = RenderingState()
 
             // HTML that takes noticeable time to render
-            struct SlowRenderingHTML: HTML.View, AsyncRendering, Sendable {
+            struct SlowRenderingHTML: HTML.View, AsyncRenderable, Sendable {
                 let state: RenderingState
 
                 var body: some HTML.View {
@@ -303,7 +303,7 @@ extension `AsyncChannel Tests` {
 
         @Test
         func `AsyncChannel suspends producer when consumer is slow`() async {
-            struct StreamingHTML: HTML.View, AsyncRendering, Sendable {
+            struct StreamingHTML: HTML.View, AsyncRenderable, Sendable {
                 var body: some HTML.View {
                     tag("div") {
                         // Generate enough content to require multiple chunks
@@ -345,7 +345,7 @@ extension `AsyncChannel Tests` {
 
         @Test
         func `AsyncChannel maintains bounded memory with large content`() async {
-            struct VeryLargeHTML: HTML.View, AsyncRendering, Sendable {
+            struct VeryLargeHTML: HTML.View, AsyncRenderable, Sendable {
                 var body: some HTML.View {
                     tag("div") {
                         // 1MB of content
@@ -379,7 +379,7 @@ extension `AsyncChannel Tests` {
 
         @Test
         func `AsyncChannel chunks arrive progressively`() async {
-            struct ProgressiveHTML: HTML.View, AsyncRendering, Sendable {
+            struct ProgressiveHTML: HTML.View, AsyncRenderable, Sendable {
                 var body: some HTML.View {
                     Group {
                         tag("header") { HTML.Text(String(repeating: "h", count: 500)) }
@@ -417,7 +417,7 @@ extension `Performance Tests` {
         func largeContentStreaming() async {
             let itemCount = 1_000_0000
 
-            struct ListHTML: HTML.View, AsyncRendering, Sendable {
+            struct ListHTML: HTML.View, AsyncRenderable, Sendable {
                 let items: [String]
 
                 var body: some HTML.View {

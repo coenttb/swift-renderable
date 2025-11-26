@@ -63,7 +63,7 @@ struct `AnyRendering Tests` {
 
 // MARK: - Test Helpers
 
-private struct TestElement: Rendering, Sendable {
+private struct TestElement: Renderable, Sendable {
     let id: String
     typealias Context = Void
     typealias Content = Never
@@ -77,7 +77,7 @@ private struct TestElement: Rendering, Sendable {
     ) where Buffer.Element == UInt8 {}
 }
 
-private struct OtherElement: Rendering, Sendable {
+private struct OtherElement: Renderable, Sendable {
     typealias Context = Void
     typealias Content = Never
     var body: Never { fatalError() }

@@ -72,7 +72,7 @@ extension HTML {
 
 // MARK: - Async Rendering
 
-extension HTML._Attributes: AsyncRendering where Content: AsyncRendering {
+extension HTML._Attributes: AsyncRenderable where Content: AsyncRenderable {
     /// Async renders this HTML element with attributes.
     public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
         _ html: Self,

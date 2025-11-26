@@ -67,7 +67,7 @@ struct `Builder Tests` {
 
 // MARK: - Test Helpers
 
-private struct TestElement: Rendering, Sendable {
+private struct TestElement: Renderable, Sendable {
     let id: String
     typealias Context = Void
     typealias Content = Never

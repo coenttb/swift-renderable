@@ -33,7 +33,7 @@ import Standards
 /// - Note: This protocol is similar in design to SwiftUI's `View` protocol,
 ///   making it familiar to Swift developers who have worked with SwiftUI.
 extension HTML {
-    public protocol View: Rendering where Content: HTML.View, Context == HTML.Context {
+    public protocol View: Renderable where Content: HTML.View, Context == HTML.Context {
         @HTML.Builder var body: Content { get }
     }
 }
@@ -82,7 +82,7 @@ extension HTML {
     /// Choose sync when you need the complete document (e.g., PDF generation).
     /// Choose AsyncChannel when streaming to a client that benefits from
     /// progressive delivery and you want bounded memory usage.
-    public protocol AsyncView: HTML.View, AsyncRendering where Content: AsyncRendering {}
+    public protocol AsyncView: HTML.View, AsyncRenderable where Content: AsyncRenderable {}
 }
 
 extension HTML.AsyncView {

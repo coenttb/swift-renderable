@@ -41,7 +41,7 @@ extension HTML {
 }
 
 // Give Raw (from Rendering module) the HTML.View conformance
-extension Raw: Rendering {
+extension Raw: Renderable {
     public typealias Content = Never
     public typealias Context = HTML.Context
 
@@ -60,7 +60,7 @@ extension Raw: Rendering {
 
 extension Raw: HTML.View {}
 
-extension Raw: AsyncRendering {
+extension Raw: AsyncRenderable {
     /// Async renders the raw bytes directly to the stream.
     public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
         _ raw: Self,

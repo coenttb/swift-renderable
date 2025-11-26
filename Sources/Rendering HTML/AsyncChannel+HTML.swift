@@ -45,7 +45,7 @@ extension AsyncChannel<ArraySlice<UInt8>> {
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
     ///   - view: The HTML content to stream.
-    public convenience init<View: HTML.View & AsyncRendering & Sendable>(
+    public convenience init<View: HTML.View & AsyncRenderable & Sendable>(
         chunkSize: Int = 4096,
         configuration: HTML.Context.Configuration? = nil,
         @HTML.Builder _ view: () -> View
@@ -93,7 +93,7 @@ extension AsyncChannel<ArraySlice<UInt8>> {
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
     ///   - document: The HTML document to stream.
-    public convenience init<Document: HTML.DocumentProtocol & AsyncRendering & Sendable>(
+    public convenience init<Document: HTML.DocumentProtocol & AsyncRenderable & Sendable>(
         chunkSize: Int = 4096,
         configuration: HTML.Context.Configuration? = nil,
         @HTML.Builder _ document: () -> Document

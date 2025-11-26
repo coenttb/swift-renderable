@@ -11,7 +11,7 @@ public import Rendering
 ///
 /// This provides the `Rendering` conformance with `HTML.Context` as the context type.
 /// Each domain module (HTML, XML, etc.) provides its own `Never` conformance.
-extension Never: Rendering {
+extension Never: Renderable {
     public typealias Context = HTML.Context
 
     @inlinable
@@ -30,7 +30,7 @@ extension Never: Rendering {
 /// contexts where no content is expected or possible.
 extension Never: HTML.View {}
 
-extension Never: AsyncRendering {
+extension Never: AsyncRenderable {
     @inlinable
     public static func _renderAsync<Stream: AsyncRenderingStreamProtocol>(
         _ markup: Self,

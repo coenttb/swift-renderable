@@ -16,19 +16,19 @@ struct `Rendering Tests` {
     @Test
     func `Rendering protocol exists`() {
         // Verify the protocol type exists
-        let _: any Rendering.Type = TestRendering.self
+        let _: any Renderable.Type = TestRendering.self
         #expect(Bool(true))
     }
 
     @Test
-    func `AsyncRendering protocol exists`() {
+    func `AsyncRenderable protocol exists`() {
         // Verify the async protocol type exists
-        let _: any AsyncRendering.Type = TestRendering.self
+        let _: any AsyncRenderable.Type = TestRendering.self
         #expect(Bool(true))
     }
 
     @Test
-    func `AsyncRenderingStreamProtocol exists`() {
+    func `AsyncRenderableStreamProtocol exists`() {
         // Verify the stream protocol exists
         func requiresStreamProtocol<T: AsyncRenderingStreamProtocol>(_ type: T.Type) {}
         requiresStreamProtocol(AsyncRenderingStream.self)
@@ -39,7 +39,7 @@ struct `Rendering Tests` {
 // MARK: - Test Helpers
 
 /// A minimal Rendering implementation for testing protocol structure
-private struct TestRendering: Rendering, AsyncRendering {
+private struct TestRendering: Renderable, AsyncRenderable {
     typealias Context = Void
     typealias Content = Never
 

@@ -33,7 +33,7 @@ public enum Builder {
     ///
     /// - Parameter components: An array of HTML components to combine.
     /// - Returns: A single HTML component representing the array of components.
-    public static func buildArray<Element: Rendering>(_ components: [Element]) -> _Array<Element> {
+    public static func buildArray<Element: Renderable>(_ components: [Element]) -> _Array<Element> {
         _Array(components)
     }
 
@@ -41,7 +41,7 @@ public enum Builder {
     ///
     /// - Parameter content: The HTML component to pass through.
     /// - Returns: The same HTML component.
-    public static func buildBlock<Content: Rendering>(_ content: Content) -> Content {
+    public static func buildBlock<Content: Renderable>(_ content: Content) -> Content {
         content
     }
 
@@ -49,7 +49,7 @@ public enum Builder {
     ///
     /// - Parameter content: The HTML components to combine.
     /// - Returns: A tuple of HTML components.
-    public static func buildBlock<each Content: Rendering>(
+    public static func buildBlock<each Content: Renderable>(
         _ content: repeat each Content
     ) -> _Tuple<repeat each Content> {
         _Tuple(repeat each content)
@@ -59,7 +59,7 @@ public enum Builder {
     ///
     /// - Parameter component: The HTML component for the "if" or "true" case.
     /// - Returns: A conditional HTML component representing the "if" or "true" case.
-    public static func buildEither<First: Rendering, Second: Rendering>(
+    public static func buildEither<First: Renderable, Second: Renderable>(
         first component: First
     ) -> _Conditional<First, Second> {
         .first(component)
@@ -69,7 +69,7 @@ public enum Builder {
     ///
     /// - Parameter component: The HTML component for the "else" or "false" case.
     /// - Returns: A conditional HTML component representing the "else" or "false" case.
-    public static func buildEither<First: Rendering, Second: Rendering>(
+    public static func buildEither<First: Renderable, Second: Renderable>(
         second component: Second
     ) -> _Conditional<First, Second> {
         .second(component)
@@ -79,7 +79,7 @@ public enum Builder {
     ///
     /// - Parameter expression: The HTML expression to convert.
     /// - Returns: The same HTML expression.
-    public static func buildExpression<T: Rendering>(_ expression: T) -> T {
+    public static func buildExpression<T: Renderable>(_ expression: T) -> T {
         expression
     }
 
@@ -87,7 +87,7 @@ public enum Builder {
     ///
     /// - Parameter component: An optional HTML component.
     /// - Returns: The same optional HTML component.
-    public static func buildOptional<T: Rendering>(_ component: T?) -> T? {
+    public static func buildOptional<T: Renderable>(_ component: T?) -> T? {
         component
     }
 
@@ -95,7 +95,7 @@ public enum Builder {
     ///
     /// - Parameter component: The HTML component to finalize.
     /// - Returns: The final HTML component.
-    public static func buildFinalResult<T: Rendering>(_ component: T) -> T {
+    public static func buildFinalResult<T: Renderable>(_ component: T) -> T {
         component
     }
 }

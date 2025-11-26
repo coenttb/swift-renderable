@@ -50,7 +50,7 @@ struct `_Array Tests` {
 // MARK: - Test Helpers
 
 /// A minimal Rendering type for testing _Array
-private struct TestElement: Rendering, Sendable {
+private struct TestElement: Renderable, Sendable {
     typealias Context = Void
     typealias Content = Never
 

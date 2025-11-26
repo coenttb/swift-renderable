@@ -141,7 +141,7 @@ extension HTML.Element: Sendable where Content: Sendable {}
 
 // MARK: - Async Rendering
 
-extension HTML.Element: AsyncRendering where Content: AsyncRendering {
+extension HTML.Element: AsyncRenderable where Content: AsyncRenderable {
     /// Async renders this HTML element with backpressure support.
     ///
     /// This implementation mirrors the sync `_render` but uses async writes
