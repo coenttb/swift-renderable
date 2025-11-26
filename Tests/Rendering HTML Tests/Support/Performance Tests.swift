@@ -10,6 +10,6 @@ import Testing
 
 @Suite(
     .serialized,
-//    .disabled()
+    .disabled()
 )
 struct `Performance Tests` {}

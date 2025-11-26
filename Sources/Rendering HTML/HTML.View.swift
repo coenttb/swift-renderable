@@ -58,49 +58,30 @@ extension HTML {
     /// Async rendering allows suspension at element boundaries, enabling true
     /// progressive streaming where memory is bounded to O(chunkSize).
     ///
-    /// ## Choosing the Right Streaming API
+    /// ## Rendering Options
     ///
-    /// Use this decision tree to select the appropriate API:
+    /// There are two canonical ways to render HTML:
     ///
-    /// ```
-    /// Need true backpressure (bounded memory)?
-    /// ├── YES → Use asyncChannel() (requires AsyncRendering + Sendable)
-    /// └── NO → Need to handle errors/cancellation?
-    ///     ├── YES → Use asyncThrowingStream()
-    ///     └── NO → Need async iteration?
-    ///         ├── YES → Use asyncStream()
-    ///         └── NO → Use bytes property (sync)
-    /// ```
-    ///
-    /// ## Memory Characteristics
-    ///
-    /// | API                    | Memory        | Backpressure | Requirements              |
-    /// |------------------------|---------------|--------------|---------------------------|
-    /// | `bytes`                | O(doc)        | N/A          | `HTML.View`               |
-    /// | `asyncStream()`        | O(doc)        | No           | `HTML.View & Sendable`    |
-    /// | `asyncThrowingStream()`| O(doc)        | No           | `HTML.View & Sendable`    |
-    /// | `asyncChannel()`       | **O(chunk)**  | **Yes**      | `AsyncRendering & Sendable` |
+    /// | Pattern | Memory | Use Case |
+    /// |---------|--------|----------|
+    /// | `[UInt8](html)` | O(doc) | Complete bytes (PDF, simple responses) |
+    /// | `AsyncChannel { html }` | **O(chunk)** | Streaming with backpressure (HTTP) |
     ///
     /// ## Example Usage
     ///
     /// ```swift
-    /// // Simple sync rendering (small documents)
-    /// let html = myView.bytes
+    /// // Sync - complete bytes
+    /// let bytes = [UInt8](myView)
     ///
-    /// // Async iteration without backpressure
-    /// for await chunk in myView.asyncStream(chunkSize: 4096) {
-    ///     await response.write(chunk)
-    /// }
-    ///
-    /// // True streaming with backpressure (large documents)
-    /// for await chunk in myView.asyncChannel(chunkSize: 4096) {
+    /// // Streaming with backpressure
+    /// for await chunk in AsyncChannel { myView } {
     ///     await response.write(chunk)
     /// }
     /// ```
     ///
-    /// - Note: Only `asyncChannel()` provides bounded memory throughout the
-    ///   entire rendering process. Other async methods buffer the complete
-    ///   document before streaming chunks.
+    /// Choose sync when you need the complete document (e.g., PDF generation).
+    /// Choose AsyncChannel when streaming to a client that benefits from
+    /// progressive delivery and you want bounded memory usage.
     public protocol AsyncView: HTML.View, AsyncRendering where Content: AsyncRendering {}
 }
 
@@ -162,8 +143,7 @@ extension HTML.View {
 }
 
 // Streaming extensions for HTML.View are defined in:
-// - AsyncStream.swift (asyncStream)
-// - AsyncThrowingStream.swift (asyncThrowingStream)
+// - AsyncChannel+HTML.swift (streaming with backpressure)
 
 /// Extension to add attribute capabilities to all HTML elements.
 extension HTML.View {
@@ -208,21 +188,6 @@ extension HTML.View {
         context: inout HTML.Context
     ) where Buffer.Element == UInt8 {
         Self._render(self, into: &buffer, context: &context)
-    }
-}
-
-extension HTML.View {
-    /// Asynchronously render this HTML to a String.
-    ///
-    /// Convenience method that delegates to `String.init(_:configuration:)`.
-    ///
-    /// - Parameter configuration: Rendering configuration.
-    /// - Returns: Rendered HTML string.
-    @inlinable
-    public func asyncString(
-        configuration: HTML.Context.Configuration? = nil
-    ) async -> String {
-        await String(self, configuration: configuration)
     }
 }
 

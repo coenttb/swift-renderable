@@ -29,7 +29,7 @@ struct `Async Tests` {
 
         let html = TestHTML()
         let syncResult = String(decoding: html.bytes, as: UTF8.self)
-        let asyncResult = await html.asyncString()
+        let asyncResult = await String(html)
 
         #expect(syncResult == asyncResult)
     }
@@ -99,10 +99,10 @@ struct `Async Tests` {
         #expect(results.contains(false))
     }
 
-    // MARK: - Streaming Integration
+    // MARK: - Sync Rendering
 
     @Test
-    func `Async stream produces complete content`() async throws {
+    func `Sync rendering produces complete content`() {
         struct TestHTML: HTML.View, Sendable {
             var body: some HTML.View {
                 tag("ul") {
@@ -114,43 +114,18 @@ struct `Async Tests` {
         }
 
         let html = TestHTML()
-        var allBytes: [UInt8] = []
+        let bytes = [UInt8](html)
+        let result = String(decoding: bytes, as: UTF8.self)
 
-        for try await chunk in AsyncThrowingStream(chunkSize: 50) { html } {
-            allBytes.append(contentsOf: chunk)
-        }
-
-        let result = String(decoding: allBytes, as: UTF8.self)
         for i in 1...5 {
             #expect(result.contains("Item \(i)"))
         }
     }
 
-    @Test
-    func `Non-throwing stream produces complete content`() async {
-        struct TestHTML: HTML.View, Sendable {
-            var body: some HTML.View {
-                tag("div") {
-                    HTML.Text("Content")
-                }
-            }
-        }
-
-        let html = TestHTML()
-        var allBytes: [UInt8] = []
-
-        for await chunk in AsyncStream(chunkSize: 10) { html } {
-            allBytes.append(contentsOf: chunk)
-        }
-
-        let result = String(decoding: allBytes, as: UTF8.self)
-        #expect(result.contains("Content"))
-    }
-
-    // MARK: - Document Streaming
+    // MARK: - Document Rendering
 
     @Test
-    func `Document async stream includes all parts`() async throws {
+    func `Document sync rendering includes all parts`() {
         struct StyledMainHTML: HTML.View, Sendable {
             var body: some HTML.View {
                 tag("main") {
@@ -164,52 +139,19 @@ struct `Async Tests` {
             StyledMainHTML()
         }
 
-        var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(chunkSize: 100) { document } {
-            allBytes.append(contentsOf: chunk)
-        }
+        let bytes = [UInt8](document)
+        let result = String(decoding: bytes, as: UTF8.self)
 
-        let result = String(decoding: allBytes, as: UTF8.self)
         #expect(result.contains("<!doctype html>"))
         #expect(result.contains("<style>"))
         #expect(result.contains("color:blue"))
         #expect(result.contains("Body content"))
     }
 
-    // MARK: - Task Cancellation
-
-    @Test
-    func `Stream handles task cancellation gracefully`() async {
-        struct LargeHTML: HTML.View, Sendable {
-            var body: some HTML.View {
-                tag("div") {
-                    for i in 0..<10000 {
-                        tag("p") { HTML.Text("Item \(i)") }
-                    }
-                }
-            }
-        }
-
-        let html = LargeHTML()
-        let task = Task {
-            var chunks = 0
-            for try await _ in AsyncThrowingStream(chunkSize: 100) { html } {
-                chunks += 1
-                if chunks > 10 {
-                    throw CancellationError()
-                }
-            }
-        }
-
-        _ = await task.result
-        // Test passes if no crash/hang
-        #expect(true)
-    }
-
     // MARK: - Async with Styles
 
     @Test
-    func `Async rendering preserves styles`() async throws {
+    func `Async rendering preserves styles`() async {
         struct StyledHTML: HTML.View, Sendable {
             var body: some HTML.View {
                 tag("div") {
@@ -221,12 +163,8 @@ struct `Async Tests` {
         }
 
         let html = StyledHTML()
-        var allBytes: [UInt8] = []
-        for try await chunk in AsyncThrowingStream(chunkSize: 1024) { html } {
-            allBytes.append(contentsOf: chunk)
-        }
+        let result = await String(html)
 
-        let result = String(decoding: allBytes, as: UTF8.self)
         #expect(result.contains("color"))
         #expect(result.contains("font-size"))
     }
@@ -246,7 +184,7 @@ struct `Async Tests` {
         }
 
         let html = AttributedHTML()
-        let result = await html.asyncString()
+        let result = await String(html)
 
         #expect(result.contains("href=\"https://example.com\""))
         #expect(result.contains("class=\"link\""))
@@ -281,7 +219,7 @@ struct `Async Tests` {
 
         for i in 1...5 {
             let html = TestHTML(id: i)
-            let result = await html.asyncString()
+            let result = await String(html)
             #expect(result.contains("ID: \(i)"))
         }
     }
@@ -295,7 +233,7 @@ struct `Async Tests` {
         await withTaskGroup(of: (Int, String).self) { group in
             for (index, html) in htmls.enumerated() {
                 group.addTask {
-                    let result = await html.asyncString()
+                    let result = await String(html)
                     return (index, result)
                 }
             }
