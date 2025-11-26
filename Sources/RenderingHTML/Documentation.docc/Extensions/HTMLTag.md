@@ -1,23 +1,23 @@
-# ``PointFreeHTML/HTMLTag``
+# ``PointFreeHTML/HTML.Tag``
 
 A factory for creating HTML elements with a function-call syntax.
 
 ## Overview
 
-`HTMLTag` represents standard HTML tag names that can be used to create HTML elements. As described in the architecture tour, this design cleverly separates tag definitions from actual HTML elements, enabling both empty tags (`div()`) and content-containing tags (`div { ... }`) without code duplication.
+`HTML.Tag` represents standard HTML tag names that can be used to create HTML elements. As described in the architecture tour, this design cleverly separates tag definitions from actual HTML elements, enabling both empty tags (`div()`) and content-containing tags (`div { ... }`) without code duplication.
 
 The tag abstraction is a key architectural decision that enables PointFreeHTML's intuitive syntax while maintaining clean internal architecture.
 
 ## Tag-to-Element Transformation
 
-`HTMLTag` acts as a factory that creates `HTMLElement` instances through its `callAsFunction()` methods:
+`HTML.Tag` acts as a factory that creates `HTMLElement` instances through its `callAsFunction()` methods:
 
 ```swift
 // Empty element: div()
 public func callAsFunction() -> HTMLElement<Empty>
 
 // Element with content: div { ... }
-public func callAsFunction<T: HTML>(@Builder _ content: () -> T) -> HTMLElement<T>
+public func callAsFunction<T: HTML.View>(@HTML.Builder _ content: () -> T) -> HTMLElement<T>
 ```
 
 When you write `div { "Hello" }`, Swift interprets this as calling `div.callAsFunction { "Hello" }`, returning an `HTMLElement<HTMLText>` that conforms to `HTML` and can be rendered.
@@ -91,12 +91,12 @@ You can create custom tags for specialized use cases:
 
 ```swift
 // Custom web component
-let customElement = HTMLTag("my-custom-element") {
+let customElement = HTML.Tag("my-custom-element") {
     "Custom content"
 }
 
 // HTML5 semantic elements
-let time = HTMLTag("time") {
+let time = HTML.Tag("time") {
     "2023-12-25"
 }
 .attribute("datetime", "2023-12-25")
@@ -104,7 +104,7 @@ let time = HTMLTag("time") {
 
 ## Why Tags Don't Conform to HTML
 
-As explained in the architecture tour, this design choice solves a critical challenge: providing both empty and content versions without code duplication. The `HTMLTag` serves as a factory that creates `HTMLElement` instances, which do conform to `HTML`.
+As explained in the architecture tour, this design choice solves a critical challenge: providing both empty and content versions without code duplication. The `HTML.Tag` serves as a factory that creates `HTMLElement` instances, which do conform to `HTML`.
 
 This separation enables:
 
@@ -118,10 +118,10 @@ This separation enables:
 Tags work seamlessly with `HTMLBuilder` to enable declarative HTML construction:
 
 ```swift
-struct BlogPost: HTML {
+struct BlogPost: HTML.View {
     let post: Post
     
-    var body: some HTML {
+    var body: some HTML.View {
         article {
             header {
                 h1 { post.title }

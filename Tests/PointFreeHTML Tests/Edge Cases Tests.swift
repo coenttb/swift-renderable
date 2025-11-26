@@ -16,9 +16,9 @@ struct EdgeCasesTests {
 
     // MARK: - Empty Content
 
-    @Test("Empty HTMLText renders nothing")
+    @Test("Empty HTML.Text renders nothing")
     func emptyHTMLText() throws {
-        let html = HTMLText("")
+        let html = HTML.Text("")
         let rendered = try String(Group { html })
         #expect(rendered.isEmpty)
     }
@@ -45,21 +45,21 @@ struct EdgeCasesTests {
 
     @Test("Whitespace-only text is preserved")
     func whitespaceOnlyText() throws {
-        let html = HTMLText("   ")
+        let html = HTML.Text("   ")
         let rendered = try String(Group { html })
         #expect(rendered == "   ")
     }
 
     @Test("Newlines in text are preserved")
     func newlinesPreserved() throws {
-        let html = HTMLText("Line 1\nLine 2\nLine 3")
+        let html = HTML.Text("Line 1\nLine 2\nLine 3")
         let rendered = try String(Group { html })
         #expect(rendered.contains("\n"))
     }
 
     @Test("Tabs in text are preserved")
     func tabsPreserved() throws {
-        let html = HTMLText("Column1\tColumn2\tColumn3")
+        let html = HTML.Text("Column1\tColumn2\tColumn3")
         let rendered = try String(Group { html })
         #expect(rendered.contains("\t"))
     }
@@ -69,14 +69,14 @@ struct EdgeCasesTests {
     @Test("Very long text content")
     func veryLongText() throws {
         let longString = String(repeating: "a", count: 100_000)
-        let html = tag("p") { HTMLText(longString) }
+        let html = tag("p") { HTML.Text(longString) }
         let rendered = try String(html)
         #expect(rendered.count > 100_000)
     }
 
     @Test("Many nested elements")
     func manyNestedElements() throws {
-        func nest(_ depth: Int, content: () -> some HTML) -> some HTML {
+        func nest(_ depth: Int, content: () -> some HTML.View) -> some HTML.View {
             if depth == 0 {
                 return AnyHTML(content())
             } else {
@@ -84,8 +84,8 @@ struct EdgeCasesTests {
             }
         }
 
-        let html = nest(50) { HTMLText("Deep content") }
-        let rendered = try String(Document { html })
+        let html = nest(50) { HTML.Text("Deep content") }
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("Deep content"))
     }
 
@@ -93,7 +93,7 @@ struct EdgeCasesTests {
     func manySiblingElements() throws {
         let html = Group {
             for i in 0..<1000 {
-                tag("span") { HTMLText("Item \(i)") }
+                tag("span") { HTML.Text("Item \(i)") }
             }
         }
         let rendered = try String(html)
@@ -141,26 +141,26 @@ struct EdgeCasesTests {
 
     @Test("Empty style value")
     func emptyStyleValue() throws {
-        let html = tag("div") { HTMLText("Content") }
+        let html = tag("div") { HTML.Text("Content") }
             .inlineStyle("color", "")
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("<div"))
     }
 
     @Test("Style with special CSS value")
     func styleSpecialCSSValue() throws {
-        let html = tag("div") { HTMLText("Content") }
+        let html = tag("div") { HTML.Text("Content") }
             .inlineStyle("content", "'Hello'")
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("content:"))
     }
 
     @Test("Very long style value")
     func veryLongStyleValue() throws {
         let longValue = String(repeating: "a", count: 10_000)
-        let html = tag("div") { HTMLText("Content") }
+        let html = tag("div") { HTML.Text("Content") }
             .inlineStyle("--custom-prop", longValue)
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("--custom-prop"))
     }
 
@@ -170,10 +170,10 @@ struct EdgeCasesTests {
     func allFalseConditionals() throws {
         let html = Group {
             if false {
-                tag("p") { HTMLText("Never shown") }
+                tag("p") { HTML.Text("Never shown") }
             }
             if false {
-                tag("span") { HTMLText("Also never shown") }
+                tag("span") { HTML.Text("Also never shown") }
             }
         }
         let rendered = try String(html)
@@ -190,7 +190,7 @@ struct EdgeCasesTests {
             if a {
                 if b {
                     if c {
-                        tag("p") { HTMLText("All true") }
+                        tag("p") { HTML.Text("All true") }
                     }
                 }
             }
@@ -206,7 +206,7 @@ struct EdgeCasesTests {
         let items: [String] = []
         let html = Group {
             for item in items {
-                tag("li") { HTMLText(item) }
+                tag("li") { HTML.Text(item) }
             }
         }
         let rendered = try String(html)
@@ -218,7 +218,7 @@ struct EdgeCasesTests {
         let items = ["Only one"]
         let html = Group {
             for item in items {
-                tag("li") { HTMLText(item) }
+                tag("li") { HTML.Text(item) }
             }
         }
         let rendered = try String(html)
@@ -230,7 +230,7 @@ struct EdgeCasesTests {
         let items: [String?] = ["First", nil, "Third", nil, "Fifth"]
         let html = Group {
             for item in items.compactMap({ $0 }) {
-                tag("li") { HTMLText(item) }
+                tag("li") { HTML.Text(item) }
             }
         }
         let rendered = try String(html)
@@ -243,19 +243,19 @@ struct EdgeCasesTests {
 
     @Test("Double type erasure")
     func doubleTypeErasure() throws {
-        let original = tag("div") { HTMLText("Original") }
+        let original = tag("div") { HTML.Text("Original") }
         let erased = AnyHTML(original)
         let doubleErased = AnyHTML(erased)
-        let rendered = try String(Document { doubleErased })
+        let rendered = try String(HTML.Document { doubleErased })
         #expect(rendered.contains("Original"))
     }
 
     @Test("Type erasure with styles")
     func typeErasureWithStyles() throws {
-        let styled = tag("div") { HTMLText("Styled") }
+        let styled = tag("div") { HTML.Text("Styled") }
             .inlineStyle("color", "red")
         let erased = AnyHTML(styled)
-        let rendered = try String(Document { erased })
+        let rendered = try String(HTML.Document { erased })
         #expect(rendered.contains("color:red"))
     }
 
@@ -284,7 +284,7 @@ struct EdgeCasesTests {
     @Test("Raw HTML with unbalanced tags")
     func rawHTMLUnbalancedTags() throws {
         let html = tag("div") {
-            HTMLRaw("<span>Not closed")
+            HTML.Raw("<span>Not closed")
         }
         let rendered = try String(html)
         #expect(rendered.contains("<span>Not closed"))
@@ -292,7 +292,7 @@ struct EdgeCasesTests {
 
     @Test("Raw HTML with script")
     func rawHTMLScript() throws {
-        let html = HTMLRaw("<script>var x = 1 < 2 && 2 > 1;</script>")
+        let html = HTML.Raw("<script>var x = 1 < 2 && 2 > 1;</script>")
         let rendered = try String(Group { html })
         #expect(rendered.contains("<script>"))
         #expect(rendered.contains("</script>"))
@@ -302,7 +302,7 @@ struct EdgeCasesTests {
 
     @Test("Document with empty head and body")
     func emptyDocument() throws {
-        let document = HTMLDocument(
+        let document = HTML.Document(
             head: { Empty() },
             body: { Empty() }
         )
@@ -313,15 +313,15 @@ struct EdgeCasesTests {
 
     @Test("Document with complex head")
     func documentComplexHead() throws {
-        let document = HTMLDocument(
+        let document = HTML.Document(
             head: {
-                tag("title") { HTMLText("Title") }
+                tag("title") { HTML.Text("Title") }
                 tag("meta").attribute("charset", "utf-8")
                 tag("meta").attribute("name", "viewport").attribute("content", "width=device-width")
                 tag("link").attribute("rel", "stylesheet").attribute("href", "style.css")
             },
             body: {
-                tag("p") { HTMLText("Content") }
+                tag("p") { HTML.Text("Content") }
             }
         )
         let rendered = try String(document)
@@ -339,21 +339,21 @@ extension `Snapshot Tests` {
         @Test("Complex edge case snapshot")
         func complexEdgeCase() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         // Empty content
                         Empty()
                         // Whitespace
-                        HTMLText("  ")
+                        HTML.Text("  ")
                         // Nested structure
                         tag("span") {
                             tag("strong") {
-                                HTMLText("Nested")
+                                HTML.Text("Nested")
                             }
                         }
                         // Conditional (true)
                         if true {
-                            HTMLText("Shown")
+                            HTML.Text("Shown")
                         }
                     }
                 },

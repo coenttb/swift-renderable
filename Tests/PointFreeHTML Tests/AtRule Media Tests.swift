@@ -14,7 +14,7 @@ struct AtRuleMediaTests {
 
     @Test("AtRule media basic creation")
     func atRuleBasicCreation() throws {
-        let atRule = AtRule(rawValue: "screen and (max-width: 768px)")
+        let atRule = HTML.AtRule(rawValue: "screen and (max-width: 768px)")
 
         // Test that media query can be created
         #expect(atRule.rawValue == "screen and (max-width: 768px)")
@@ -22,9 +22,9 @@ struct AtRuleMediaTests {
 
     @Test("AtRule media with different conditions")
     func atRuleWithDifferentConditions() throws {
-        let mobileQuery = AtRule(rawValue: "screen and (max-width: 480px)")
-        let tabletQuery = AtRule(rawValue: "screen and (min-width: 481px) and (max-width: 1024px)")
-        let desktopQuery = AtRule(rawValue: "screen and (min-width: 1025px)")
+        let mobileQuery = HTML.AtRule(rawValue: "screen and (max-width: 480px)")
+        let tabletQuery = HTML.AtRule(rawValue: "screen and (min-width: 481px) and (max-width: 1024px)")
+        let desktopQuery = HTML.AtRule(rawValue: "screen and (min-width: 1025px)")
 
         #expect(mobileQuery.rawValue.contains("max-width: 480px"))
         #expect(tabletQuery.rawValue.contains("min-width: 481px"))
@@ -33,15 +33,15 @@ struct AtRuleMediaTests {
 
     @Test("AtRule media with print media")
     func atRuleWithPrintMedia() throws {
-        let printQuery = AtRule(rawValue: "print")
+        let printQuery = HTML.AtRule(rawValue: "print")
 
         #expect(printQuery.rawValue == "print")
     }
 
     @Test("AtRule media with orientation")
     func atRuleWithOrientation() throws {
-        let portraitQuery = AtRule(rawValue: "screen and (orientation: portrait)")
-        let landscapeQuery = AtRule(rawValue: "screen and (orientation: landscape)")
+        let portraitQuery = HTML.AtRule(rawValue: "screen and (orientation: portrait)")
+        let landscapeQuery = HTML.AtRule(rawValue: "screen and (orientation: landscape)")
 
         #expect(portraitQuery.rawValue.contains("portrait"))
         #expect(landscapeQuery.rawValue.contains("landscape"))
@@ -49,8 +49,8 @@ struct AtRuleMediaTests {
 
     @Test("AtRule media with device features")
     func atRuleWithDeviceFeatures() throws {
-        let retinaQuery = AtRule(rawValue: "screen and (-webkit-min-device-pixel-ratio: 2)")
-        let hoverQuery = AtRule(rawValue: "screen and (hover: hover)")
+        let retinaQuery = HTML.AtRule(rawValue: "screen and (-webkit-min-device-pixel-ratio: 2)")
+        let hoverQuery = HTML.AtRule(rawValue: "screen and (hover: hover)")
 
         #expect(retinaQuery.rawValue.contains("device-pixel-ratio"))
         #expect(hoverQuery.rawValue.contains("hover: hover"))
@@ -58,9 +58,9 @@ struct AtRuleMediaTests {
 
     @Test("AtRule media equality")
     func atRuleEquality() throws {
-        let query1 = AtRule(rawValue: "screen and (max-width: 768px)")
-        let query2 = AtRule(rawValue: "screen and (max-width: 768px)")
-        let query3 = AtRule(rawValue: "screen and (max-width: 1024px)")
+        let query1 = HTML.AtRule(rawValue: "screen and (max-width: 768px)")
+        let query2 = HTML.AtRule(rawValue: "screen and (max-width: 768px)")
+        let query3 = HTML.AtRule(rawValue: "screen and (max-width: 1024px)")
 
         #expect(query1.rawValue == query2.rawValue)
         #expect(query1.rawValue != query3.rawValue)
@@ -75,15 +75,15 @@ extension `Snapshot Tests` {
         @Test("AtRule media snapshot - mobile styles")
         func atRuleMediaSnapshotMobile() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         "Mobile content"
                     }
-                    .inlineStyle("color", "blue", atRule: AtRule(rawValue: "@media (max-width: 768px)"))
+                    .inlineStyle("color", "blue", atRule: HTML.AtRule(rawValue: "@media (max-width: 768px)"))
                     .inlineStyle(
                         "font-size",
                         "14px",
-                        atRule: AtRule(rawValue: "@media (max-width: 768px)")
+                        atRule: HTML.AtRule(rawValue: "@media (max-width: 768px)")
                     )
                 },
                 as: .html
@@ -111,12 +111,12 @@ extension `Snapshot Tests` {
         @Test("AtRule media snapshot - print styles")
         func atRuleMediaSnapshotPrint() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         "Print content"
                     }
-                    .inlineStyle("display", "none", atRule: AtRule(rawValue: "@media print"))
-                    .inlineStyle("color", "black", atRule: AtRule(rawValue: "@media print"))
+                    .inlineStyle("display", "none", atRule: HTML.AtRule(rawValue: "@media print"))
+                    .inlineStyle("color", "black", atRule: HTML.AtRule(rawValue: "@media print"))
                 },
                 as: .html
             ) {
@@ -143,32 +143,32 @@ extension `Snapshot Tests` {
         @Test("AtRule media snapshot - mixed media queries")
         func atRuleMediaSnapshotMixed() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         tag("h1") { "Responsive Title" }
                             .inlineStyle(
                                 "font-size",
                                 "24px",
-                                atRule: AtRule(rawValue: "@media (min-width: 768px)")
+                                atRule: HTML.AtRule(rawValue: "@media (min-width: 768px)")
                             )
                             .inlineStyle(
                                 "font-size",
                                 "18px",
-                                atRule: AtRule(rawValue: "@media (max-width: 767px)")
+                                atRule: HTML.AtRule(rawValue: "@media (max-width: 767px)")
                             )
 
                         tag("p") { "This paragraph adapts to different screen sizes" }
                             .inlineStyle(
                                 "margin",
                                 "1rem",
-                                atRule: AtRule(rawValue: "@media (min-width: 768px)")
+                                atRule: HTML.AtRule(rawValue: "@media (min-width: 768px)")
                             )
                             .inlineStyle(
                                 "margin",
                                 "0.5rem",
-                                atRule: AtRule(rawValue: "@media (max-width: 767px)")
+                                atRule: HTML.AtRule(rawValue: "@media (max-width: 767px)")
                             )
-                            .inlineStyle("display", "none", atRule: AtRule(rawValue: "@media print"))
+                            .inlineStyle("display", "none", atRule: HTML.AtRule(rawValue: "@media print"))
                     }
                 },
                 as: .html
@@ -207,7 +207,7 @@ extension `Snapshot Tests` {
         @Test("AtRule media snapshot - no media query")
         func atRuleMediaSnapshotNoMedia() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         "Regular content without media queries"
                     }

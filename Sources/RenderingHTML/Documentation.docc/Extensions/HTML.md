@@ -13,10 +13,10 @@ Every type conforming to `HTML` must implement a `body` property that defines th
 ### Basic Implementation
 
 ```swift
-struct WelcomeMessage: HTML {
+struct WelcomeMessage: HTML.View {
     let name: String
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             h1 { "Welcome, \(name)!" }
             p { "Thanks for using PointFreeHTML." }
@@ -34,7 +34,7 @@ let htmlString = try String(welcome)
 For simple, stateless HTML, you can create functions that return HTML:
 
 ```swift
-func alertBanner(message: String, type: AlertType = .info) -> some HTML {
+func alertBanner(message: String, type: AlertType = .info) -> some HTML.View {
     div {
         message
     }
@@ -61,11 +61,11 @@ Efficient rendering with minimal memory allocation and fast string generation.
 ### Conditional Content
 
 ```swift
-struct UserProfile: HTML {
+struct UserProfile: HTML.View {
     let user: User
     let isEditable: Bool
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             h2 { user.name }
             p { user.email }
@@ -82,10 +82,10 @@ struct UserProfile: HTML {
 ### Dynamic Content with Loops
 
 ```swift
-struct NavigationMenu: HTML {
+struct NavigationMenu: HTML.View {
     let items: [MenuItem]
     
-    var body: some HTML {
+    var body: some HTML.View {
         nav {
             ul {
                 for item in items {

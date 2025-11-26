@@ -29,9 +29,9 @@ PointFreeHTML enables **any Swift type** to be rendered as HTML through a simple
 ```swift
 import PointFreeHTML
 
-struct Greeting: HTML {
+struct Greeting: HTML.View {
     let name: String
-    var body: some HTML {
+    var body: some HTML.View {
         tag("h1") { "Hello, \(name)!" }
     }
 }
@@ -70,8 +70,8 @@ PointFreeHTML integrates seamlessly with the broader Swift web development ecosy
 ```swift
 import HTML // This imports swift-html which includes PointFreeHTML
 
-struct StyledComponent: HTML {
-    var body: some HTML {
+struct StyledComponent: HTML.View {
+    var body: some HTML.View {
         tag("div") {
             tag("a") { "Styled Heading" }
                 .attribute("href", "#")
@@ -94,9 +94,9 @@ import PointFreeHTML
 app.get("hello", ":name") { req -> String in
     let name = req.parameters.get("name") ?? "World"
 
-    struct Greeting: HTML {
+    struct Greeting: HTML.View {
         let name: String
-        var body: some HTML {
+        var body: some HTML.View {
             tag("h1") { "Hello, \(name)!" }
         }
     }

@@ -123,7 +123,7 @@ struct SetStringTests {
 
     @Test("inlineTags used for formatting decisions")
     func usedForFormattingDecisions() {
-        // This tests how inlineTags would be used in HTMLElement rendering
+        // This tests how inlineTags would be used in HTML.Element rendering
         let inlineTags = Set<String>.inlineTags
 
         func isInlineTag(_ tag: String) -> Bool {

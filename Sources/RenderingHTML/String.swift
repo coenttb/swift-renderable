@@ -35,7 +35,7 @@ extension String {
     /// ## Example
     ///
     /// ```swift
-    /// let document = Document {
+    /// let document = HTML.Document {
     ///     div {
     ///         h1 { "Hello, World!" }
     ///         p { "Welcome to PointFree HTML" }
@@ -54,7 +54,7 @@ extension String {
     ///   - html: The HTML content to render as a string
     ///   - encoding: The character encoding to use when converting bytes to string (default: UTF-8)
     ///
-    /// - Throws: `HTMLContext.Rendering.Error` if the rendered bytes cannot be converted to a string
+    /// - Throws: `HTML.Context.Configuration.Error` if the rendered bytes cannot be converted to a string
     ///   using the specified encoding
     ///
     /// ## See Also
@@ -62,17 +62,17 @@ extension String {
     /// - ``ContiguousArray/init(_:)-swift.method``: Canonical byte transformation
     /// - ``Array/init(_:)-swift.method``: Array convenience wrapper
     public init<Encoding>(
-        html: some HTML,
+        html: some HTML.View,
         as encoding: Encoding.Type = UTF8.self
-    ) throws(HTMLContext.Rendering.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
+    ) throws(HTML.Context.Configuration.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
         let bytes = ContiguousArray(html)
         self = String(decoding: bytes, as: encoding)
     }
-    
+
     public init<Encoding>(
-        _ html: some HTML,
+        _ html: some HTML.View,
         as encoding: Encoding.Type = UTF8.self
-    ) throws(HTMLContext.Rendering.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
+    ) throws(HTML.Context.Configuration.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
         self = try .init(html: html, as: encoding)
     }
 }
@@ -93,9 +93,9 @@ extension String {
     ///   - html: The HTML content to render.
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
-    public init<T: HTML>(
+    public init<T: HTML.View>(
         _ html: T,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) async {
         let bytes = await [UInt8](html, configuration: configuration)
         self = String(decoding: bytes, as: UTF8.self)
@@ -118,9 +118,9 @@ extension String {
     ///   - document: The HTML document to render.
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
-    public init<T: HTMLDocumentProtocol>(
+    public init<T: HTML.DocumentProtocol>(
         document: T,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) async {
         let bytes = await [UInt8](document: document, configuration: configuration)
         self = String(decoding: bytes, as: UTF8.self)

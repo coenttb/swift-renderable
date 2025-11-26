@@ -5,10 +5,10 @@
 Here's how you typically build custom HTML elements—or components—using `swift-html` that uses PointFreeHTML to render. You define your types and conform to the `HTML` protocol, just like Views in SwiftUI:
 
 ```swift
-struct Example: HTML {
+struct Example: HTML.View {
     let name: String
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             h1 { "Hello, \(name)!" }
             p { "Welcome to pointfree-html." }
@@ -20,11 +20,11 @@ struct Example: HTML {
 You can then easily use this component in an HTML document:
 ```swift
 struct ExampleDocument: Document {
-    var head: some HTML {
+    var head: some HTML.View {
         title { "My Page" }
     }
     
-    var body: some HTML {
+    var body: some HTML.View {
         Example(name: "Coen")
     }
 }
@@ -43,7 +43,7 @@ At the heart of pointfree-html is the deceptively simple HTML protocol:
 ```swift
 public protocol HTML {
     associatedtype Content: HTML
-    @Builder
+    @HTML.Builder
     var body: Content { get }
     static func _render(_ html: Self, into printer: inout HTMLPrinter)
 }
@@ -51,7 +51,7 @@ public protocol HTML {
 
 The intriguing part is that the Content itself must conform to HTML. But then... that Content will also have a Content associatedtype. And wouldn't that also have to conform to the `HTML` protocol? That's exactly right! This recursive definition might seem a little puzzling at first glance—but it hints at a deeper elegance beneath the surface.
 
-> Note: The addition of @Builder to the `var body` refers to a custom result builder that to construct the HTML.
+> Note: The addition of @HTML.Builder to the `var body` refers to a custom result builder that to construct the HTML.
 
 ### The Hidden Magic of \_render
 
@@ -95,17 +95,17 @@ The rendered bytes are efficient too, letting you pass them directly to browsers
 
 > NOTE: PointFreeHTMLElements can be found on the `pointfree-elements` branch. They were removed from the library to keep it focussed on rendering any HTML. PointFreeHTMLElements is just an example implementation.
 
-### The Tag Abstraction: HTMLTag and HTMLElement
+### The Tag Abstraction: HTML.Tag and HTMLElement
 
 At the heart of `pointfree-html`'s elegant API lies a clever abstraction: the separation of tag definitions from the actual HTML elements they create. This design decision enables the library's intuitive syntax while maintaining a clean internal architecture.
 
-#### Why HTMLTag doesn't conform to HTML
+#### Why HTML.Tag doesn't conform to HTML
 
-If you look at the code for `div`, `p`, or any other tag, you'll notice something surprising: these tag variables don't directly conform to the `HTML` protocol. Instead, they're instances of `HTMLTag` (or specialized variants like `HTMLVoidTag` for self-closing elements):
+If you look at the code for `div`, `p`, or any other tag, you'll notice something surprising: these tag variables don't directly conform to the `HTML` protocol. Instead, they're instances of `HTML.Tag` (or specialized variants like `HTMLVoidTag` for self-closing elements):
 
 ```swift
-public var div: HTMLTag { #function }
-public var p: HTMLTag { #function }
+public var div: HTML.Tag { #function }
+public var p: HTML.Tag { #function }
 public var br: HTMLVoidTag { #function }
 ```
 
@@ -115,7 +115,7 @@ This approach solves a critical design challenge: how do we provide both an empt
 
 #### The Tag-to-Element Transformation
 
-`HTMLTag` acts as a factory that creates `HTMLElement` instances, which do conform to `HTML`. This happens through HTMLTag's `callAsFunction()` methods:
+`HTML.Tag` acts as a factory that creates `HTMLElement` instances, which do conform to `HTML`. This happens through HTML.Tag's `callAsFunction()` methods:
 
 ```swift
 public struct HTMLTag: ExpressibleByStringLiteral {
@@ -127,7 +127,7 @@ public struct HTMLTag: ExpressibleByStringLiteral {
     }
     
     // For elements with content: div { ... }
-    public func callAsFunction<T: HTML>(@Builder _ content: () -> T) -> HTMLElement<T> {
+    public func callAsFunction<T: HTML.View>(@HTML.Builder _ content: () -> T) -> HTMLElement<T> {
         tag(self.rawValue, content)
     }
 }
@@ -235,7 +235,7 @@ a { "Visit our website" }
 Behind the scenes, the `attribute` method wraps the original HTML element in a special `_HTMLAttributes` struct:
 
 ```swift
-public struct _HTMLAttributes<Content: HTML>: HTML {
+public struct _HTMLAttributes<Content: HTML>: HTML.View {
     let content: Content
     var attributes: OrderedDictionary<String, String>
     

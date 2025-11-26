@@ -1,5 +1,5 @@
 //
-//  HTMLRawTests.swift
+//  HTML.RawTests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
@@ -9,66 +9,66 @@
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLRaw Tests")
+@Suite("HTML.Raw Tests")
 struct HTMLRawTests {
 
-    @Test("HTMLRaw with plain text")
+    @Test("HTML.Raw with plain text")
     func rawWithPlainText() throws {
-        let raw = HTMLRaw("plain text")
+        let raw = HTML.Raw("plain text")
         let rendered = try String(raw)
         #expect(rendered == "plain text")
     }
 
-    @Test("HTMLRaw with HTML tags")
+    @Test("HTML.Raw with HTML tags")
     func rawWithHTMLTags() throws {
-        let raw = HTMLRaw("<strong>bold text</strong>")
+        let raw = HTML.Raw("<strong>bold text</strong>")
         let rendered = try String(raw)
         #expect(rendered == "<strong>bold text</strong>")
         #expect(rendered.contains("<strong>"))
         #expect(rendered.contains("</strong>"))
     }
 
-    @Test("HTMLRaw does not escape HTML")
+    @Test("HTML.Raw does not escape HTML")
     func rawDoesNotEscape() throws {
-        let raw = HTMLRaw("<div class='test'>content</div>")
-        let rendered = try String(Document { raw })
+        let raw = HTML.Raw("<div class='test'>content</div>")
+        let rendered = try String(HTML.Document { raw })
         #expect(rendered.contains("<div class='test'>"))
         #expect(!rendered.contains("&lt;"))
         #expect(!rendered.contains("&gt;"))
     }
 
-    @Test("HTMLRaw with special characters")
+    @Test("HTML.Raw with special characters")
     func rawWithSpecialCharacters() throws {
-        let raw = HTMLRaw("© 2025 & company <script>alert('test')</script>")
-        let rendered = try String(Document { raw })
+        let raw = HTML.Raw("© 2025 & company <script>alert('test')</script>")
+        let rendered = try String(HTML.Document { raw })
         #expect(rendered.contains("© 2025 & company"))
         #expect(rendered.contains("<script>"))
         #expect(!rendered.contains("&copy;"))
         #expect(!rendered.contains("&amp;"))
     }
 
-    @Test("HTMLRaw in composition")
+    @Test("HTML.Raw in composition")
     func rawInComposition() throws {
         let element = tag("div") {
-            HTMLText("Safe text: ")
-            HTMLRaw("<em>raw emphasis</em>")
-            HTMLText(" & more safe text")
+            HTML.Text("Safe text: ")
+            HTML.Raw("<em>raw emphasis</em>")
+            HTML.Text(" & more safe text")
         }
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("Safe text: "))
         #expect(rendered.contains("<em>raw emphasis</em>"))
         #expect(rendered.contains("&amp; more safe text"))
     }
 
-    @Test("Empty HTMLRaw")
+    @Test("Empty HTML.Raw")
     func emptyRaw() throws {
-        let raw = HTMLRaw("")
+        let raw = HTML.Raw("")
         let rendered = try String(raw)
         #expect(rendered.isEmpty)
     }
 
-    @Test("HTMLRaw with multiline content")
+    @Test("HTML.Raw with multiline content")
     func rawWithMultilineContent() throws {
         let content = """
             <div>
@@ -76,7 +76,7 @@ struct HTMLRawTests {
                 <p>Paragraph</p>
             </div>
             """
-        let raw = HTMLRaw(content)
+        let raw = HTML.Raw(content)
         let rendered = try String(raw)
         #expect(rendered == content)
         #expect(rendered.contains("<h1>Title</h1>"))
@@ -89,17 +89,17 @@ struct HTMLRawTests {
 extension `Snapshot Tests` {
     @Suite
     struct HTMLRawSnapshotTests {
-        @Test("HTMLRaw embedded content snapshot")
+        @Test("HTML.Raw embedded content snapshot")
         func rawEmbeddedContentSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         tag("h1") {
-                            HTMLText("Blog Post")
+                            HTML.Text("Blog Post")
                         }
 
                         tag("div") {
-                            HTMLRaw(
+                            HTML.Raw(
                                 """
                                 <p>This content includes <strong>pre-formatted HTML</strong> that should render as-is.</p>
                                 <blockquote cite="https://example.com">
@@ -111,7 +111,7 @@ extension `Snapshot Tests` {
                         .attribute("class", "raw-content")
 
                         tag("p") {
-                            HTMLText("This is regular text that will be escaped.")
+                            HTML.Text("This is regular text that will be escaped.")
                         }
                     }
                     .attribute("class", "blog-post")
@@ -141,16 +141,16 @@ extension `Snapshot Tests` {
             }
         }
 
-        @Test("HTMLRaw with scripts and styles snapshot")
+        @Test("HTML.Raw with scripts and styles snapshot")
         func rawWithScriptsSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         tag("h2") {
-                            HTMLText("Interactive Content")
+                            HTML.Text("Interactive Content")
                         }
 
-                        HTMLRaw(
+                        HTML.Raw(
                             """
                             <div id="interactive-widget">
                                 <p>Click the button below:</p>
@@ -174,7 +174,7 @@ extension `Snapshot Tests` {
                         )
 
                         tag("p") {
-                            HTMLText("The above widget was inserted as raw HTML.")
+                            HTML.Text("The above widget was inserted as raw HTML.")
                         }
                     }
                 },

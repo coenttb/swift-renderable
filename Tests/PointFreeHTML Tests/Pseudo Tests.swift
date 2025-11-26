@@ -14,9 +14,9 @@ struct PseudoTests {
 
     @Test("Pseudo class creation")
     func pseudoClassCreation() throws {
-        let hover = Pseudo.hover
-        let active = Pseudo.active
-        let focus = Pseudo.focus
+        let hover = HTML.Pseudo.hover
+        let active = HTML.Pseudo.active
+        let focus = HTML.Pseudo.focus
 
         // Test that pseudo classes can be created
         #expect(hover.rawValue == ":hover")
@@ -26,9 +26,9 @@ struct PseudoTests {
 
     @Test("Pseudo element creation")
     func pseudoElementCreation() throws {
-        let before = Pseudo.before
-        let after = Pseudo.after
-        let firstLine = Pseudo.firstLine
+        let before = HTML.Pseudo.before
+        let after = HTML.Pseudo.after
+        let firstLine = HTML.Pseudo.firstLine
 
         #expect(before.rawValue == "::before")
         #expect(after.rawValue == "::after")
@@ -37,9 +37,9 @@ struct PseudoTests {
 
     @Test("Structural pseudo classes")
     func structuralPseudoClasses() throws {
-        let firstChild = Pseudo.firstChild
-        let lastChild = Pseudo.lastChild
-        let nthChild = Pseudo.nthChild(2)
+        let firstChild = HTML.Pseudo.firstChild
+        let lastChild = HTML.Pseudo.lastChild
+        let nthChild = HTML.Pseudo.nthChild(2)
 
         #expect(firstChild.rawValue == ":first-child")
         #expect(lastChild.rawValue == ":last-child")
@@ -48,10 +48,10 @@ struct PseudoTests {
 
     @Test("Form pseudo classes")
     func formPseudoClasses() throws {
-        let checked = Pseudo.checked
-        let disabled = Pseudo.disabled
-        let enabled = Pseudo.enabled
-        let required = Pseudo.required
+        let checked = HTML.Pseudo.checked
+        let disabled = HTML.Pseudo.disabled
+        let enabled = HTML.Pseudo.enabled
+        let required = HTML.Pseudo.required
 
         #expect(checked.rawValue == ":checked")
         #expect(disabled.rawValue == ":disabled")
@@ -61,15 +61,15 @@ struct PseudoTests {
 
     @Test("Custom pseudo selector")
     func customPseudoSelector() throws {
-        let custom = Pseudo(":not(.hidden)")
+        let custom = HTML.Pseudo(":not(.hidden)")
 
         #expect(custom.rawValue == ":not(.hidden)")
     }
 
     @Test("Pseudo with nth functions")
     func pseudoWithNthFunctions() throws {
-        let nthOfType = Pseudo.nthOfType(3)
-        let nthLastChild = Pseudo.nthLastChild(1)
+        let nthOfType = HTML.Pseudo.nthOfType(3)
+        let nthLastChild = HTML.Pseudo.nthLastChild(1)
 
         #expect(nthOfType.rawValue == ":nth-of-type(3)")
         #expect(nthLastChild.rawValue == ":nth-last-child(1)")
@@ -77,9 +77,9 @@ struct PseudoTests {
 
     @Test("Pseudo equality")
     func pseudoEquality() throws {
-        let hover1 = Pseudo.hover
-        let hover2 = Pseudo.hover
-        let active = Pseudo.active
+        let hover1 = HTML.Pseudo.hover
+        let hover2 = HTML.Pseudo.hover
+        let active = HTML.Pseudo.active
 
         #expect(hover1.rawValue == hover2.rawValue)
         #expect(hover1.rawValue != active.rawValue)
@@ -87,8 +87,8 @@ struct PseudoTests {
 
     @Test("Pseudo + operator - combining pseudo-classes")
     func pseudoCombiningClasses() throws {
-        let hoverFocus = Pseudo.hover + Pseudo.focus
-        let activeVisited = Pseudo.active + Pseudo.visited
+        let hoverFocus = HTML.Pseudo.hover + HTML.Pseudo.focus
+        let activeVisited = HTML.Pseudo.active + HTML.Pseudo.visited
 
         #expect(hoverFocus.rawValue == ":hover:focus")
         #expect(activeVisited.rawValue == ":active:visited")
@@ -96,7 +96,7 @@ struct PseudoTests {
 
     @Test("Pseudo + operator - combining pseudo-elements")
     func pseudoCombiningElements() throws {
-        let beforeAfter = Pseudo.before + Pseudo.after
+        let beforeAfter = HTML.Pseudo.before + HTML.Pseudo.after
 
         // Note: This creates an invalid CSS selector, but tests the operator
         #expect(beforeAfter.rawValue == "::before::after")
@@ -104,8 +104,8 @@ struct PseudoTests {
 
     @Test("Pseudo + operator - mixing classes and elements")
     func pseudoMixingClassesAndElements() throws {
-        let hoverBefore = Pseudo.hover + Pseudo.before
-        let focusAfter = Pseudo.focus + Pseudo.after
+        let hoverBefore = HTML.Pseudo.hover + HTML.Pseudo.before
+        let focusAfter = HTML.Pseudo.focus + HTML.Pseudo.after
 
         #expect(hoverBefore.rawValue == ":hover::before")
         #expect(focusAfter.rawValue == ":focus::after")
@@ -113,15 +113,15 @@ struct PseudoTests {
 
     @Test("Pseudo + operator - chaining multiple")
     func pseudoChainingMultiple() throws {
-        let complex = Pseudo.hover + Pseudo.focus + Pseudo.active
+        let complex = HTML.Pseudo.hover + HTML.Pseudo.focus + HTML.Pseudo.active
 
         #expect(complex.rawValue == ":hover:focus:active")
     }
 
     @Test("Pseudo + operator - with nth functions")
     func pseudoCombiningWithNthFunctions() throws {
-        let nthChildHover = Pseudo.nthChild(2) + Pseudo.hover
-        let firstChildFocus = Pseudo.firstChild + Pseudo.focus
+        let nthChildHover = HTML.Pseudo.nthChild(2) + HTML.Pseudo.hover
+        let firstChildFocus = HTML.Pseudo.firstChild + HTML.Pseudo.focus
 
         #expect(nthChildHover.rawValue == ":nth-child(2):hover")
         #expect(firstChildFocus.rawValue == ":first-child:focus")
@@ -129,9 +129,9 @@ struct PseudoTests {
 
     @Test("Pseudo + operator - with custom pseudo")
     func pseudoCombiningWithCustom() throws {
-        let customPseudo = Pseudo(rawValue: ":not(.hidden)")
-        let customHover = customPseudo + Pseudo.hover
-        let hoverCustom = Pseudo.hover + customPseudo
+        let customPseudo = HTML.Pseudo(rawValue: ":not(.hidden)")
+        let customHover = customPseudo + HTML.Pseudo.hover
+        let hoverCustom = HTML.Pseudo.hover + customPseudo
 
         #expect(customHover.rawValue == ":not(.hidden):hover")
         #expect(hoverCustom.rawValue == ":hover:not(.hidden)")
@@ -146,7 +146,7 @@ extension `Snapshot Tests` {
         @Test("HTML align-content with prefix renders properly")
         func htmlAlignContentWithPrefixRendersCorrectly() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div")
                         .inlineStyle("align-content", "space-between", pseudo: .after)
                 },

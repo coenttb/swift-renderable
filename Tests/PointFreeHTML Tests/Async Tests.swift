@@ -18,11 +18,11 @@ struct AsyncTests {
 
     @Test("Async and sync rendering produce same output")
     func asyncSyncConsistency() async throws {
-        struct TestHTML: HTML, Sendable {
-            var body: some HTML {
+        struct TestHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
-                    tag("h1") { HTMLText("Title") }
-                    tag("p") { HTMLText("Content") }
+                    tag("h1") { HTML.Text("Title") }
+                    tag("p") { HTML.Text("Content") }
                 }
             }
         }
@@ -36,7 +36,7 @@ struct AsyncTests {
 
     @Test("Async bytes matches sync bytes")
     func asyncBytesMatchSync() async {
-        let html = tag("p") { HTMLText("Test content") }
+        let html = tag("p") { HTML.Text("Test content") }
         let syncBytes = html.bytes
         let asyncBytes = await html.asyncBytes()
 
@@ -50,9 +50,9 @@ struct AsyncTests {
         let results = await withTaskGroup(of: String.self) { group in
             for i in 0..<10 {
                 group.addTask {
-                    let html = Document {
+                    let html = HTML.Document {
                         tag("div") {
-                            HTMLText("Item \(i)")
+                            HTML.Text("Item \(i)")
                         }
                         .inlineStyle("order", "\(i)")
                     }
@@ -77,13 +77,13 @@ struct AsyncTests {
     func taskLocalIsolation() async {
         let results = await withTaskGroup(of: Bool.self) { group in
             group.addTask {
-                HTMLContext.Rendering.$current.withValue(.email) {
-                    HTMLContext.Rendering.current.forceImportant
+                HTML.Context.Configuration.$current.withValue(.email) {
+                    HTML.Context.Configuration.current.forceImportant
                 }
             }
             group.addTask {
-                HTMLContext.Rendering.$current.withValue(.default) {
-                    HTMLContext.Rendering.current.forceImportant
+                HTML.Context.Configuration.$current.withValue(.default) {
+                    HTML.Context.Configuration.current.forceImportant
                 }
             }
 
@@ -103,11 +103,11 @@ struct AsyncTests {
 
     @Test("Async stream produces complete content")
     func asyncStreamComplete() async throws {
-        struct TestHTML: HTML, Sendable {
-            var body: some HTML {
+        struct TestHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("ul") {
                     for i in 1...5 {
-                        tag("li") { HTMLText("Item \(i)") }
+                        tag("li") { HTML.Text("Item \(i)") }
                     }
                 }
             }
@@ -128,10 +128,10 @@ struct AsyncTests {
 
     @Test("Non-throwing stream produces complete content")
     func nonThrowingStreamComplete() async {
-        struct TestHTML: HTML, Sendable {
-            var body: some HTML {
+        struct TestHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("Content")
+                    HTML.Text("Content")
                 }
             }
         }
@@ -151,16 +151,16 @@ struct AsyncTests {
 
     @Test("Document async stream includes all parts")
     func documentAsyncStream() async throws {
-        struct StyledMainHTML: HTML, Sendable {
-            var body: some HTML {
+        struct StyledMainHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("main") {
-                    HTMLText("Body content")
+                    HTML.Text("Body content")
                 }
                 .inlineStyle("color", "blue")
             }
         }
 
-        let document = Document {
+        let document = HTML.Document {
             StyledMainHTML()
         }
 
@@ -180,11 +180,11 @@ struct AsyncTests {
 
     @Test("Stream handles task cancellation gracefully")
     func streamCancellation() async {
-        struct LargeHTML: HTML, Sendable {
-            var body: some HTML {
+        struct LargeHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
                     for i in 0..<10000 {
-                        tag("p") { HTMLText("Item \(i)") }
+                        tag("p") { HTML.Text("Item \(i)") }
                     }
                 }
             }
@@ -210,10 +210,10 @@ struct AsyncTests {
 
     @Test("Async rendering preserves styles")
     func asyncPreservesStyles() async throws {
-        struct StyledHTML: HTML, Sendable {
-            var body: some HTML {
+        struct StyledHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("Styled")
+                    HTML.Text("Styled")
                 }
                 .inlineStyle("color", "red")
                 .inlineStyle("font-size", "16px")
@@ -235,10 +235,10 @@ struct AsyncTests {
 
     @Test("Async rendering preserves attributes")
     func asyncPreservesAttributes() async {
-        struct AttributedHTML: HTML, Sendable {
-            var body: some HTML {
+        struct AttributedHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("a") {
-                    HTMLText("Link")
+                    HTML.Text("Link")
                 }
                 .attribute("href", "https://example.com")
                 .attribute("class", "link")
@@ -256,8 +256,8 @@ struct AsyncTests {
 
     @Test("Async with empty content")
     func asyncEmptyContent() async {
-        struct EmptyHTML: HTML, Sendable {
-            var body: some HTML {
+        struct EmptyHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 Empty()
             }
         }
@@ -272,10 +272,10 @@ struct AsyncTests {
 
     @Test("Multiple sequential async operations")
     func multipleSequentialAsync() async throws {
-        struct TestHTML: HTML, Sendable {
+        struct TestHTML: HTML.View, Sendable {
             let id: Int
-            var body: some HTML {
-                tag("div") { HTMLText("ID: \(id)") }
+            var body: some HTML.View {
+                tag("div") { HTML.Text("ID: \(id)") }
             }
         }
 
@@ -289,7 +289,7 @@ struct AsyncTests {
     @Test("Parallel async rendering")
     func parallelAsyncRendering() async {
         let htmls = (1...10).map { i in
-            tag("p") { HTMLText("Parallel \(i)") }
+            tag("p") { HTML.Text("Parallel \(i)") }
         }
 
         await withTaskGroup(of: (Int, String).self) { group in

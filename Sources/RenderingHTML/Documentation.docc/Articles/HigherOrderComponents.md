@@ -3,16 +3,16 @@
 Create components that wrap and enhance other components:
 
 ```swift
-struct WithLoading<Content: HTML>: HTML {
+struct WithLoading<Content: HTML>: HTML.View {
     let isLoading: Bool
     let content: Content
     
-    init(isLoading: Bool, @Builder content: () -> Content) {
+    init(isLoading: Bool, @HTML.Builder content: () -> Content) {
         self.isLoading = isLoading
         self.content = content()
     }
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             if isLoading {
                 div {

@@ -16,10 +16,10 @@ struct AsyncStreamTests {
 
     @Test("AsyncStream streams HTML content")
     func streamsHTMLContent() async {
-        struct TestHTML: HTML, Sendable {
-            var body: some HTML {
+        struct TestHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("Hello, World!")
+                    HTML.Text("Hello, World!")
                 }
             }
         }
@@ -36,12 +36,12 @@ struct AsyncStreamTests {
 
     @Test("AsyncStream yields complete content")
     func yieldsCompleteContent() async {
-        struct MultiParagraphHTML: HTML, Sendable {
-            var body: some HTML {
+        struct MultiParagraphHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 Group {
-                    tag("p") { HTMLText("First") }
-                    tag("p") { HTMLText("Second") }
-                    tag("p") { HTMLText("Third") }
+                    tag("p") { HTML.Text("First") }
+                    tag("p") { HTML.Text("Second") }
+                    tag("p") { HTML.Text("Third") }
                 }
             }
         }
@@ -61,10 +61,10 @@ struct AsyncStreamTests {
 
     @Test("AsyncStream respects chunk size")
     func respectsChunkSize() async {
-        struct LongContentHTML: HTML, Sendable {
-            var body: some HTML {
+        struct LongContentHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText(String(repeating: "a", count: 1000))
+                    HTML.Text(String(repeating: "a", count: 1000))
                 }
             }
         }
@@ -82,10 +82,10 @@ struct AsyncStreamTests {
 
     @Test("AsyncStream with default chunk size")
     func defaultChunkSize() async {
-        struct SimpleHTML: HTML, Sendable {
-            var body: some HTML {
+        struct SimpleHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("Content")
+                    HTML.Text("Content")
                 }
             }
         }
@@ -103,17 +103,17 @@ struct AsyncStreamTests {
 
     @Test("AsyncStream with custom configuration")
     func customConfiguration() async {
-        struct StyledHTML: HTML, Sendable {
-            var body: some HTML {
+        struct StyledHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("Content")
+                    HTML.Text("Content")
                 }
                 .inlineStyle("color", "red")
             }
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in AsyncStream(document: Document { StyledHTML() }, configuration: .email) {
+        for await chunk in AsyncStream(document: HTML.Document { StyledHTML() }, configuration: .email) {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -123,10 +123,10 @@ struct AsyncStreamTests {
 
     @Test("AsyncStream with nil configuration uses default")
     func nilConfigurationUsesDefault() async {
-        struct SpanHTML: HTML, Sendable {
-            var body: some HTML {
+        struct SpanHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("span") {
-                    HTMLText("Test")
+                    HTML.Text("Test")
                 }
             }
         }
@@ -144,9 +144,9 @@ struct AsyncStreamTests {
 
     @Test("AsyncStream streams HTML document")
     func streamsDocument() async {
-        let document = Document {
+        let document = HTML.Document {
             tag("main") {
-                HTMLText("Main content")
+                HTML.Text("Main content")
             }
         }
 
@@ -167,10 +167,10 @@ struct AsyncStreamTests {
 
     @Test("asyncStreamNonThrowing convenience method")
     func convenienceMethod() async {
-        struct ConvenienceHTML: HTML, Sendable {
-            var body: some HTML {
+        struct ConvenienceHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("Via convenience")
+                    HTML.Text("Via convenience")
                 }
             }
         }
@@ -186,17 +186,17 @@ struct AsyncStreamTests {
 
     @Test("asyncStreamNonThrowing with configuration")
     func convenienceMethodWithConfiguration() async {
-        struct StyledHTML: HTML, Sendable {
-            var body: some HTML {
+        struct StyledHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("Styled")
+                    HTML.Text("Styled")
                 }
                 .inlineStyle("margin", "0")
             }
         }
 
         var allBytes: [UInt8] = []
-        for await chunk in Document { StyledHTML() }.asyncStreamNonThrowing(chunkSize: 4096, configuration: .email) {
+        for await chunk in HTML.Document { StyledHTML() }.asyncStreamNonThrowing(chunkSize: 4096, configuration: .email) {
             allBytes.append(contentsOf: chunk)
         }
 
@@ -208,8 +208,8 @@ struct AsyncStreamTests {
 
     @Test("AsyncStream with empty content")
     func emptyContent() async {
-        struct EmptyHTML: HTML, Sendable {
-            var body: some HTML {
+        struct EmptyHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 Empty()
             }
         }
@@ -226,12 +226,12 @@ struct AsyncStreamTests {
 
     @Test("AsyncStream with nested elements")
     func nestedElements() async {
-        struct NestedHTML: HTML, Sendable {
-            var body: some HTML {
+        struct NestedHTML: HTML.View, Sendable {
+            var body: some HTML.View {
                 tag("div") {
                     tag("ul") {
-                        tag("li") { HTMLText("Item 1") }
-                        tag("li") { HTMLText("Item 2") }
+                        tag("li") { HTML.Text("Item 1") }
+                        tag("li") { HTML.Text("Item 2") }
                     }
                 }
             }
@@ -257,13 +257,13 @@ extension `Performance Tests` {
     struct AsyncStreamPerformance {
         @Test(.disabled("Performance test - enable manually"))
         func largeContentStreaming() async {
-            struct ListHTML: HTML, Sendable {
+            struct ListHTML: HTML.View, Sendable {
                 let items: [String]
-                var body: some HTML {
+                var body: some HTML.View {
                     tag("ul") {
                         for item in items {
                             tag("li") {
-                                HTMLText(item)
+                                HTML.Text(item)
                             }
                         }
                     }

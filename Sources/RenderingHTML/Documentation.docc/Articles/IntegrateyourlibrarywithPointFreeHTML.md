@@ -131,8 +131,8 @@ button { "Call us" }
 // Make your Anchor callable as a function returning some HTML
 extension HTML_Standard_Elements.Anchor {
     public func callAsFunction(
-        @Builder _ content: () -> some HTML
-    ) -> some HTML {
+        @HTML.Builder _ content: () -> some HTML
+    ) -> some HTML.View {
         HTMLElement(tag: Self.tag) { content() }
             .href(self.href)
             .target(self.target)
@@ -230,8 +230,8 @@ It's that simple. Your type provides the value, PointFreeHTML handles the render
 // The recipe:
 extension YourElement {
     public func callAsFunction(
-        @Builder _ content: () -> some HTML
-    ) -> some HTML {
+        @HTML.Builder _ content: () -> some HTML
+    ) -> some HTML.View {
         HTMLElement(tag: Self.tag) { content() }
             .yourAttribute(self.yourAttributeValue)
             .anotherAttribute(self.anotherValue)
@@ -386,7 +386,7 @@ import HTMLElementTypes
 import CSSTypes
 import PointFreeHTML
 
-let contactPage = Document {
+let contactPage = HTML.Document {
     div {
         h1 { "Get in touch" }
         

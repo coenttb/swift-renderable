@@ -19,7 +19,7 @@ struct SecurityTests {
     @Test("Script tags in text are escaped")
     func scriptTagsEscaped() throws {
         let malicious = "<script>alert('XSS')</script>"
-        let html = tag("p") { HTMLText(malicious) }
+        let html = tag("p") { HTML.Text(malicious) }
         let rendered = try String(html)
 
         #expect(!rendered.contains("<script>"))
@@ -29,7 +29,7 @@ struct SecurityTests {
     @Test("Script tags with attributes are escaped")
     func scriptTagsWithAttrsEscaped() throws {
         let malicious = "<script src=\"evil.js\"></script>"
-        let html = tag("div") { HTMLText(malicious) }
+        let html = tag("div") { HTML.Text(malicious) }
         let rendered = try String(html)
 
         #expect(!rendered.contains("<script"))
@@ -39,7 +39,7 @@ struct SecurityTests {
     @Test("Event handlers in text are escaped")
     func eventHandlersEscaped() throws {
         let malicious = "<img src=x onerror=\"alert('XSS')\">"
-        let html = tag("div") { HTMLText(malicious) }
+        let html = tag("div") { HTML.Text(malicious) }
         let rendered = try String(html)
 
         // The < and > are escaped, so browser won't parse as HTML tag
@@ -52,7 +52,7 @@ struct SecurityTests {
     @Test("JavaScript URLs in text are escaped")
     func javascriptURLsEscaped() throws {
         let malicious = "<a href=\"javascript:alert('XSS')\">Click</a>"
-        let html = tag("div") { HTMLText(malicious) }
+        let html = tag("div") { HTML.Text(malicious) }
         let rendered = try String(html)
 
         // The < and > are escaped, so browser won't parse as HTML tag
@@ -99,7 +99,7 @@ struct SecurityTests {
     @Test("HTML entities in text don't execute")
     func htmlEntitiesInText() throws {
         let malicious = "&#60;script&#62;alert('XSS')&#60;/script&#62;"
-        let html = tag("p") { HTMLText(malicious) }
+        let html = tag("p") { HTML.Text(malicious) }
         let rendered = try String(html)
 
         // The entity codes should be escaped or rendered as text
@@ -109,7 +109,7 @@ struct SecurityTests {
     @Test("Hex encoded entities don't execute")
     func hexEncodedEntities() throws {
         let malicious = "&#x3C;script&#x3E;alert('XSS')&#x3C;/script&#x3E;"
-        let html = tag("p") { HTMLText(malicious) }
+        let html = tag("p") { HTML.Text(malicious) }
         let rendered = try String(html)
 
         #expect(!rendered.contains("<script>"))
@@ -121,9 +121,9 @@ struct SecurityTests {
     func styleExpressionInjection() throws {
         // Old IE expression() attack
         let malicious = "expression(alert('XSS'))"
-        let html = tag("div") { HTMLText("Content") }
+        let html = tag("div") { HTML.Text("Content") }
             .inlineStyle("color", malicious)
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
 
         // Style should be present but expression shouldn't execute
         // The style value is passed through - it's CSS, not HTML
@@ -134,9 +134,9 @@ struct SecurityTests {
     func styleURLInjection() throws {
         // Attempting javascript: URL in style
         let malicious = "url(javascript:alert('XSS'))"
-        let html = tag("div") { HTMLText("Content") }
+        let html = tag("div") { HTML.Text("Content") }
             .inlineStyle("background", malicious)
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
 
         // The value is passed through - CSS, not HTML context
         #expect(rendered.contains("background:"))
@@ -144,21 +144,21 @@ struct SecurityTests {
 
     // MARK: - Raw HTML Security
 
-    @Test("HTMLRaw is not escaped (use with caution)")
+    @Test("HTML.Raw is not escaped (use with caution)")
     func rawHTMLNotEscaped() throws {
         let dangerous = "<script>alert('This executes')</script>"
-        let html = HTMLRaw(dangerous)
+        let html = HTML.Raw(dangerous)
         let rendered = try String(Group { html })
 
         // RAW HTML IS NOT ESCAPED - THIS IS INTENTIONAL BUT DANGEROUS
         #expect(rendered.contains("<script>"))
     }
 
-    @Test("Only use HTMLRaw with trusted content")
+    @Test("Only use HTML.Raw with trusted content")
     func rawHTMLTrusted() throws {
-        // Only trusted, sanitized content should use HTMLRaw
+        // Only trusted, sanitized content should use HTML.Raw
         let trusted = "<strong>Bold text</strong>"
-        let html = HTMLRaw(trusted)
+        let html = HTML.Raw(trusted)
         let rendered = try String(Group { html })
 
         #expect(rendered.contains("<strong>"))
@@ -170,7 +170,7 @@ struct SecurityTests {
     func unicodeEscapeSequences() throws {
         // \u003c = < and \u003e = >
         let malicious = "\\u003cscript\\u003ealert('XSS')\\u003c/script\\u003e"
-        let html = tag("p") { HTMLText(malicious) }
+        let html = tag("p") { HTML.Text(malicious) }
         let rendered = try String(html)
 
         // The backslash sequences are literal text, not interpreted
@@ -181,7 +181,7 @@ struct SecurityTests {
     func zeroWidthCharacters() throws {
         // Zero-width joiner and other invisible characters
         let sneaky = "scr\u{200B}ipt"  // script with zero-width space
-        let html = tag("p") { HTMLText("<\(sneaky)>alert('XSS')</\(sneaky)>") }
+        let html = tag("p") { HTML.Text("<\(sneaky)>alert('XSS')</\(sneaky)>") }
         let rendered = try String(html)
 
         // Should still escape the angle brackets
@@ -216,7 +216,7 @@ struct SecurityTests {
     @Test("Common XSS payload 1: IMG onerror")
     func xssPayloadImgOnerror() throws {
         let payload = "<IMG SRC=x onerror=\"alert('XSS')\">"
-        let html = tag("div") { HTMLText(payload) }
+        let html = tag("div") { HTML.Text(payload) }
         let rendered = try String(html)
 
         // The < is escaped, preventing browser from parsing as HTML
@@ -228,7 +228,7 @@ struct SecurityTests {
     @Test("Common XSS payload 2: SVG onload")
     func xssPayloadSvgOnload() throws {
         let payload = "<svg onload=\"alert('XSS')\">"
-        let html = tag("div") { HTMLText(payload) }
+        let html = tag("div") { HTML.Text(payload) }
         let rendered = try String(html)
 
         #expect(rendered.contains("&lt;svg"))
@@ -237,7 +237,7 @@ struct SecurityTests {
     @Test("Common XSS payload 3: body onload")
     func xssPayloadBodyOnload() throws {
         let payload = "<body onload=\"alert('XSS')\">"
-        let html = tag("div") { HTMLText(payload) }
+        let html = tag("div") { HTML.Text(payload) }
         let rendered = try String(html)
 
         #expect(rendered.contains("&lt;body"))
@@ -246,7 +246,7 @@ struct SecurityTests {
     @Test("Common XSS payload 4: iframe")
     func xssPayloadIframe() throws {
         let payload = "<iframe src=\"javascript:alert('XSS')\">"
-        let html = tag("div") { HTMLText(payload) }
+        let html = tag("div") { HTML.Text(payload) }
         let rendered = try String(html)
 
         #expect(rendered.contains("&lt;iframe"))
@@ -256,8 +256,8 @@ struct SecurityTests {
 
     @Test("HTML document sets proper structure")
     func documentStructure() throws {
-        let document = Document {
-            tag("p") { HTMLText("Content") }
+        let document = HTML.Document {
+            tag("p") { HTML.Text("Content") }
         }
         let rendered = try String(document)
 
@@ -270,7 +270,7 @@ struct SecurityTests {
     @Test("Nested script tags")
     func nestedScriptTags() throws {
         let payload = "<<script>script>alert('XSS')<</script>/script>"
-        let html = tag("p") { HTMLText(payload) }
+        let html = tag("p") { HTML.Text(payload) }
         let rendered = try String(html)
 
         #expect(!rendered.contains("<script>"))
@@ -279,7 +279,7 @@ struct SecurityTests {
     @Test("Mixed case script tag")
     func mixedCaseScript() throws {
         let payload = "<ScRiPt>alert('XSS')</ScRiPt>"
-        let html = tag("p") { HTMLText(payload) }
+        let html = tag("p") { HTML.Text(payload) }
         let rendered = try String(html)
 
         #expect(rendered.contains("&lt;ScRiPt&gt;"))

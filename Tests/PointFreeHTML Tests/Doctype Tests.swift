@@ -14,19 +14,19 @@ struct DoctypeTests {
 
     @Test("Doctype renders HTML5 doctype")
     func doctypeRendersHTML5() throws {
-        let doctype = Doctype()
+        let doctype = HTML.Doctype()
         let rendered = try String(doctype)
         #expect(rendered == "<!doctype html>")
     }
 
     @Test("Doctype in document context")
     func doctypeInDocument() throws {
-        struct TestDocument: HTML {
-            var body: some HTML {
-                Doctype()
+        struct TestDocument: HTML.View {
+            var body: some HTML.View {
+                HTML.Doctype()
                 tag("html") {
                     tag("body") {
-                        HTMLText("content")
+                        HTML.Text("content")
                     }
                 }
             }
@@ -42,15 +42,15 @@ struct DoctypeTests {
     @Test("Doctype with other HTML elements")
     func doctypeWithOtherElements() throws {
         let content = Group {
-            Doctype()
+            HTML.Doctype()
             tag("html") {
                 tag("head") {
                     tag("title") {
-                        HTMLText("Test Page")
+                        HTML.Text("Test Page")
                     }
                 }
                 tag("body") {
-                    HTMLText("Body content")
+                    HTML.Text("Body content")
                 }
             }
         }
@@ -64,8 +64,8 @@ struct DoctypeTests {
     @Test("Multiple doctypes")
     func multipleDoctypes() throws {
         let content = Group {
-            Doctype()
-            Doctype()
+            HTML.Doctype()
+            HTML.Doctype()
         }
 
         let rendered = try String(content)
@@ -81,18 +81,18 @@ extension `Snapshot Tests` {
         @Test("Doctype in complete document snapshot")
         func doctypeInDocumentSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         tag("h1") {
-                            HTMLText("HTML5 Document")
+                            HTML.Text("HTML5 Document")
                         }
                         tag("p") {
-                            HTMLText("This document starts with a proper HTML5 doctype declaration.")
+                            HTML.Text("This document starts with a proper HTML5 doctype declaration.")
                         }
                     }
                 } head: {
                     tag("title") {
-                        HTMLText("Doctype Example")
+                        HTML.Text("Doctype Example")
                     }
                 },
                 as: .html

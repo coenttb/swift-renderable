@@ -1,5 +1,5 @@
 //
-//  HTMLContext.Rendering.swift
+//  HTML.Context.Configuration.swift
 //  pointfree-html
 //
 //  Configuration and error types for HTML rendering.
@@ -8,7 +8,7 @@
 import INCITS_4_1986
 import Rendering
 
-extension HTMLContext {
+extension HTML.Context {
 
     /// Configuration options for HTML rendering.
     ///
@@ -22,11 +22,11 @@ extension HTMLContext {
     /// configuration explicitly:
     ///
     /// ```swift
-    /// HTMLContext.Rendering.$current.withValue(.pretty) {
+    /// HTML.Context.Configuration.$current.withValue(.pretty) {
     ///     let html = ContiguousArray(document)
     /// }
     /// ```
-    public struct Rendering: Sendable {
+    public struct Configuration: Sendable {
         /// Task-local configuration for HTML rendering.
         ///
         /// This enables configuration without explicit parameter passing.
@@ -40,7 +40,7 @@ extension HTMLContext {
         /// let minified = ContiguousArray(html)
         ///
         /// // Pretty-printed
-        /// HTMLContext.Rendering.$current.withValue(.pretty) {
+        /// HTML.Context.Configuration.$current.withValue(.pretty) {
         ///     let pretty = ContiguousArray(html)
         /// }
         /// ```
@@ -122,7 +122,7 @@ extension HTMLContext {
     }
 }
 
-extension HTMLContext.Rendering {
+extension HTML.Context.Configuration {
     /// An error type representing HTML rendering failures.
     ///
     /// This error is thrown when there's a problem rendering HTML content

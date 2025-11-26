@@ -16,21 +16,21 @@ struct HTMLVoidTagTests {
 
     @Test("HTMLVoidTag string initialization")
     func stringInitialization() throws {
-        let voidTag = HTMLVoidTag("br")
+        let voidTag = HTML.VoidTag("br")
         #expect(voidTag.rawValue == "br")
     }
 
     @Test("HTMLVoidTag string literal initialization")
     func stringLiteralInitialization() throws {
-        let voidTag: HTMLVoidTag = "hr"
+        let voidTag: HTML.VoidTag = "hr"
         #expect(voidTag.rawValue == "hr")
     }
 
     // MARK: - All Tags
 
-    @Test("HTMLVoidTag.allTags contains expected tags")
+    @Test("HTML.VoidTag.allTags contains expected tags")
     func allTagsContainsExpectedTags() {
-        let allTags = HTMLVoidTag.allTags
+        let allTags = HTML.VoidTag.allTags
         #expect(allTags.contains("area"))
         #expect(allTags.contains("base"))
         #expect(allTags.contains("br"))
@@ -47,16 +47,16 @@ struct HTMLVoidTagTests {
         #expect(allTags.contains("wbr"))
     }
 
-    @Test("HTMLVoidTag.allTags has correct count")
+    @Test("HTML.VoidTag.allTags has correct count")
     func allTagsHasCorrectCount() {
-        #expect(HTMLVoidTag.allTags.count == 16)
+        #expect(HTML.VoidTag.allTags.count == 16)
     }
 
     // MARK: - Call As Function
 
     @Test("HTMLVoidTag creates self-closing element")
     func createsSelfClosingElement() throws {
-        let br = HTMLVoidTag("br")
+        let br = HTML.VoidTag("br")
         let element = br()
         let rendered = try String(element)
         #expect(rendered.contains("<br"))
@@ -67,26 +67,26 @@ struct HTMLVoidTagTests {
 
     @Test("HTMLVoidTag br element")
     func brElement() throws {
-        let br = HTMLVoidTag("br")
+        let br = HTML.VoidTag("br")
         let rendered = try String(br())
         #expect(rendered.contains("<br>"))
     }
 
     @Test("HTMLVoidTag hr element")
     func hrElement() throws {
-        let hr = HTMLVoidTag("hr")
+        let hr = HTML.VoidTag("hr")
         let rendered = try String(hr())
         #expect(rendered.contains("<hr>"))
     }
 
     @Test("HTMLVoidTag img element")
     func imgElement() throws {
-        let img = HTMLVoidTag("img")
+        let img = HTML.VoidTag("img")
         let element = img()
             .attribute("src", "/image.jpg")
             .attribute("alt", "Description")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("<img"))
         #expect(rendered.contains("src=\"/image.jpg\""))
         #expect(rendered.contains("alt=\"Description\""))
@@ -95,13 +95,13 @@ struct HTMLVoidTagTests {
 
     @Test("HTMLVoidTag input element")
     func inputElement() throws {
-        let input = HTMLVoidTag("input")
+        let input = HTML.VoidTag("input")
         let element = input()
             .attribute("type", "text")
             .attribute("name", "username")
             .attribute("placeholder", "Enter username")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("<input"))
         #expect(rendered.contains("type=\"text\""))
         #expect(rendered.contains("name=\"username\""))
@@ -109,23 +109,23 @@ struct HTMLVoidTagTests {
 
     @Test("HTMLVoidTag meta element")
     func metaElement() throws {
-        let meta = HTMLVoidTag("meta")
+        let meta = HTML.VoidTag("meta")
         let element = meta()
             .attribute("charset", "utf-8")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("<meta"))
         #expect(rendered.contains("charset=\"utf-8\""))
     }
 
     @Test("HTMLVoidTag link element")
     func linkElement() throws {
-        let link = HTMLVoidTag("link")
+        let link = HTML.VoidTag("link")
         let element = link()
             .attribute("rel", "stylesheet")
             .attribute("href", "/styles.css")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("<link"))
         #expect(rendered.contains("rel=\"stylesheet\""))
         #expect(rendered.contains("href=\"/styles.css\""))
@@ -135,7 +135,7 @@ struct HTMLVoidTagTests {
 
     @Test("HTMLVoidTag with multiple attributes")
     func multipleAttributes() throws {
-        let input = HTMLVoidTag("input")
+        let input = HTML.VoidTag("input")
         let element = input()
             .attribute("type", "email")
             .attribute("name", "email")
@@ -143,7 +143,7 @@ struct HTMLVoidTagTests {
             .attribute("required", "")
             .attribute("placeholder", "your@email.com")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("type=\"email\""))
         #expect(rendered.contains("name=\"email\""))
         #expect(rendered.contains("id=\"email-field\""))
@@ -155,20 +155,20 @@ struct HTMLVoidTagTests {
 
     @Test("HTMLVoidTag in form")
     func inForm() throws {
-        let input = HTMLVoidTag("input")
-        let br = HTMLVoidTag("br")
+        let input = HTML.VoidTag("input")
+        let br = HTML.VoidTag("br")
 
         let html = tag("form") {
-            tag("label") { HTMLText("Name:") }
+            tag("label") { HTML.Text("Name:") }
             br()
             input().attribute("type", "text").attribute("name", "name")
             br()
-            tag("label") { HTMLText("Email:") }
+            tag("label") { HTML.Text("Email:") }
             br()
             input().attribute("type", "email").attribute("name", "email")
         }
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("<form>"))
         #expect(rendered.contains("<br>"))
         #expect(rendered.contains("<input"))
@@ -176,10 +176,10 @@ struct HTMLVoidTagTests {
 
     @Test("HTMLVoidTag in head")
     func inHead() throws {
-        let meta = HTMLVoidTag("meta")
-        let link = HTMLVoidTag("link")
+        let meta = HTML.VoidTag("meta")
+        let link = HTML.VoidTag("link")
 
-        let document = Document {
+        let document = HTML.Document {
             Empty()
         } head: {
             meta().attribute("charset", "utf-8")
@@ -201,22 +201,22 @@ extension `Snapshot Tests` {
     struct HTMLVoidTagSnapshotTests {
         @Test("HTMLVoidTag form elements snapshot")
         func formElementsSnapshot() {
-            let input = HTMLVoidTag("input")
-            let br = HTMLVoidTag("br")
+            let input = HTML.VoidTag("input")
+            let br = HTML.VoidTag("br")
 
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("form") {
                         tag("fieldset") {
-                            tag("legend") { HTMLText("Contact Form") }
-                            tag("label") { HTMLText("Name:") }
+                            tag("legend") { HTML.Text("Contact Form") }
+                            tag("label") { HTML.Text("Name:") }
                             br()
                             input()
                                 .attribute("type", "text")
                                 .attribute("name", "name")
                             br()
                             br()
-                            tag("label") { HTMLText("Email:") }
+                            tag("label") { HTML.Text("Email:") }
                             br()
                             input()
                                 .attribute("type", "email")

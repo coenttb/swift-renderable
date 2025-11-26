@@ -1,5 +1,5 @@
 //
-//  HTMLTag Tests.swift
+//  HTML.Tag Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
@@ -9,28 +9,28 @@
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLTag Tests")
+@Suite("HTML.Tag Tests")
 struct HTMLTagTests {
 
-    @Test("HTMLTag basic functionality")
+    @Test("HTML.Tag basic functionality")
     func htmlTagBasics() throws {
-        let tag: some HTML = HTMLTag("div") {
-            HTMLText("content")
+        let tag: some HTML.View = HTML.Tag("div") {
+            HTML.Text("content")
         }
 
-        let rendered = try String(Document { tag })
+        let rendered = try String(HTML.Document { tag })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("content"))
         #expect(rendered.contains("</div>"))
     }
 
-    @Test("HTMLTextTag for text content")
+    @Test("HTML.TextTag for text content")
     func htmlTextTag() throws {
-        let textTag = HTMLTextTag("span") {
+        let textTag = HTML.TextTag("span") {
             "text content"
         }
 
-        let rendered = try String(Document { textTag })
+        let rendered = try String(HTML.Document { textTag })
         #expect(rendered.contains("<span>"))
         #expect(rendered.contains("text content"))
         #expect(rendered.contains("</span>"))
@@ -38,9 +38,9 @@ struct HTMLTagTests {
 
     @Test("HTMLVoidTag self-closing")
     func htmlVoidTag() throws {
-        let voidTag = HTMLVoidTag("br")()
+        let voidTag = HTML.VoidTag("br")()
 
-        let rendered = try String(Document { voidTag })
+        let rendered = try String(HTML.Document { voidTag })
         #expect(rendered.contains("<br"))
         #expect(rendered.contains("/>") || rendered.contains(">"))
         #expect(!rendered.contains("</br>"))
@@ -48,26 +48,26 @@ struct HTMLTagTests {
 
     @Test("HTMLVoidTag with attributes")
     func voidTagWithAttributes() throws {
-        let voidTag = HTMLVoidTag("input")()
+        let voidTag = HTML.VoidTag("input")()
             .attribute("type", "text")
             .attribute("name", "username")
 
-        let rendered = try String(Document { voidTag })
+        let rendered = try String(HTML.Document { voidTag })
         #expect(rendered.contains("<input"))
         #expect(rendered.contains("type=\"text\""))
         #expect(rendered.contains("name=\"username\""))
         #expect(!rendered.contains("</input>"))
     }
 
-    @Test("Nested HTMLTags")
+    @Test("Nested HTML.Tags")
     func nestedTags() throws {
-        let outerTag = HTMLTag("div") {
-            HTMLTag("p") {
-                HTMLText("nested paragraph")
+        let outerTag = HTML.Tag("div") {
+            HTML.Tag("p") {
+                HTML.Text("nested paragraph")
             }
         }
 
-        let rendered = try String(Document { outerTag })
+        let rendered = try String(HTML.Document { outerTag })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("<p>"))
         #expect(rendered.contains("nested paragraph"))
@@ -75,11 +75,11 @@ struct HTMLTagTests {
         #expect(rendered.contains("</div>"))
     }
 
-    @Test("Empty HTMLTag")
+    @Test("Empty HTML.Tag")
     func emptyTag() throws {
-        let tag = HTMLTag("div")()
+        let tag = HTML.Tag("div")()
 
-        let rendered = try String(Document { tag })
+        let rendered = try String(HTML.Document { tag })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("</div>"))
     }
@@ -90,24 +90,24 @@ struct HTMLTagTests {
 extension `Snapshot Tests` {
     @Suite
     struct HTMLTagSnapshotTests {
-        @Test("HTMLTag semantic structure snapshot")
+        @Test("HTML.Tag semantic structure snapshot")
         func semanticStructureSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("main") {
-                        HTMLTag("header") {
-                            HTMLTag("nav") {
-                                HTMLTextTag("h1") {
+                        HTML.Tag("header") {
+                            HTML.Tag("nav") {
+                                HTML.TextTag("h1") {
                                     "Site Navigation"
                                 }
-                                HTMLTag("ul") {
-                                    HTMLTag("li") {
-                                        HTMLTextTag("a") {
+                                HTML.Tag("ul") {
+                                    HTML.Tag("li") {
+                                        HTML.TextTag("a") {
                                             "Home"
                                         }
                                     }
-                                    HTMLTag("li") {
-                                        HTMLTextTag("a") {
+                                    HTML.Tag("li") {
+                                        HTML.TextTag("a") {
                                             "About"
                                         }
                                     }
@@ -115,12 +115,12 @@ extension `Snapshot Tests` {
                             }
                         }
 
-                        HTMLTag("section") {
-                            HTMLTextTag("h2") {
+                        HTML.Tag("section") {
+                            HTML.TextTag("h2") {
                                 "Main Content"
                             }
-                            HTMLTextTag("p") {
-                                "This demonstrates semantic HTML structure using HTMLTag components."
+                            HTML.TextTag("p") {
+                                "This demonstrates semantic HTML structure using HTML.Tag components."
                             }
                         }
                     }
@@ -149,7 +149,7 @@ extension `Snapshot Tests` {
                       <section>
                         <h2>Main Content
                         </h2>
-                        <p>This demonstrates semantic HTML structure using HTMLTag components.
+                        <p>This demonstrates semantic HTML structure using HTML.Tag components.
                         </p>
                       </section>
                     </main>
@@ -162,29 +162,29 @@ extension `Snapshot Tests` {
         @Test("HTMLVoidTag form elements snapshot")
         func voidTagFormSnapshot() {
             assertInlineSnapshot(
-                of: Document {
-                    HTMLTag("form") {
-                        HTMLTag("fieldset") {
-                            HTMLTextTag("legend") {
+                of: HTML.Document {
+                    HTML.Tag("form") {
+                        HTML.Tag("fieldset") {
+                            HTML.TextTag("legend") {
                                 "Contact Information"
                             }
 
-                            HTMLVoidTag("input")()
+                            HTML.VoidTag("input")()
                                 .attribute("type", "text")
                                 .attribute("name", "name")
                                 .attribute("placeholder", "Your Name")
 
-                            HTMLVoidTag("br")()
+                            HTML.VoidTag("br")()
 
-                            HTMLVoidTag("input")()
+                            HTML.VoidTag("input")()
                                 .attribute("type", "email")
                                 .attribute("name", "email")
                                 .attribute("placeholder", "Your Email")
 
-                            HTMLVoidTag("hr")()
+                            HTML.VoidTag("hr")()
 
-                            HTMLTag("button") {
-                                HTMLText("Submit Form")
+                            HTML.Tag("button") {
+                                HTML.Text("Submit Form")
                             }
                             .attribute("type", "submit")
                         }

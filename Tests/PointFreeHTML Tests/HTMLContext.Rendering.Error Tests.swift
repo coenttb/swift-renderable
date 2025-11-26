@@ -1,5 +1,5 @@
 //
-//  HTMLContext.Rendering.Error Tests.swift
+//  HTML.Context.Configuration.Error Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -9,20 +9,20 @@
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLContext.Rendering.Error Tests")
+@Suite("HTML.Context.Configuration.Error Tests")
 struct HTMLContextRenderingErrorTests {
 
     // MARK: - Initialization
 
     @Test("Error initialization with message")
     func initWithMessage() {
-        let error = HTMLContext.Rendering.Error(message: "Failed to render HTML")
+        let error = HTML.Context.Configuration.Error(message: "Failed to render HTML")
         #expect(error.message == "Failed to render HTML")
     }
 
     @Test("Error with empty message")
     func emptyMessage() {
-        let error = HTMLContext.Rendering.Error(message: "")
+        let error = HTML.Context.Configuration.Error(message: "")
         #expect(error.message.isEmpty)
     }
 
@@ -30,20 +30,20 @@ struct HTMLContextRenderingErrorTests {
 
     @Test("Error conforms to Swift.Error")
     func conformsToSwiftError() {
-        let error: any Swift.Error = HTMLContext.Rendering.Error(message: "Test error")
-        #expect(error is HTMLContext.Rendering.Error)
+        let error: any Swift.Error = HTML.Context.Configuration.Error(message: "Test error")
+        #expect(error is HTML.Context.Configuration.Error)
     }
 
     @Test("Error can be thrown and caught")
     func canBeThrown() {
         func throwingFunction() throws {
-            throw HTMLContext.Rendering.Error(message: "Intentional error")
+            throw HTML.Context.Configuration.Error(message: "Intentional error")
         }
 
         do {
             try throwingFunction()
             Issue.record("Expected error to be thrown")
-        } catch let error as HTMLContext.Rendering.Error {
+        } catch let error as HTML.Context.Configuration.Error {
             #expect(error.message == "Intentional error")
         } catch {
             Issue.record("Unexpected error type: \(type(of: error))")
@@ -54,7 +54,7 @@ struct HTMLContextRenderingErrorTests {
 
     @Test("Error with descriptive message")
     func descriptiveMessage() {
-        let error = HTMLContext.Rendering.Error(message: "Invalid UTF-8 sequence at byte offset 42")
+        let error = HTML.Context.Configuration.Error(message: "Invalid UTF-8 sequence at byte offset 42")
         #expect(error.message.contains("UTF-8"))
         #expect(error.message.contains("42"))
     }
@@ -66,7 +66,7 @@ struct HTMLContextRenderingErrorTests {
         - Invalid attribute value
         - Missing closing tag
         """
-        let error = HTMLContext.Rendering.Error(message: message)
+        let error = HTML.Context.Configuration.Error(message: message)
         #expect(error.message.contains("Rendering failed"))
         #expect(error.message.contains("Invalid attribute"))
         #expect(error.message.contains("Missing closing tag"))
@@ -76,10 +76,10 @@ struct HTMLContextRenderingErrorTests {
 
     @Test("String initializer throws on invalid encoding")
     func stringInitializerThrows() throws {
-        // Test that String(Document { ... }) works normally
-        let document = Document {
+        // Test that String(HTML.Document { ... }) works normally
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Valid content")
+                HTML.Text("Valid content")
             }
         }
 
@@ -92,19 +92,19 @@ struct HTMLContextRenderingErrorTests {
 
     @Test("Error can be handled with do-catch")
     func doCatchHandling() {
-        let error = HTMLContext.Rendering.Error(message: "Test")
+        let error = HTML.Context.Configuration.Error(message: "Test")
 
         do {
             throw error
         } catch {
-            #expect(error is HTMLContext.Rendering.Error)
+            #expect(error is HTML.Context.Configuration.Error)
         }
     }
 
     @Test("Error can be used with Result type")
     func resultTypeUsage() {
-        let result: Result<String, HTMLContext.Rendering.Error> = .failure(
-            HTMLContext.Rendering.Error(message: "Rendering failed")
+        let result: Result<String, HTML.Context.Configuration.Error> = .failure(
+            HTML.Context.Configuration.Error(message: "Rendering failed")
         )
 
         switch result {
@@ -118,13 +118,13 @@ struct HTMLContextRenderingErrorTests {
     @Test("Error can be used with async throws")
     func asyncThrows() async {
         func asyncRenderer() async throws -> String {
-            throw HTMLContext.Rendering.Error(message: "Async rendering failed")
+            throw HTML.Context.Configuration.Error(message: "Async rendering failed")
         }
 
         do {
             _ = try await asyncRenderer()
             Issue.record("Expected error")
-        } catch let error as HTMLContext.Rendering.Error {
+        } catch let error as HTML.Context.Configuration.Error {
             #expect(error.message == "Async rendering failed")
         } catch {
             Issue.record("Wrong error type")
@@ -135,7 +135,7 @@ struct HTMLContextRenderingErrorTests {
 
     @Test("Error message preserves special characters")
     func preservesSpecialCharacters() {
-        let error = HTMLContext.Rendering.Error(message: "Error with <html> & \"quotes\"")
+        let error = HTML.Context.Configuration.Error(message: "Error with <html> & \"quotes\"")
         #expect(error.message.contains("<html>"))
         #expect(error.message.contains("&"))
         #expect(error.message.contains("\"quotes\""))
@@ -143,7 +143,7 @@ struct HTMLContextRenderingErrorTests {
 
     @Test("Error message preserves Unicode")
     func preservesUnicode() {
-        let error = HTMLContext.Rendering.Error(message: "Error: 日本語 🚫")
+        let error = HTML.Context.Configuration.Error(message: "Error: 日本語 🚫")
         #expect(error.message.contains("日本語"))
         #expect(error.message.contains("🚫"))
     }

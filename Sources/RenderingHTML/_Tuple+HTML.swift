@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  _Tuple+HTML.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -7,23 +7,20 @@
 
 public import Rendering
 
-/// A container for a tuple of HTML elements.
-///
-/// This type is used internally by the `HTMLBuilder` to handle
-/// multiple HTML elements combined in a single block.
-public typealias _HTMLTuple<each Content: HTML> = _Tuple<repeat each Content>
-
-extension _Tuple: Rendering where repeat each Content: HTML {
-    public typealias Context = HTMLContext
+// Extend the _Tuple type from Rendering module to conform to HTML.View
+// Note: _Tuple is a top-level type exported from the Rendering module.
+// Users can access it as _Tuple<Content...> directly, not through HTML._Tuple.
+extension _Tuple: Rendering where repeat each Content: HTML.View {
+    public typealias Context = HTML.Context
     public typealias Content = Never
     public var body: Never { fatalError() }
 
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ html: Self,
         into buffer: inout Buffer,
-        context: inout HTMLContext
+        context: inout HTML.Context
     ) where Buffer.Element == UInt8 {
-        func render<T: HTML>(_ element: T) {
+        func render<T: HTML.View>(_ element: T) {
             let oldAttributes = context.attributes
             defer { context.attributes = oldAttributes }
             T._render(element, into: &buffer, context: &context)
@@ -32,4 +29,4 @@ extension _Tuple: Rendering where repeat each Content: HTML {
     }
 }
 
-extension _Tuple: HTML where repeat each Content: HTML {}
+extension _Tuple: HTML.View where repeat each Content: HTML.View {}

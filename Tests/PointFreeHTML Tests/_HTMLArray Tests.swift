@@ -1,5 +1,5 @@
 //
-//  _HTMLArray Tests.swift
+//  _Array Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -9,18 +9,18 @@ import RenderingHTML
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("_HTMLArray Tests")
-struct _HTMLArrayTests {
+@Suite("_Array Tests")
+struct _ArrayTests {
 
     // MARK: - Basic Rendering
 
-    @Test("_HTMLArray renders multiple elements")
+    @Test("_Array renders multiple elements")
     func rendersMultipleElements() throws {
-        // _HTMLArray is created through HTMLBuilder with for loops
+        // _Array is created through HTMLBuilder with for loops
         let html = Group {
             for item in ["A", "B", "C"] {
                 tag("li") {
-                    HTMLText(item)
+                    HTML.Text(item)
                 }
             }
         }
@@ -31,13 +31,13 @@ struct _HTMLArrayTests {
         #expect(rendered.contains("<li>C</li>"))
     }
 
-    @Test("_HTMLArray with empty array")
+    @Test("_Array with empty array")
     func emptyArray() throws {
         let items: [String] = []
         let html = Group {
             for item in items {
                 tag("li") {
-                    HTMLText(item)
+                    HTML.Text(item)
                 }
             }
         }
@@ -46,12 +46,12 @@ struct _HTMLArrayTests {
         #expect(rendered.isEmpty)
     }
 
-    @Test("_HTMLArray with single element")
+    @Test("_Array with single element")
     func singleElement() throws {
         let html = Group {
             for item in ["Only"] {
                 tag("span") {
-                    HTMLText(item)
+                    HTML.Text(item)
                 }
             }
         }
@@ -62,17 +62,17 @@ struct _HTMLArrayTests {
 
     // MARK: - Complex Content
 
-    @Test("_HTMLArray with nested elements")
+    @Test("_Array with nested elements")
     func nestedElements() throws {
         let items = [("Title 1", "Content 1"), ("Title 2", "Content 2")]
         let html = Group {
             for (title, content) in items {
                 tag("article") {
                     tag("h2") {
-                        HTMLText(title)
+                        HTML.Text(title)
                     }
                     tag("p") {
-                        HTMLText(content)
+                        HTML.Text(content)
                     }
                 }
             }
@@ -86,31 +86,31 @@ struct _HTMLArrayTests {
         #expect(rendered.contains("Content 2"))
     }
 
-    @Test("_HTMLArray with attributes")
+    @Test("_Array with attributes")
     func withAttributes() throws {
         let items = ["item-1", "item-2", "item-3"]
         let html = Group {
             for id in items {
                 tag("div") {
-                    HTMLText(id)
+                    HTML.Text(id)
                 }
                 .attribute("id", id)
             }
         }
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("id=\"item-1\""))
         #expect(rendered.contains("id=\"item-2\""))
         #expect(rendered.contains("id=\"item-3\""))
     }
 
-    @Test("_HTMLArray with indices")
+    @Test("_Array with indices")
     func withIndices() throws {
         let items = ["First", "Second", "Third"]
         let html = Group {
             for (index, item) in items.enumerated() {
                 tag("div") {
-                    HTMLText("\(index): \(item)")
+                    HTML.Text("\(index): \(item)")
                 }
             }
         }
@@ -121,14 +121,14 @@ struct _HTMLArrayTests {
         #expect(rendered.contains("2: Third"))
     }
 
-    // MARK: - HTMLForEach Integration
+    // MARK: - HTML.ForEach Integration
 
-    @Test("_HTMLArray via HTMLForEach")
+    @Test("_Array via HTML.ForEach")
     func viaHTMLForEach() throws {
         let items = ["Alpha", "Beta", "Gamma"]
-        let html = HTMLForEach(items) { item in
+        let html = HTML.ForEach(items) { item in
             tag("option") {
-                HTMLText(item)
+                HTML.Text(item)
             }
         }
 
@@ -140,13 +140,13 @@ struct _HTMLArrayTests {
 
     // MARK: - Context Propagation
 
-    @Test("_HTMLArray propagates context correctly")
+    @Test("_Array propagates context correctly")
     func propagatesContext() throws {
         let items = ["Red", "Blue"]
-        let html = Document {
+        let html = HTML.Document {
             for item in items {
                 tag("span") {
-                    HTMLText(item)
+                    HTML.Text(item)
                 }
                 .inlineStyle("color", item.lowercased())
             }
@@ -162,16 +162,16 @@ struct _HTMLArrayTests {
 
 extension `Snapshot Tests` {
     @Suite
-    struct _HTMLArraySnapshotTests {
-        @Test("_HTMLArray list rendering snapshot")
+    struct _ArraySnapshotTests {
+        @Test("_Array list rendering snapshot")
         func listRenderingSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("ul") {
                         for item in ["Home", "About", "Contact"] {
                             tag("li") {
                                 tag("a") {
-                                    HTMLText(item)
+                                    HTML.Text(item)
                                 }
                                 .attribute("href", "/\(item.lowercased())")
                             }

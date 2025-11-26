@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  HTML.Pseudo.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 16/04/2025.
@@ -7,83 +7,84 @@
 
 import Rendering
 
-/// Represents CSS pseudo-classes and pseudo-elements for targeting element states and parts.
-///
-/// `Pseudo` provides a type-safe way to apply CSS pseudo-classes and pseudo-elements
-/// in PointFreeHTML. Pseudo-classes target elements in specific states (like `:hover`,
-/// `:focus`, `:disabled`), while pseudo-elements target specific parts of elements
-/// (like `::before`, `::after`, `::first-line`).
-///
-/// ## Basic Usage
-///
-/// ```swift
-/// // Most common: using string literals
-/// button { "Click me" }
-///     .inlineStyle("background-color", "blue")
-///     .inlineStyle("background-color", "red", pseudo: ":hover")
-///
-/// // Using static properties (equivalent)
-/// let hover: Pseudo = .hover
-/// button { "Click me" }
-///     .inlineStyle("background-color", "red", pseudo: .hover)
-///
-/// // Pseudo-element for generated content
-/// div { "Content" }
-///     .inlineStyle("content", "\"★\"", pseudo: "::before")
-/// ```
-///
-/// ## Pseudo-Classes vs Pseudo-Elements
-///
-/// **Pseudo-classes** (single colon `:`) target elements based on their state:
-/// - `:hover` - when user hovers over element
-/// - `:focus` - when element has keyboard focus
-/// - `:disabled` - when form element is disabled
-/// - `:first-child` - first child element
-///
-/// **Pseudo-elements** (double colon `::`) target parts of elements:
-/// - `::before` - generated content before element
-/// - `::after` - generated content after element
-/// - `::first-line` - first line of text content
-///
-/// ## Combining Pseudo-Selectors
-///
-/// Use the `+` operator to combine multiple pseudo-selectors:
-///
-/// ```swift
-/// // Using string literals (most common)
-/// let combined: Pseudo = ":not(:disabled):hover"
-///
-/// // Or combining static properties
-/// let notDisabled: Pseudo = .not(.disabled)
-/// let combined: Pseudo = notDisabled + .hover
-///
-/// input { "" }
-///     .inlineStyle("border-color", "blue", pseudo: .init(rawValue: ":not(:disabled):hover"))
-/// // Generates: input:not(:disabled):hover { border-color: blue; }
-/// ```
-///
-/// ## Functional Pseudo-Classes
-///
-/// Some pseudo-classes accept parameters:
-///
-/// ```swift
-/// // Using string literals (most common)
-/// li { "Item" }
-///     .inlineStyle("color", "red", pseudo: ":nth-child(odd)")
-///     .inlineStyle("color", "blue", pseudo: ":nth-child(2n+1)")
-///
-/// // Using static functions (equivalent)
-/// let oddChild: Pseudo = .nthChild("odd")
-/// li { "Item" }
-///     .inlineStyle("color", "red", pseudo: .nthChild("odd"))
-///
-/// // Negation pseudo-class
-/// button { "Button" }
-///     .inlineStyle("opacity", "0.5", pseudo: ":not(:enabled)")
-/// ```
-public struct Pseudo: RawRepresentable, Hashable, Sendable, ExpressibleByStringLiteral,
-    ExpressibleByStringInterpolation
-{
+extension HTML {
+    /// Represents CSS pseudo-classes and pseudo-elements for targeting element states and parts.
+    ///
+    /// `HTML.Pseudo` provides a type-safe way to apply CSS pseudo-classes and pseudo-elements
+    /// in PointFreeHTML. Pseudo-classes target elements in specific states (like `:hover`,
+    /// `:focus`, `:disabled`), while pseudo-elements target specific parts of elements
+    /// (like `::before`, `::after`, `::first-line`).
+    ///
+    /// ## Basic Usage
+    ///
+    /// ```swift
+    /// // Most common: using string literals
+    /// button { "Click me" }
+    ///     .inlineStyle("background-color", "blue")
+    ///     .inlineStyle("background-color", "red", pseudo: ":hover")
+    ///
+    /// // Using static properties (equivalent)
+    /// let hover: HTML.Pseudo = .hover
+    /// button { "Click me" }
+    ///     .inlineStyle("background-color", "red", pseudo: .hover)
+    ///
+    /// // Pseudo-element for generated content
+    /// div { "Content" }
+    ///     .inlineStyle("content", "\"★\"", pseudo: "::before")
+    /// ```
+    ///
+    /// ## Pseudo-Classes vs Pseudo-Elements
+    ///
+    /// **Pseudo-classes** (single colon `:`) target elements based on their state:
+    /// - `:hover` - when user hovers over element
+    /// - `:focus` - when element has keyboard focus
+    /// - `:disabled` - when form element is disabled
+    /// - `:first-child` - first child element
+    ///
+    /// **Pseudo-elements** (double colon `::`) target parts of elements:
+    /// - `::before` - generated content before element
+    /// - `::after` - generated content after element
+    /// - `::first-line` - first line of text content
+    ///
+    /// ## Combining Pseudo-Selectors
+    ///
+    /// Use the `+` operator to combine multiple pseudo-selectors:
+    ///
+    /// ```swift
+    /// // Using string literals (most common)
+    /// let combined: HTML.Pseudo = ":not(:disabled):hover"
+    ///
+    /// // Or combining static properties
+    /// let notDisabled: HTML.Pseudo = .not(.disabled)
+    /// let combined: HTML.Pseudo = notDisabled + .hover
+    ///
+    /// input { "" }
+    ///     .inlineStyle("border-color", "blue", pseudo: .init(rawValue: ":not(:disabled):hover"))
+    /// // Generates: input:not(:disabled):hover { border-color: blue; }
+    /// ```
+    ///
+    /// ## Functional Pseudo-Classes
+    ///
+    /// Some pseudo-classes accept parameters:
+    ///
+    /// ```swift
+    /// // Using string literals (most common)
+    /// li { "Item" }
+    ///     .inlineStyle("color", "red", pseudo: ":nth-child(odd)")
+    ///     .inlineStyle("color", "blue", pseudo: ":nth-child(2n+1)")
+    ///
+    /// // Using static functions (equivalent)
+    /// let oddChild: HTML.Pseudo = .nthChild("odd")
+    /// li { "Item" }
+    ///     .inlineStyle("color", "red", pseudo: .nthChild("odd"))
+    ///
+    /// // Negation pseudo-class
+    /// button { "Button" }
+    ///     .inlineStyle("opacity", "0.5", pseudo: ":not(:enabled)")
+    /// ```
+    public struct Pseudo: RawRepresentable, Hashable, Sendable, ExpressibleByStringLiteral,
+        ExpressibleByStringInterpolation
+    {
     /// The CSS pseudo-class or pseudo-element selector.
     public var rawValue: String
 
@@ -105,10 +106,11 @@ public struct Pseudo: RawRepresentable, Hashable, Sendable, ExpressibleByStringL
     public init(stringLiteral value: String) {
         self.init(rawValue: value)
     }
+    }
 }
 
 // MARK: - Pseudo-Selector Combination
-extension Pseudo {
+extension HTML.Pseudo {
     /// Combines two pseudo-selectors into a single compound pseudo-selector.
     ///
     /// This operator allows you to chain multiple pseudo-classes or pseudo-elements
@@ -136,7 +138,7 @@ extension Pseudo {
 }
 
 // MARK: - Pseudo-Elements
-extension Pseudo {
+extension HTML.Pseudo {
     /// Pseudo-elements target specific parts of elements and create virtual elements.
     /// They use double colon (::) syntax and are used for styling generated content
     /// or specific portions of element content.
@@ -191,7 +193,7 @@ extension Pseudo {
 }
 
 // MARK: - Pseudo-Classes
-extension Pseudo {
+extension HTML.Pseudo {
     /// Pseudo-classes target elements based on their state or position.
     /// They use single colon (:) syntax and are applied when elements
     /// meet specific conditions or are in particular states.

@@ -20,10 +20,10 @@ struct RenderingTests {
     @Test("Basic rendering")
     func basicRendering() throws {
         let element = tag("div") {
-            HTMLText("test content")
+            HTML.Text("test content")
         }
 
-        try HTMLContext.Rendering.$current.withValue(.default) {
+        try HTML.Context.Configuration.$current.withValue(.default) {
             let rendered = try String(element)
 
             #expect(rendered.contains("<div>"))
@@ -35,10 +35,10 @@ struct RenderingTests {
     @Test("Rendering with pretty configuration")
     func prettyConfiguration() throws {
         let element = tag("div") {
-            HTMLText("content")
+            HTML.Text("content")
         }
 
-        try HTMLContext.Rendering.$current.withValue(.pretty) {
+        try HTML.Context.Configuration.$current.withValue(.pretty) {
             let rendered = try String(element)
 
             #expect(!rendered.isEmpty)
@@ -51,7 +51,7 @@ struct RenderingTests {
     func emptyContent() throws {
         let empty = Empty()
 
-        try HTMLContext.Rendering.$current.withValue(.default) {
+        try HTML.Context.Configuration.$current.withValue(.default) {
             let rendered = try String(empty)
 
             #expect(rendered.isEmpty)
@@ -62,11 +62,11 @@ struct RenderingTests {
     func nestedElements() throws {
         let element = tag("div") {
             tag("p") {
-                HTMLText("nested content")
+                HTML.Text("nested content")
             }
         }
 
-        HTMLContext.Rendering.$current.withValue(.default) {
+        HTML.Context.Configuration.$current.withValue(.default) {
             let bytes = ContiguousArray(element)
             let rendered = String(data: Data(bytes), encoding: .utf8) ?? ""
 
@@ -81,12 +81,12 @@ struct RenderingTests {
     @Test("Manual rendering with buffer and context")
     func manualRendering() throws {
         var buffer: ContiguousArray<UInt8> = []
-        var context = HTMLContext(.default)
+        var context = HTML.Context(.default)
         let element = tag("span") {
-            HTMLText("manual render")
+            HTML.Text("manual render")
         }
 
-        HTMLElement._render(element, into: &buffer, context: &context)
+        HTML.Element._render(element, into: &buffer, context: &context)
         let rendered = String(data: Data(buffer), encoding: .utf8) ?? ""
 
         #expect(rendered.contains("<span>"))
@@ -96,10 +96,10 @@ struct RenderingTests {
 
     @Test("Stylesheet generation via context")
     func stylesheetGeneration() throws {
-        var context = HTMLContext(.pretty)
+        var context = HTML.Context(.pretty)
 
         // Add some styles to test stylesheet generation
-        context.styles[StyleKey(nil, ".test-class")] = "color:red;font-size:16px"
+        context.styles[HTML.StyleKey(nil, ".test-class")] = "color:red;font-size:16px"
 
         let stylesheet = context.stylesheet
         #expect(stylesheet.contains(".test-class"))
@@ -109,9 +109,9 @@ struct RenderingTests {
 
     @Test("Rendering configuration options")
     func configurationOptions() throws {
-        let defaultConfig = HTMLContext.Rendering.default
-        let prettyConfig = HTMLContext.Rendering.pretty
-        let emailConfig = HTMLContext.Rendering.email
+        let defaultConfig = HTML.Context.Configuration.default
+        let prettyConfig = HTML.Context.Configuration.pretty
+        let emailConfig = HTML.Context.Configuration.email
 
         #expect(defaultConfig.indentation == [])
         #expect(defaultConfig.newline == [])
@@ -126,17 +126,17 @@ struct RenderingTests {
 
     @Test("Document rendering")
     func documentRendering() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("h1") {
-                HTMLText("Hello World")
+                HTML.Text("Hello World")
             }
         } head: {
             tag("title") {
-                HTMLText("Test")
+                HTML.Text("Test")
             }
         }
 
-        try HTMLContext.Rendering.$current.withValue(.default) {
+        try HTML.Context.Configuration.$current.withValue(.default) {
             let rendered = try String(document)
 
             #expect(rendered.contains("<!doctype html>"))

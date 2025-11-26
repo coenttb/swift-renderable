@@ -11,16 +11,16 @@ import Testing
 @Suite("HTMLBuilder Tests")
 struct HTMLBuilderTests {
 
-    @Test("HTMLText basic functionality")
+    @Test("HTML.Text basic functionality")
     func htmlTextBasics() throws {
-        let text = HTMLText("Hello, World!")
+        let text = HTML.Text("Hello, World!")
         let rendered = try String(text)
         #expect(rendered == "Hello, World!")
     }
 
-    @Test("HTMLText escapes HTML characters")
+    @Test("HTML.Text escapes HTML characters")
     func htmlTextEscaping() throws {
-        let text = HTMLText("<script>alert('xss')</script>")
+        let text = HTML.Text("<script>alert('xss')</script>")
         let rendered = try String(text)
         #expect(rendered.contains("&lt;script&gt;"))
         #expect(!rendered.contains("<script>"))
@@ -28,9 +28,9 @@ struct HTMLBuilderTests {
 
     @Test("HTMLBuilder with single element")
     func builderSingleElement() throws {
-        struct TestHTML: HTML {
-            var body: some HTML {
-                HTMLText("single")
+        struct TestHTML: HTML.View {
+            var body: some HTML.View {
+                HTML.Text("single")
             }
         }
 
@@ -41,11 +41,11 @@ struct HTMLBuilderTests {
 
     @Test("HTMLBuilder with multiple elements")
     func builderMultipleElements() throws {
-        struct TestHTML: HTML {
-            var body: some HTML {
-                HTMLText("first")
-                HTMLText("second")
-                HTMLText("third")
+        struct TestHTML: HTML.View {
+            var body: some HTML.View {
+                HTML.Text("first")
+                HTML.Text("second")
+                HTML.Text("third")
             }
         }
 
@@ -56,14 +56,14 @@ struct HTMLBuilderTests {
 
     @Test("HTMLBuilder conditional rendering - true")
     func builderConditionalTrue() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let showContent = true
 
-            var body: some HTML {
+            var body: some HTML.View {
                 if showContent {
-                    HTMLText("visible")
+                    HTML.Text("visible")
                 } else {
-                    HTMLText("hidden")
+                    HTML.Text("hidden")
                 }
             }
         }
@@ -75,14 +75,14 @@ struct HTMLBuilderTests {
 
     @Test("HTMLBuilder conditional rendering - false")
     func builderConditionalFalse() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let showContent = false
 
-            var body: some HTML {
+            var body: some HTML.View {
                 if showContent {
-                    HTMLText("visible")
+                    HTML.Text("visible")
                 } else {
-                    HTMLText("hidden")
+                    HTML.Text("hidden")
                 }
             }
         }
@@ -94,12 +94,12 @@ struct HTMLBuilderTests {
 
     @Test("HTMLBuilder with array of elements")
     func builderWithArray() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let items = ["first", "second", "third"]
 
-            var body: some HTML {
+            var body: some HTML.View {
                 for item in items {
-                    HTMLText(item)
+                    HTML.Text(item)
                 }
             }
         }

@@ -133,15 +133,15 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
     ///   - html: The HTML content to stream.
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
-    public init<T: HTML & Sendable>(
+    public init<T: HTML.View & Sendable>(
         progressive html: T,
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
             Task { @Sendable in
-                var context = HTMLContext(config)
+                var context = HTML.Context(config)
                 var buffer = ChunkingBuffer(chunkSize: chunkSize) { chunk in
                     continuation.yield(chunk)
                 }

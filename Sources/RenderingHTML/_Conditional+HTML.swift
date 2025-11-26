@@ -1,5 +1,5 @@
 //
-//  _HTMLConditional.swift
+//  _Conditional+HTML.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -7,10 +7,7 @@
 
 public import Rendering
 
-/// A type to represent conditional HTML content based on if/else conditions.
-///
-/// This type is used internally by the `HTMLBuilder` to handle
-/// conditional content created by `if`/`else` statements.
-public typealias _HTMLConditional<First: HTML, Second: HTML> = _Conditional<First, Second>
-
-extension _Conditional: HTML where First: HTML, Second: HTML {}
+// Extend the _Conditional type from Rendering module to conform to HTML.View
+// Note: _Conditional is a top-level type exported from the Rendering module.
+// Users can access it as _Conditional<First, Second> directly, not through HTML._Conditional.
+extension _Conditional: HTML.View where First: HTML.View, Second: HTML.View {}

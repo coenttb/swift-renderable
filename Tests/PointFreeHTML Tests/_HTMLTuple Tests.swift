@@ -1,5 +1,5 @@
 //
-//  _HTMLTuple Tests.swift
+//  _Tuple Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -10,23 +10,23 @@ import RenderingHTMLTestSupport
 import Testing
 import Foundation
 
-@Suite("_HTMLTuple Tests")
-struct _HTMLTupleTests {
+@Suite("_Tuple Tests")
+struct _TupleTests {
 
     // MARK: - Basic Tuple Rendering
 
-    @Test("_HTMLTuple renders multiple elements")
+    @Test("_Tuple renders multiple elements")
     func rendersMultipleElements() throws {
-        // _HTMLTuple is created implicitly when you have multiple elements in a builder
+        // _Tuple is created implicitly when you have multiple elements in a builder
         let html = Group {
             tag("h1") {
-                HTMLText("Title")
+                HTML.Text("Title")
             }
             tag("p") {
-                HTMLText("Paragraph")
+                HTML.Text("Paragraph")
             }
             tag("footer") {
-                HTMLText("Footer")
+                HTML.Text("Footer")
             }
         }
 
@@ -36,22 +36,22 @@ struct _HTMLTupleTests {
         #expect(rendered.contains("<footer>Footer</footer>"))
     }
 
-    @Test("_HTMLTuple with two elements")
+    @Test("_Tuple with two elements")
     func twoElements() throws {
         let html = Group {
-            HTMLText("First")
-            HTMLText("Second")
+            HTML.Text("First")
+            HTML.Text("Second")
         }
 
         let rendered = try String(html)
         #expect(rendered == "FirstSecond")
     }
 
-    @Test("_HTMLTuple with single element")
+    @Test("_Tuple with single element")
     func singleElement() throws {
         let html = Group {
             tag("div") {
-                HTMLText("Only one")
+                HTML.Text("Only one")
             }
         }
 
@@ -62,16 +62,16 @@ struct _HTMLTupleTests {
 
     // MARK: - Attribute Isolation
 
-    @Test("_HTMLTuple isolates attributes between elements")
+    @Test("_Tuple isolates attributes between elements")
     func isolatesAttributes() throws {
-        let html = Document {
+        let html = HTML.Document {
             tag("div") {
-                HTMLText("First div")
+                HTML.Text("First div")
             }
             .attribute("class", "first")
 
             tag("div") {
-                HTMLText("Second div")
+                HTML.Text("Second div")
             }
             .attribute("class", "second")
         }
@@ -90,22 +90,22 @@ struct _HTMLTupleTests {
 
     // MARK: - Nested Tuples
 
-    @Test("_HTMLTuple with nested groups")
+    @Test("_Tuple with nested groups")
     func nestedGroups() throws {
         let html = Group {
             tag("header") {
-                HTMLText("Header")
+                HTML.Text("Header")
             }
             Group {
                 tag("main") {
-                    HTMLText("Main content")
+                    HTML.Text("Main content")
                 }
                 tag("aside") {
-                    HTMLText("Sidebar")
+                    HTML.Text("Sidebar")
                 }
             }
             tag("footer") {
-                HTMLText("Footer")
+                HTML.Text("Footer")
             }
         }
 
@@ -118,38 +118,38 @@ struct _HTMLTupleTests {
 
     // MARK: - Different Types
 
-    @Test("_HTMLTuple with mixed content types")
+    @Test("_Tuple with mixed content types")
     func mixedContentTypes() throws {
         let html = Group {
-            HTMLText("Plain text")
+            HTML.Text("Plain text")
             tag("br")
-            HTMLRaw("<strong>Raw HTML</strong>")
+            HTML.Raw("<strong>Raw HTML</strong>")
             tag("p") {
-                HTMLText("Paragraph")
+                HTML.Text("Paragraph")
             }
         }
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("Plain text"))
         #expect(rendered.contains("<br>"))
         #expect(rendered.contains("<strong>Raw HTML</strong>"))
         #expect(rendered.contains("<p>"))
     }
 
-    @Test("_HTMLTuple with void and regular elements")
+    @Test("_Tuple with void and regular elements")
     func voidAndRegularElements() throws {
         let html = Group {
             tag("input")
                 .attribute("type", "text")
             tag("label") {
-                HTMLText("Name")
+                HTML.Text("Name")
             }
             tag("br")
             tag("input")
                 .attribute("type", "submit")
         }
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("type=\"text\""))
         #expect(rendered.contains("<label>"))
         #expect(rendered.contains("<br>"))
@@ -158,16 +158,16 @@ struct _HTMLTupleTests {
 
     // MARK: - Style Propagation
 
-    @Test("_HTMLTuple propagates styles correctly")
+    @Test("_Tuple propagates styles correctly")
     func propagatesStyles() throws {
-        let html = Document {
+        let html = HTML.Document {
             tag("div") {
-                HTMLText("First")
+                HTML.Text("First")
             }
             .inlineStyle("color", "red")
 
             tag("div") {
-                HTMLText("Second")
+                HTML.Text("Second")
             }
             .inlineStyle("color", "blue")
         }
@@ -179,25 +179,25 @@ struct _HTMLTupleTests {
 
     // MARK: - Complex Structures
 
-    @Test("_HTMLTuple in document structure")
+    @Test("_Tuple in document structure")
     func inDocumentStructure() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("header") {
                 tag("h1") {
-                    HTMLText("Site Title")
+                    HTML.Text("Site Title")
                 }
             }
             tag("nav") {
-                tag("a") { HTMLText("Home") }.attribute("href", "/")
-                tag("a") { HTMLText("About") }.attribute("href", "/about")
+                tag("a") { HTML.Text("Home") }.attribute("href", "/")
+                tag("a") { HTML.Text("About") }.attribute("href", "/about")
             }
             tag("main") {
                 tag("article") {
-                    HTMLText("Article content")
+                    HTML.Text("Article content")
                 }
             }
             tag("footer") {
-                HTMLText("© 2025")
+                HTML.Text("© 2025")
             }
         }
 
@@ -213,24 +213,24 @@ struct _HTMLTupleTests {
 
 extension `Snapshot Tests` {
     @Suite
-    struct _HTMLTupleSnapshotTests {
-        @Test("_HTMLTuple page layout snapshot")
+    struct _TupleSnapshotTests {
+        @Test("_Tuple page layout snapshot")
         func pageLayoutSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("header") {
                         tag("h1") {
-                            HTMLText("My Website")
+                            HTML.Text("My Website")
                         }
                     }
                     tag("main") {
                         tag("p") {
-                            HTMLText("Welcome to my site.")
+                            HTML.Text("Welcome to my site.")
                         }
                     }
                     tag("footer") {
                         tag("small") {
-                            HTMLText("© 2025")
+                            HTML.Text("© 2025")
                         }
                     }
                 },

@@ -1,5 +1,5 @@
 //
-//  HTMLText Tests.swift
+//  HTML.Text Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -9,99 +9,99 @@
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLText Tests")
+@Suite("HTML.Text Tests")
 struct HTMLTextTests {
 
     // MARK: - Initialization
 
-    @Test("HTMLText basic initialization")
+    @Test("HTML.Text basic initialization")
     func basicInitialization() throws {
-        let text = HTMLText("Hello, World!")
+        let text = HTML.Text("Hello, World!")
         let rendered = try String(text)
         #expect(rendered == "Hello, World!")
     }
 
-    @Test("HTMLText empty string")
+    @Test("HTML.Text empty string")
     func emptyString() throws {
-        let text = HTMLText("")
+        let text = HTML.Text("")
         let rendered = try String(text)
         #expect(rendered.isEmpty)
     }
 
-    @Test("HTMLText string literal initialization")
+    @Test("HTML.Text string literal initialization")
     func stringLiteralInitialization() throws {
-        let text: HTMLText = "Hello from literal"
+        let text: HTML.Text = "Hello from literal"
         let rendered = try String(text)
         #expect(rendered == "Hello from literal")
     }
 
-    @Test("HTMLText string interpolation")
+    @Test("HTML.Text string interpolation")
     func stringInterpolation() throws {
         let name = "World"
-        let text: HTMLText = "Hello, \(name)!"
+        let text: HTML.Text = "Hello, \(name)!"
         let rendered = try String(text)
         #expect(rendered == "Hello, World!")
     }
 
     // MARK: - HTML Escaping
 
-    @Test("HTMLText escapes ampersand")
+    @Test("HTML.Text escapes ampersand")
     func escapesAmpersand() throws {
-        let text = HTMLText("Rock & Roll")
+        let text = HTML.Text("Rock & Roll")
         let rendered = try String(text)
         #expect(rendered == "Rock &amp; Roll")
     }
 
-    @Test("HTMLText escapes less than")
+    @Test("HTML.Text escapes less than")
     func escapesLessThan() throws {
-        let text = HTMLText("a < b")
+        let text = HTML.Text("a < b")
         let rendered = try String(text)
         #expect(rendered == "a &lt; b")
     }
 
-    @Test("HTMLText escapes greater than")
+    @Test("HTML.Text escapes greater than")
     func escapesGreaterThan() throws {
-        let text = HTMLText("a > b")
+        let text = HTML.Text("a > b")
         let rendered = try String(text)
         #expect(rendered == "a &gt; b")
     }
 
-    @Test("HTMLText escapes multiple special characters")
+    @Test("HTML.Text escapes multiple special characters")
     func escapesMultipleSpecialCharacters() throws {
-        let text = HTMLText("<script>alert('XSS');</script>")
+        let text = HTML.Text("<script>alert('XSS');</script>")
         let rendered = try String(text)
         #expect(rendered == "&lt;script&gt;alert('XSS');&lt;/script&gt;")
     }
 
-    @Test("HTMLText preserves quotes - not escaped in text content")
+    @Test("HTML.Text preserves quotes - not escaped in text content")
     func preservesQuotes() throws {
-        let text = HTMLText("He said \"Hello\"")
+        let text = HTML.Text("He said \"Hello\"")
         let rendered = try String(text)
         #expect(rendered == "He said \"Hello\"")
     }
 
-    @Test("HTMLText preserves single quotes")
+    @Test("HTML.Text preserves single quotes")
     func preservesSingleQuotes() throws {
-        let text = HTMLText("It's working")
+        let text = HTML.Text("It's working")
         let rendered = try String(text)
         #expect(rendered == "It's working")
     }
 
     // MARK: - Concatenation
 
-    @Test("HTMLText concatenation with + operator")
+    @Test("HTML.Text concatenation with + operator")
     func concatenationWithOperator() throws {
-        let hello = HTMLText("Hello, ")
-        let world = HTMLText("World!")
+        let hello = HTML.Text("Hello, ")
+        let world = HTML.Text("World!")
         let combined = hello + world
         let rendered = try String(combined)
         #expect(rendered == "Hello, World!")
     }
 
-    @Test("HTMLText concatenation preserves escaping")
+    @Test("HTML.Text concatenation preserves escaping")
     func concatenationPreservesEscaping() throws {
-        let left = HTMLText("A & B")
-        let right = HTMLText(" < C")
+        let left = HTML.Text("A & B")
+        let right = HTML.Text(" < C")
         let combined = left + right
         let rendered = try String(combined)
         #expect(rendered == "A &amp; B &lt; C")
@@ -109,41 +109,41 @@ struct HTMLTextTests {
 
     // MARK: - Unicode
 
-    @Test("HTMLText preserves Unicode characters")
+    @Test("HTML.Text preserves Unicode characters")
     func preservesUnicode() throws {
-        let text = HTMLText("Hello, 世界! 🌍")
+        let text = HTML.Text("Hello, 世界! 🌍")
         let rendered = try String(text)
         #expect(rendered == "Hello, 世界! 🌍")
     }
 
-    @Test("HTMLText preserves emoji")
+    @Test("HTML.Text preserves emoji")
     func preservesEmoji() throws {
-        let text = HTMLText("👍🏽 Great job!")
+        let text = HTML.Text("👍🏽 Great job!")
         let rendered = try String(text)
         #expect(rendered == "👍🏽 Great job!")
     }
 
     // MARK: - Edge Cases
 
-    @Test("HTMLText with newlines")
+    @Test("HTML.Text with newlines")
     func withNewlines() throws {
-        let text = HTMLText("Line 1\nLine 2\nLine 3")
+        let text = HTML.Text("Line 1\nLine 2\nLine 3")
         let rendered = try String(text)
         #expect(rendered == "Line 1\nLine 2\nLine 3")
     }
 
-    @Test("HTMLText with tabs")
+    @Test("HTML.Text with tabs")
     func withTabs() throws {
-        let text = HTMLText("Col1\tCol2\tCol3")
+        let text = HTML.Text("Col1\tCol2\tCol3")
         let rendered = try String(text)
         #expect(rendered == "Col1\tCol2\tCol3")
     }
 
-    @Test("HTMLText in document context")
+    @Test("HTML.Text in document context")
     func inDocumentContext() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("p") {
-                HTMLText("This is & that")
+                HTML.Text("This is & that")
             }
         }
         let rendered = try String(document)
@@ -156,16 +156,16 @@ struct HTMLTextTests {
 extension `Snapshot Tests` {
     @Suite
     struct HTMLTextSnapshotTests {
-        @Test("HTMLText basic rendering snapshot")
+        @Test("HTML.Text basic rendering snapshot")
         func basicRenderingSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         tag("h1") {
-                            HTMLText("Welcome & Hello")
+                            HTML.Text("Welcome & Hello")
                         }
                         tag("p") {
-                            HTMLText("This is a paragraph with <special> characters & symbols.")
+                            HTML.Text("This is a paragraph with <special> characters & symbols.")
                         }
                     }
                 },
@@ -189,19 +189,19 @@ extension `Snapshot Tests` {
             }
         }
 
-        @Test("HTMLText with various content types snapshot")
+        @Test("HTML.Text with various content types snapshot")
         func variousContentSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("article") {
                         tag("h2") {
-                            HTMLText("Code Examples")
+                            HTML.Text("Code Examples")
                         }
                         tag("p") {
-                            HTMLText("In HTML, use &lt;tag&gt; syntax (shown escaped).")
+                            HTML.Text("In HTML, use &lt;tag&gt; syntax (shown escaped).")
                         }
                         tag("p") {
-                            HTMLText("Copyright © 2025 - All rights reserved")
+                            HTML.Text("Copyright © 2025 - All rights reserved")
                         }
                     }
                 },

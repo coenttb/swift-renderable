@@ -8,9 +8,9 @@ struct ReadmeVerificationTests {
 
     @Test("README Basic Usage: Greeting component")
     func basicUsageGreeting() throws {
-        struct Greeting: HTML {
+        struct Greeting: HTML.View {
             let name: String
-            var body: some HTML {
+            var body: some HTML.View {
                 tag("h1") { "Hello, \(name)!" }
             }
         }
@@ -29,8 +29,8 @@ struct ReadmeVerificationTests {
 
     @Test("README Swift-HTML Integration: PointFreeHTML APIs")
     func swiftHtmlIntegrationPointFreeAPI() {
-        struct StyledComponent: HTML {
-            var body: some HTML {
+        struct StyledComponent: HTML.View {
+            var body: some HTML.View {
                 tag("div") {
                     tag("a") { "Styled Heading" }
                         .attribute("href", "#")
@@ -56,9 +56,9 @@ struct ReadmeVerificationTests {
         // Simulate the route logic without Vapor
         let name = "TestUser"
 
-        struct Greeting: HTML {
+        struct Greeting: HTML.View {
             let name: String
-            var body: some HTML {
+            var body: some HTML.View {
                 tag("h1") { "Hello, \(name)!" }
             }
         }
@@ -73,8 +73,8 @@ struct ReadmeVerificationTests {
 
     @Test("README Core: HTML protocol conformance")
     func htmlProtocolConformance() {
-        struct CustomComponent: HTML {
-            var body: some HTML {
+        struct CustomComponent: HTML.View {
+            var body: some HTML.View {
                 tag("div") { "Content" }
             }
         }
@@ -97,8 +97,8 @@ struct ReadmeVerificationTests {
 
     @Test("README Core: String rendering")
     func stringRendering() throws {
-        struct Simple: HTML {
-            var body: some HTML {
+        struct Simple: HTML.View {
+            var body: some HTML.View {
                 tag("span") { "Test" }
             }
         }
@@ -109,8 +109,8 @@ struct ReadmeVerificationTests {
 
     @Test("README Core: Bytes rendering")
     func bytesRendering() {
-        struct Simple: HTML {
-            var body: some HTML {
+        struct Simple: HTML.View {
+            var body: some HTML.View {
                 tag("span") { "Test" }
             }
         }
@@ -125,14 +125,14 @@ struct ReadmeVerificationTests {
 
     @Test("README Core: Nested components")
     func nestedComponents() {
-        struct Inner: HTML {
-            var body: some HTML {
+        struct Inner: HTML.View {
+            var body: some HTML.View {
                 tag("span") { "Inner" }
             }
         }
 
-        struct Outer: HTML {
-            var body: some HTML {
+        struct Outer: HTML.View {
+            var body: some HTML.View {
                 tag("div") {
                     Inner()
                 }
@@ -147,8 +147,8 @@ struct ReadmeVerificationTests {
 
     @Test("README Core: HTMLBuilder result builder")
     func htmlBuilderMultipleElements() {
-        struct MultiElement: HTML {
-            var body: some HTML {
+        struct MultiElement: HTML.View {
+            var body: some HTML.View {
                 tag("div") {
                     tag("h1") { "Title" }
                     tag("p") { "Paragraph" }
@@ -165,9 +165,9 @@ struct ReadmeVerificationTests {
 
     @Test("README Core: String interpolation in HTML content")
     func stringInterpolation() {
-        struct Interpolated: HTML {
+        struct Interpolated: HTML.View {
             let value: String
-            var body: some HTML {
+            var body: some HTML.View {
                 tag("p") { "Value: \(value)" }
             }
         }

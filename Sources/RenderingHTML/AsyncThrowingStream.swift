@@ -34,10 +34,10 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
-    public init<T: HTML & Sendable>(
+    public init<T: HTML.View & Sendable>(
         _ html: T,
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
@@ -45,7 +45,7 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
                 do {
                     // Render synchronously into buffer
                     var buffer: [UInt8] = []
-                    var context = HTMLContext(config)
+                    var context = HTML.Context(config)
                     T._render(html, into: &buffer, context: &context)
 
                     // Yield in chunks with cooperative scheduling
@@ -86,8 +86,8 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
     ///
     /// ```swift
     /// struct MyPage: HTMLDocumentProtocol, Sendable {
-    ///     var head: some HTML { title { "My Page" } }
-    ///     var body: some HTML { div { "Content" } }
+    ///     var head: some HTML.View { title { "My Page" } }
+    ///     var body: some HTML.View { div { "Content" } }
     /// }
     ///
     /// let page = MyPage()
@@ -101,10 +101,10 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
-    public init<T: HTMLDocumentProtocol & Sendable>(
+    public init<T: HTML.DocumentProtocol & Sendable>(
         document: T,
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
@@ -112,7 +112,7 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
                 do {
                     // Two-phase render: body first to collect styles
                     var buffer: [UInt8] = []
-                    var context = HTMLContext(config)
+                    var context = HTML.Context(config)
                     T._render(document, into: &buffer, context: &context)
 
                     // Stream in chunks with cooperative scheduling
@@ -153,8 +153,8 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
     ///
     /// ```swift
     /// struct MyPage: HTMLDocumentProtocol, Sendable {
-    ///     var head: some HTML { title { "Progressive Page" } }
-    ///     var body: some HTML {
+    ///     var head: some HTML.View { title { "Progressive Page" } }
+    ///     var body: some HTML.View {
     ///         div {
     ///             h1 { "Hello" }.inlineStyle("color", "navy")
     ///         }
@@ -173,15 +173,15 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
     ///   - document: The HTML document to stream.
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
-    public init<T: HTMLDocumentProtocol & Sendable>(
+    public init<T: HTML.DocumentProtocol & Sendable>(
         progressiveDocument document: T,
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
             Task { @Sendable in
-                var context = HTMLContext(config)
+                var context = HTML.Context(config)
                 var buffer = ChunkingBuffer(chunkSize: chunkSize) { chunk in
                     continuation.yield(chunk)
                 }
@@ -228,7 +228,7 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
     }
 }
 
-extension HTML where Self: Sendable {
+extension HTML.View where Self: Sendable {
     /// Progressive stream this HTML as async byte chunks.
     ///
     /// True progressive streaming - chunks are emitted as content renders.
@@ -239,13 +239,13 @@ extension HTML where Self: Sendable {
     /// - Returns: An AsyncThrowingStream yielding byte chunks progressively.
     public func progressiveStream(
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
         AsyncThrowingStream(progressive: self, chunkSize: chunkSize, configuration: configuration)
     }
 }
 
-extension HTMLDocumentProtocol where Self: Sendable {
+extension HTML.DocumentProtocol where Self: Sendable {
     /// Progressive stream this document with styles at end of body.
     ///
     /// Enables true progressive streaming by placing `<style>` at end of `<body>`.
@@ -257,7 +257,7 @@ extension HTMLDocumentProtocol where Self: Sendable {
     /// - Returns: An AsyncThrowingStream yielding byte chunks progressively.
     public func progressiveDocumentStream(
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
         AsyncThrowingStream(progressiveDocument: self, chunkSize: chunkSize, configuration: configuration)
     }

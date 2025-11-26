@@ -16,10 +16,10 @@ struct CustomStringConvertibleTests {
 
     @Test("HTML type with CustomStringConvertible has description")
     func hasDescription() {
-        struct DescribableHTML: HTML, CustomStringConvertible {
-            var body: some HTML {
+        struct DescribableHTML: HTML.View, CustomStringConvertible {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("Hello")
+                    HTML.Text("Hello")
                 }
             }
         }
@@ -33,10 +33,10 @@ struct CustomStringConvertibleTests {
 
     @Test("Description matches rendered bytes")
     func descriptionMatchesBytes() {
-        struct TestHTML: HTML, CustomStringConvertible {
-            var body: some HTML {
+        struct TestHTML: HTML.View, CustomStringConvertible {
+            var body: some HTML.View {
                 tag("span") {
-                    HTMLText("Test content")
+                    HTML.Text("Test content")
                 }
             }
         }
@@ -52,11 +52,11 @@ struct CustomStringConvertibleTests {
 
     @Test("Description with nested elements")
     func nestedElements() {
-        struct NestedHTML: HTML, CustomStringConvertible {
-            var body: some HTML {
+        struct NestedHTML: HTML.View, CustomStringConvertible {
+            var body: some HTML.View {
                 tag("ul") {
-                    tag("li") { HTMLText("Item 1") }
-                    tag("li") { HTMLText("Item 2") }
+                    tag("li") { HTML.Text("Item 1") }
+                    tag("li") { HTML.Text("Item 2") }
                 }
             }
         }
@@ -72,10 +72,10 @@ struct CustomStringConvertibleTests {
 
     @Test("Description with attributes")
     func withAttributes() {
-        struct AttributedHTML: HTML, CustomStringConvertible {
-            var body: some HTML {
+        struct AttributedHTML: HTML.View, CustomStringConvertible {
+            var body: some HTML.View {
                 tag("a") {
-                    HTMLText("Link")
+                    HTML.Text("Link")
                 }
                 .attribute("href", "https://example.com")
             }
@@ -91,8 +91,8 @@ struct CustomStringConvertibleTests {
 
     @Test("Description with empty content")
     func emptyContent() {
-        struct EmptyHTML: HTML, CustomStringConvertible {
-            var body: some HTML {
+        struct EmptyHTML: HTML.View, CustomStringConvertible {
+            var body: some HTML.View {
                 Empty()
             }
         }
@@ -105,10 +105,10 @@ struct CustomStringConvertibleTests {
 
     @Test("Can use in string interpolation")
     func stringInterpolation() {
-        struct SimpleHTML: HTML, CustomStringConvertible {
-            var body: some HTML {
+        struct SimpleHTML: HTML.View, CustomStringConvertible {
+            var body: some HTML.View {
                 tag("b") {
-                    HTMLText("bold")
+                    HTML.Text("bold")
                 }
             }
         }
@@ -121,10 +121,10 @@ struct CustomStringConvertibleTests {
 
     @Test("Can print to console")
     func printToConsole() {
-        struct PrintableHTML: HTML, CustomStringConvertible {
-            var body: some HTML {
+        struct PrintableHTML: HTML.View, CustomStringConvertible {
+            var body: some HTML.View {
                 tag("p") {
-                    HTMLText("Printable")
+                    HTML.Text("Printable")
                 }
             }
         }
@@ -141,10 +141,10 @@ struct CustomStringConvertibleTests {
 
     @Test("Description with Unicode content")
     func unicodeContent() {
-        struct UnicodeHTML: HTML, CustomStringConvertible {
-            var body: some HTML {
+        struct UnicodeHTML: HTML.View, CustomStringConvertible {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("Héllo Wörld 日本語 🎉")
+                    HTML.Text("Héllo Wörld 日本語 🎉")
                 }
             }
         }
@@ -162,10 +162,10 @@ struct CustomStringConvertibleTests {
 
     @Test("Description escapes HTML entities")
     func escapesHTMLEntities() {
-        struct EscapingHTML: HTML, CustomStringConvertible {
-            var body: some HTML {
+        struct EscapingHTML: HTML.View, CustomStringConvertible {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("<script>alert('XSS')</script>")
+                    HTML.Text("<script>alert('XSS')</script>")
                 }
             }
         }
@@ -183,10 +183,10 @@ struct CustomStringConvertibleTests {
 
     @Test("HTML without CustomStringConvertible uses default description")
     func withoutCustomStringConvertible() {
-        struct PlainHTML: HTML {
-            var body: some HTML {
+        struct PlainHTML: HTML.View {
+            var body: some HTML.View {
                 tag("div") {
-                    HTMLText("Plain")
+                    HTML.Text("Plain")
                 }
             }
         }

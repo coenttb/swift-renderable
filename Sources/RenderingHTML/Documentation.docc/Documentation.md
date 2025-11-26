@@ -20,7 +20,7 @@ PointFreeHTML brings SwiftUI-style declarative syntax to HTML generation. Write 
 
 ### 🎨 **Developer experience that works**
 - **Familiar syntax** - if you know SwiftUI, you know PointFreeHTML
-- **Result builders** - natural HTML structure with `@Builder`
+- **Result builders** - natural HTML structure with `@HTML.Builder`
 - **Smart CSS handling** - automatic deduplication and optimization
 - **Easy integration** - extend your existing types with a few lines
 
@@ -41,10 +41,10 @@ dependencies: [
 Here's a complete blog post component using one PointFreeHTML integration: [swift-html](https://github.com/coenttb/swift-html):
 
 ```swift
-struct BlogPost: HTML {
+struct BlogPost: HTML.View {
     let post: Post
     
-    var body: some HTML {
+    var body: some HTML.View {
         article {
             header {
                 h1 { post.title }
@@ -60,7 +60,7 @@ struct BlogPost: HTML {
             
             if !post.tags.isEmpty {
                 footer {
-                    HTMLForEach(post.tags) { tag in
+                    HTML.ForEach(post.tags) { tag in
                         span { tag }
                             .background", .color(.hex("#eee")))
                             .padding(.rem(0.25), .rem(0.5))
@@ -95,10 +95,10 @@ struct BlogPost: HTML {
 ```swift
 import PointFreeHTML
 
-struct WelcomeMessage: HTML {
+struct WelcomeMessage: HTML.View {
     let name: String
     
-    var body: some HTML {
+    var body: some HTML.View {
         tag("div") {
             tag("h1") { "Hello, \(name)!" }
             tag("p") { "Welcome to type-safe HTML generation." }
@@ -126,7 +126,7 @@ let htmlString: String = try String(welcome)
 Build full HTML5 documents with proper structure:
 
 ```swift
-let document = Document {
+let document = HTML.Document {
     WelcomeMessage(name: "World")
 } head: {
     tag("title") { "My App" }
@@ -148,7 +148,7 @@ Everything starts with this protocol:
 ```swift
 public protocol HTML {
     associatedtype Content: HTML
-    @Builder var body: Content { get }
+    @HTML.Builder var body: Content { get }
     static func _render(_ html: Self, into printer: inout HTMLPrinter)
 }
 ```
@@ -160,10 +160,10 @@ This recursive design enables composability. Components delegate rendering to th
 Build interfaces using patterns you already know:
 
 ```swift
-struct UserCard: HTML {
+struct UserCard: HTML.View {
     let user: User
     
-    var body: some HTML {
+    var body: some HTML.View {
         tag("div") {
             tag("img")
                 .attribute("src", user.avatarURL)
@@ -210,14 +210,14 @@ tag("span") { "Also red" }.inlineStyle("color", "red")
 Create reusable wrappers for common patterns:
 
 ```swift
-struct Card<Content: HTML>: HTML {
+struct Card<Content: HTML>: HTML.View {
     let content: Content
     
-    init(@Builder content: () -> Content) {
+    init(@HTML.Builder content: () -> Content) {
         self.content = content()
     }
     
-    var body: some HTML {
+    var body: some HTML.View {
         tag("div") { content }
             .inlineStyle("border", "1px solid #ddd")
             .inlineStyle("border-radius", "8px")
@@ -237,12 +237,12 @@ Card {
 Render arrays without boilerplate:
 
 ```swift
-struct ProductGrid: HTML {
+struct ProductGrid: HTML.View {
     let products: [Product]
     
-    var body: some HTML {
+    var body: some HTML.View {
         tag("div") {
-            HTMLForEach(products) { product in
+            HTML.ForEach(products) { product in
                 ProductCard(product: product)
             }
         }
@@ -324,7 +324,7 @@ PointFreeHTML makes HTML generation in Swift a pleasure. Whether you're building
 - ``HTMLDocument``
 - ``HTMLBuilder``
 - ``HTMLElement``
-- ``HTMLTag``
+- ``HTML.Tag``
 
 ### HTML content
 
@@ -332,7 +332,7 @@ PointFreeHTML makes HTML generation in Swift a pleasure. Whether you're building
 - ``HTMLRaw``
 - ``Empty``
 - ``Group``
-- ``HTMLForEach``
+- ``HTML.ForEach``
 
 ### HTML attributes
 

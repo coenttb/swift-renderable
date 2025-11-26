@@ -1,5 +1,5 @@
 //
-//  HTMLForEachTests.swift
+//  HTML.ForEachTests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
@@ -9,69 +9,69 @@
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLForEach Tests")
+@Suite("HTML.ForEach Tests")
 struct HTMLForEachTests {
 
-    @Test("HTMLForEach with array of strings")
+    @Test("HTML.ForEach with array of strings")
     func forEachWithStrings() throws {
         let items = ["apple", "banana", "cherry"]
-        let forEach = HTMLForEach(items) { item in
-            HTMLText(item)
+        let forEach = HTML.ForEach(items) { item in
+            HTML.Text(item)
         }
 
         let rendered = try String(forEach)
         #expect(rendered == "applebananacherry")
     }
 
-    @Test("HTMLForEach with elements")
+    @Test("HTML.ForEach with elements")
     func forEachWithElements() throws {
         let items = ["first", "second", "third"]
-        let forEach = HTMLForEach(items) { item in
+        let forEach = HTML.ForEach(items) { item in
             tag("li") {
-                HTMLText(item)
+                HTML.Text(item)
             }
         }
 
-        let rendered = try String(Document { forEach })
+        let rendered = try String(HTML.Document { forEach })
         #expect(rendered.contains("<li>first</li>"))
         #expect(rendered.contains("<li>second</li>"))
         #expect(rendered.contains("<li>third</li>"))
     }
 
-    @Test("HTMLForEach with empty array")
+    @Test("HTML.ForEach with empty array")
     func forEachWithEmptyArray() throws {
         let items: [String] = []
-        let forEach = HTMLForEach(items) { item in
-            HTMLText(item)
+        let forEach = HTML.ForEach(items) { item in
+            HTML.Text(item)
         }
 
         let rendered = try String(forEach)
         #expect(rendered.isEmpty)
     }
 
-    @Test("HTMLForEach with numbers")
+    @Test("HTML.ForEach with numbers")
     func forEachWithNumbers() throws {
         let numbers = [1, 2, 3, 4, 5]
-        let forEach = HTMLForEach(numbers) { number in
-            HTMLText(String(number))
+        let forEach = HTML.ForEach(numbers) { number in
+            HTML.Text(String(number))
         }
 
         let rendered = try String(forEach)
         #expect(rendered == "12345")
     }
 
-    @Test("HTMLForEach nested in elements")
+    @Test("HTML.ForEach nested in elements")
     func forEachNestedInElements() throws {
         let items = ["item1", "item2", "item3"]
         let list = tag("ul") {
-            HTMLForEach(items) { item in
+            HTML.ForEach(items) { item in
                 tag("li") {
-                    HTMLText(item)
+                    HTML.Text(item)
                 }
             }
         }
 
-        let rendered = try String(Document { list })
+        let rendered = try String(HTML.Document { list })
         #expect(rendered.contains("<ul>"))
         #expect(rendered.contains("<li>item1</li>"))
         #expect(rendered.contains("<li>item2</li>"))
@@ -79,7 +79,7 @@ struct HTMLForEachTests {
         #expect(rendered.contains("</ul>"))
     }
 
-    @Test("HTMLForEach with complex content")
+    @Test("HTML.ForEach with complex content")
     func forEachWithComplexContent() throws {
         struct Item {
             let title: String
@@ -91,18 +91,18 @@ struct HTMLForEachTests {
             Item(title: "Second", description: "Second description"),
         ]
 
-        let forEach = HTMLForEach(items) { item in
+        let forEach = HTML.ForEach(items) { item in
             tag("div") {
                 tag("h3") {
-                    HTMLText(item.title)
+                    HTML.Text(item.title)
                 }
                 tag("p") {
-                    HTMLText(item.description)
+                    HTML.Text(item.description)
                 }
             }
         }
 
-        let rendered = try String(Document { forEach })
+        let rendered = try String(HTML.Document { forEach })
         #expect(rendered.contains("<h3>First</h3>"))
         #expect(rendered.contains("<p>First description</p>"))
         #expect(rendered.contains("<h3>Second</h3>"))
@@ -115,18 +115,18 @@ struct HTMLForEachTests {
 extension `Snapshot Tests` {
     @Suite
     struct HTMLForEachSnapshotTests {
-        @Test("HTMLForEach list generation snapshot")
+        @Test("HTML.ForEach list generation snapshot")
         func forEachListSnapshot() {
             let items = ["Home", "About", "Services", "Contact"]
 
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("nav") {
                         tag("ul") {
-                            HTMLForEach(items) { item in
+                            HTML.ForEach(items) { item in
                                 tag("li") {
                                     tag("a") {
-                                        HTMLText(item)
+                                        HTML.Text(item)
                                     }
                                     .attribute("href", "#\(item.lowercased())")
                                 }
@@ -161,7 +161,7 @@ extension `Snapshot Tests` {
             }
         }
 
-        @Test("HTMLForEach complex content snapshot")
+        @Test("HTML.ForEach complex content snapshot")
         func forEachComplexContentSnapshot() {
             struct Product {
                 let name: String
@@ -183,22 +183,22 @@ extension `Snapshot Tests` {
             ]
 
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         tag("h1") {
-                            HTMLText("Our Products")
+                            HTML.Text("Our Products")
                         }
-                        HTMLForEach(products) { product in
+                        HTML.ForEach(products) { product in
                             tag("article") {
                                 tag("h2") {
-                                    HTMLText(product.name)
+                                    HTML.Text(product.name)
                                 }
                                 tag("p") {
-                                    HTMLText("Price: \(product.price)")
+                                    HTML.Text("Price: \(product.price)")
                                 }
                                 .attribute("class", "price")
                                 tag("p") {
-                                    HTMLText(product.description)
+                                    HTML.Text(product.description)
                                 }
                                 .attribute("class", "description")
                             }

@@ -18,10 +18,10 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .seconds(3)))
         func `baseline - no capacity reservation 10K renders`() {
-            HTMLContext.Rendering.$current.withValue(.default) {
+            HTML.Context.Configuration.$current.withValue(.default) {
                 for _ in 0..<10_000 {
                     _ = try! String(
-                        Document {
+                        HTML.Document {
                             tag("div")
                                 .attribute("id", "container")
                                 .attribute("class", "content")
@@ -33,10 +33,10 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .seconds(3)))
         func `baseline - large document no reservation 1K renders`() {
-            HTMLContext.Rendering.$current.withValue(.default) {
+            HTML.Context.Configuration.$current.withValue(.default) {
                 for _ in 0..<1_000 {
                     _ = try! String(
-                        Document {
+                        HTML.Document {
                             tag("div") {
                                 for i in 0..<20 {
                                     tag("section")
@@ -55,10 +55,10 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .seconds(3)))
         func `optimized - 4KB capacity reservation 10K renders`() {
-            HTMLContext.Rendering.$current.withValue(.optimized) {
+            HTML.Context.Configuration.$current.withValue(.optimized) {
                 for _ in 0..<10_000 {
                     _ = try! String(
-                        Document {
+                        HTML.Document {
                             tag("div")
                                 .attribute("id", "container")
                                 .attribute("class", "content")
@@ -70,10 +70,10 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .seconds(3)))
         func `optimized - 4KB capacity large document 1K renders`() {
-            HTMLContext.Rendering.$current.withValue(.optimized) {
+            HTML.Context.Configuration.$current.withValue(.optimized) {
                 for _ in 0..<1_000 {
                     _ = try! String(
-                        Document {
+                        HTML.Document {
                             tag("div") {
                                 for i in 0..<20 {
                                     tag("section")
@@ -92,16 +92,16 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .milliseconds(300)))
         func `small capacity - 512 bytes for small docs 1K renders`() {
-            let config = HTMLContext.Rendering(
+            let config = HTML.Context.Configuration(
                 forceImportant: false,
                 indentation: [],
                 newline: [],
                 reservedCapacity: 512
             )
-            HTMLContext.Rendering.$current.withValue(config) {
+            HTML.Context.Configuration.$current.withValue(config) {
                 for _ in 0..<1_000 {
                     _ = try! String(
-                        Document {
+                        HTML.Document {
                             tag("p") { "Hello, World!" }
                         }
                     )
@@ -111,16 +111,16 @@ extension `Performance Tests` {
 
         @Test(.timed(threshold: .seconds(3)))
         func `large capacity - 16KB for large docs 1K renders`() {
-            let config = HTMLContext.Rendering(
+            let config = HTML.Context.Configuration(
                 forceImportant: false,
                 indentation: [],
                 newline: [],
                 reservedCapacity: 16384
             )
-            HTMLContext.Rendering.$current.withValue(config) {
+            HTML.Context.Configuration.$current.withValue(config) {
                 for _ in 0..<1_000 {
                     _ = try! String(
-                        Document {
+                        HTML.Document {
                             tag("div") {
                                 for i in 0..<50 {
                                     tag("article")

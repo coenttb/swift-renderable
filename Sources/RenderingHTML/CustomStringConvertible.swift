@@ -15,16 +15,16 @@ import Rendering
 /// ## Example
 ///
 /// ```swift
-/// struct Greeting: HTML, CustomStringConvertible {
-///     var body: some HTML {
-///         tag("div") { HTMLText("Hello!") }
+/// struct Greeting: HTML.View, CustomStringConvertible {
+///     var body: some HTML.View {
+///         tag("div") { HTML.Text("Hello!") }
 ///     }
 /// }
 ///
 /// let greeting = Greeting()
 /// print(greeting) // Prints: <div>Hello!</div>
 /// ```
-extension CustomStringConvertible where Self: HTML {
+extension CustomStringConvertible where Self: HTML.View {
     public var description: String {
         String(decoding: self.bytes, as: UTF8.self)
     }

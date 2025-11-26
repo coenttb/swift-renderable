@@ -38,7 +38,7 @@ a { "Visit our website" }
 - An `OrderedDictionary<String, String>` of attributes to apply
 
 ```swift
-public struct _HTMLAttributes<Content: HTML>: HTML {
+public struct _HTMLAttributes<Content: HTML>: HTML.View {
     let content: Content
     var attributes: OrderedDictionary<String, String>
 }

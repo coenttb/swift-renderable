@@ -20,24 +20,24 @@ struct HTMLInlineStyleProtocolTests {
     @Test("inlineStyle creates styled element")
     func inlineStyleCreatesStyledElement() throws {
         let html = tag("div") {
-            HTMLText("Styled content")
+            HTML.Text("Styled content")
         }
         .inlineStyle("color", "red")
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("color:red"))
     }
 
     @Test("Multiple styles are extracted")
     func multipleStylesExtracted() throws {
         let html = tag("div") {
-            HTMLText("Content")
+            HTML.Text("Content")
         }
         .inlineStyle("color", "red")
         .inlineStyle("margin", "10px")
         .inlineStyle("padding", "5px")
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("color:red"))
         #expect(rendered.contains("margin:10px"))
         #expect(rendered.contains("padding:5px"))
@@ -48,11 +48,11 @@ struct HTMLInlineStyleProtocolTests {
     @Test("Content is preserved through styling")
     func contentPreserved() throws {
         let html = tag("span") {
-            HTMLText("Original content")
+            HTML.Text("Original content")
         }
         .inlineStyle("font-weight", "bold")
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("Original content"))
         #expect(rendered.contains("<span"))
     }
@@ -61,12 +61,12 @@ struct HTMLInlineStyleProtocolTests {
     func nestedContentPreserved() throws {
         let html = tag("div") {
             tag("p") {
-                HTMLText("Paragraph")
+                HTML.Text("Paragraph")
             }
         }
         .inlineStyle("background", "white")
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("<div"))
         #expect(rendered.contains("<p>"))
         #expect(rendered.contains("Paragraph"))
@@ -77,13 +77,13 @@ struct HTMLInlineStyleProtocolTests {
     @Test("Chained styles all apply")
     func chainedStylesApply() throws {
         let html = tag("div") {
-            HTMLText("Multi-styled")
+            HTML.Text("Multi-styled")
         }
         .inlineStyle("color", "blue")
         .inlineStyle("background-color", "yellow")
         .inlineStyle("border", "1px solid black")
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("color:blue"))
         #expect(rendered.contains("background-color:yellow"))
         #expect(rendered.contains("border:1px solid black"))
@@ -94,11 +94,11 @@ struct HTMLInlineStyleProtocolTests {
     @Test("Style with media query extracted")
     func styleWithMediaQuery() throws {
         let html = tag("div") {
-            HTMLText("Responsive")
+            HTML.Text("Responsive")
         }
         .inlineStyle("display", "none", atRule: .init(rawValue: "@media print"), selector: nil, pseudo: nil)
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("@media print"))
         #expect(rendered.contains("display:none"))
     }
@@ -106,12 +106,12 @@ struct HTMLInlineStyleProtocolTests {
     @Test("Multiple media queries")
     func multipleMediaQueries() throws {
         let html = tag("div") {
-            HTMLText("Content")
+            HTML.Text("Content")
         }
         .inlineStyle("width", "100%", atRule: .init(rawValue: "@media (max-width: 768px)"), selector: nil, pseudo: nil)
         .inlineStyle("width", "50%", atRule: .init(rawValue: "@media (min-width: 769px)"), selector: nil, pseudo: nil)
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("@media (max-width: 768px)"))
         #expect(rendered.contains("@media (min-width: 769px)"))
     }
@@ -121,12 +121,12 @@ struct HTMLInlineStyleProtocolTests {
     @Test("Style with pseudo class")
     func styleWithPseudoClass() throws {
         let html = tag("a") {
-            HTMLText("Hover me")
+            HTML.Text("Hover me")
         }
         .attribute("href", "#")
         .inlineStyle("color", "red", pseudo: .hover)
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains(":hover"))
         #expect(rendered.contains("color:red"))
     }
@@ -136,12 +136,12 @@ struct HTMLInlineStyleProtocolTests {
     @Test("Empty style value")
     func emptyStyleValue() throws {
         let html = tag("div") {
-            HTMLText("Content")
+            HTML.Text("Content")
         }
         .inlineStyle("color", "")
 
         // Should still render without crashing
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("<div"))
     }
 
@@ -151,12 +151,12 @@ struct HTMLInlineStyleProtocolTests {
     func typeErasureStyleExtraction() throws {
         // AnyHTML should preserve styles
         let original = tag("div") {
-            HTMLText("Erased")
+            HTML.Text("Erased")
         }
         .inlineStyle("color", "green")
 
         let erased = AnyHTML(original)
-        let rendered = try String(Document { erased })
+        let rendered = try String(HTML.Document { erased })
 
         #expect(rendered.contains("color:green"))
         #expect(rendered.contains("Erased"))
@@ -170,18 +170,18 @@ struct HTMLInlineStyleProtocolTests {
         let html = Group {
             if showFirst {
                 tag("div") {
-                    HTMLText("First")
+                    HTML.Text("First")
                 }
                 .inlineStyle("color", "red")
             } else {
                 tag("div") {
-                    HTMLText("Second")
+                    HTML.Text("Second")
                 }
                 .inlineStyle("color", "blue")
             }
         }
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("color:red"))
         #expect(!rendered.contains("color:blue"))
     }
@@ -194,13 +194,13 @@ struct HTMLInlineStyleProtocolTests {
         let html = Group {
             for color in colors {
                 tag("span") {
-                    HTMLText(color)
+                    HTML.Text(color)
                 }
                 .inlineStyle("color", color)
             }
         }
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("color:red"))
         #expect(rendered.contains("color:green"))
         #expect(rendered.contains("color:blue"))

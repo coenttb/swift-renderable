@@ -1,5 +1,5 @@
 //
-//  _HTMLConditional Tests.swift
+//  _Conditional Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -9,23 +9,23 @@
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("_HTMLConditional Tests")
-struct _HTMLConditionalTests {
+@Suite("_Conditional Tests")
+struct _ConditionalTests {
 
     // MARK: - Basic Conditionals
 
-    @Test("_HTMLConditional renders true branch")
+    @Test("_Conditional renders true branch")
     func rendersTrueBranch() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let condition = true
-            var body: some HTML {
+            var body: some HTML.View {
                 if condition {
                     tag("div") {
-                        HTMLText("True branch")
+                        HTML.Text("True branch")
                     }
                 } else {
                     tag("span") {
-                        HTMLText("False branch")
+                        HTML.Text("False branch")
                     }
                 }
             }
@@ -38,18 +38,18 @@ struct _HTMLConditionalTests {
         #expect(!rendered.contains("False branch"))
     }
 
-    @Test("_HTMLConditional renders false branch")
+    @Test("_Conditional renders false branch")
     func rendersFalseBranch() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let condition = false
-            var body: some HTML {
+            var body: some HTML.View {
                 if condition {
                     tag("div") {
-                        HTMLText("True branch")
+                        HTML.Text("True branch")
                     }
                 } else {
                     tag("span") {
-                        HTMLText("False branch")
+                        HTML.Text("False branch")
                     }
                 }
             }
@@ -64,14 +64,14 @@ struct _HTMLConditionalTests {
 
     // MARK: - If-Only Conditionals
 
-    @Test("_HTMLConditional if-only true")
+    @Test("_Conditional if-only true")
     func ifOnlyTrue() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let show = true
-            var body: some HTML {
+            var body: some HTML.View {
                 if show {
                     tag("div") {
-                        HTMLText("Shown")
+                        HTML.Text("Shown")
                     }
                 }
             }
@@ -81,14 +81,14 @@ struct _HTMLConditionalTests {
         #expect(rendered.contains("Shown"))
     }
 
-    @Test("_HTMLConditional if-only false")
+    @Test("_Conditional if-only false")
     func ifOnlyFalse() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let show = false
-            var body: some HTML {
+            var body: some HTML.View {
                 if show {
                     tag("div") {
-                        HTMLText("Shown")
+                        HTML.Text("Shown")
                     }
                 }
             }
@@ -100,22 +100,22 @@ struct _HTMLConditionalTests {
 
     // MARK: - Nested Conditionals
 
-    @Test("_HTMLConditional nested conditionals")
+    @Test("_Conditional nested conditionals")
     func nestedConditionals() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let outer = true
             let inner = false
-            var body: some HTML {
+            var body: some HTML.View {
                 if outer {
                     tag("div") {
                         if inner {
-                            HTMLText("Inner true")
+                            HTML.Text("Inner true")
                         } else {
-                            HTMLText("Inner false")
+                            HTML.Text("Inner false")
                         }
                     }
                 } else {
-                    HTMLText("Outer false")
+                    HTML.Text("Outer false")
                 }
             }
         }
@@ -129,19 +129,19 @@ struct _HTMLConditionalTests {
 
     // MARK: - Conditionals with Attributes
 
-    @Test("_HTMLConditional with attributes")
+    @Test("_Conditional with attributes")
     func withAttributes() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let isActive = true
-            var body: some HTML {
+            var body: some HTML.View {
                 if isActive {
                     tag("button") {
-                        HTMLText("Active")
+                        HTML.Text("Active")
                     }
                     .attribute("class", "btn-active")
                 } else {
                     tag("button") {
-                        HTMLText("Inactive")
+                        HTML.Text("Inactive")
                     }
                     .attribute("class", "btn-inactive")
                     .attribute("disabled", "")
@@ -149,7 +149,7 @@ struct _HTMLConditionalTests {
             }
         }
 
-        let rendered = try String(Document { TestHTML() })
+        let rendered = try String(HTML.Document { TestHTML() })
         #expect(rendered.contains("btn-active"))
         #expect(rendered.contains("Active"))
         #expect(!rendered.contains("btn-inactive"))
@@ -158,50 +158,50 @@ struct _HTMLConditionalTests {
 
     // MARK: - Conditionals with Styles
 
-    @Test("_HTMLConditional with inline styles")
+    @Test("_Conditional with inline styles")
     func withInlineStyles() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let isHighlighted = true
-            var body: some HTML {
+            var body: some HTML.View {
                 if isHighlighted {
                     tag("span") {
-                        HTMLText("Highlighted")
+                        HTML.Text("Highlighted")
                     }
                     .inlineStyle("background-color", "yellow")
                 } else {
                     tag("span") {
-                        HTMLText("Normal")
+                        HTML.Text("Normal")
                     }
                 }
             }
         }
 
-        let rendered = try String(Document { TestHTML() })
+        let rendered = try String(HTML.Document { TestHTML() })
         #expect(rendered.contains("background-color:yellow"))
         #expect(rendered.contains("Highlighted"))
     }
 
     // MARK: - Different Branch Types
 
-    @Test("_HTMLConditional different element types")
+    @Test("_Conditional different element types")
     func differentElementTypes() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let useLink = true
-            var body: some HTML {
+            var body: some HTML.View {
                 if useLink {
                     tag("a") {
-                        HTMLText("Click here")
+                        HTML.Text("Click here")
                     }
                     .attribute("href", "/page")
                 } else {
                     tag("span") {
-                        HTMLText("No link")
+                        HTML.Text("No link")
                     }
                 }
             }
         }
 
-        let rendered = try String(Document { TestHTML() })
+        let rendered = try String(HTML.Document { TestHTML() })
         #expect(rendered.contains("<a"))
         #expect(rendered.contains("href=\"/page\""))
         #expect(!rendered.contains("<span>"))
@@ -209,22 +209,22 @@ struct _HTMLConditionalTests {
 
     // MARK: - Complex Content
 
-    @Test("_HTMLConditional with complex content")
+    @Test("_Conditional with complex content")
     func complexContent() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let hasDetails = true
-            var body: some HTML {
+            var body: some HTML.View {
                 tag("article") {
                     tag("h1") {
-                        HTMLText("Title")
+                        HTML.Text("Title")
                     }
                     if hasDetails {
                         tag("section") {
                             tag("h2") {
-                                HTMLText("Details")
+                                HTML.Text("Details")
                             }
                             tag("p") {
-                                HTMLText("More information here.")
+                                HTML.Text("More information here.")
                             }
                         }
                     }
@@ -243,26 +243,26 @@ struct _HTMLConditionalTests {
 
 extension `Snapshot Tests` {
     @Suite
-    struct _HTMLConditionalSnapshotTests {
-        @Test("_HTMLConditional true branch snapshot")
+    struct _ConditionalSnapshotTests {
+        @Test("_Conditional true branch snapshot")
         func trueBranchSnapshot() {
-            struct ConditionalPage: HTML {
+            struct ConditionalPage: HTML.View {
                 let isLoggedIn = true
-                var body: some HTML {
+                var body: some HTML.View {
                     tag("header") {
                         if isLoggedIn {
                             tag("nav") {
                                 tag("span") {
-                                    HTMLText("Welcome, User!")
+                                    HTML.Text("Welcome, User!")
                                 }
                                 tag("a") {
-                                    HTMLText("Logout")
+                                    HTML.Text("Logout")
                                 }
                                 .attribute("href", "/logout")
                             }
                         } else {
                             tag("a") {
-                                HTMLText("Login")
+                                HTML.Text("Login")
                             }
                             .attribute("href", "/login")
                         }
@@ -271,7 +271,7 @@ extension `Snapshot Tests` {
             }
 
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     ConditionalPage()
                 },
                 as: .html

@@ -27,15 +27,15 @@ extension [UInt8] {
     ///   - html: The HTML content to render.
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
-    public init<T: HTML>(
+    public init<T: HTML.View>(
         _ html: T,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) async {
         // Yield to allow other tasks to run
         await Task.yield()
 
         var buffer: [UInt8] = []
-        var context = HTMLContext(configuration ?? .default)
+        var context = HTML.Context(configuration ?? .default)
         T._render(html, into: &buffer, context: &context)
         self = buffer
     }
@@ -72,7 +72,7 @@ extension [UInt8] {
     /// ## Example
     ///
     /// ```swift
-    /// let document = Document {
+    /// let document = HTML.Document {
     ///     div { h1 { "Hello!" } }
     /// }
     ///
@@ -90,14 +90,14 @@ extension [UInt8] {
     ///
     /// - ``ContiguousArray/init(_:)-swift.method``: Zero-copy canonical transformation
     /// - ``String/init(_:encoding:)``: String derived from bytes (validates UTF-8)
-    /// - ``HTML/render()``: Legacy method (deprecated, use ContiguousArray instead)
+    /// - ``HTML.View/render()``: Legacy method (deprecated, use ContiguousArray instead)
     @inlinable
-    public init<T: HTML>(_ html: T) {
+    public init<T: HTML.View>(_ html: T) {
         self.init(ContiguousArray(html))
     }
 }
 
-extension HTML {
+extension HTML.View {
     /// Asynchronously render this HTML to a complete byte array.
     ///
     /// Convenience method that delegates to `[UInt8].init(_:configuration:)`.
@@ -106,7 +106,7 @@ extension HTML {
     /// - Returns: Complete rendered bytes.
     @inlinable
     public func asyncBytes(
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) async -> [UInt8] {
         await [UInt8](self, configuration: configuration)
     }
@@ -128,14 +128,14 @@ extension Array where Element == UInt8 {
     ///   - document: The HTML document to render.
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
-    public init<T: HTMLDocumentProtocol>(
+    public init<T: HTML.DocumentProtocol>(
         document: T,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) async {
         await Task.yield()
 
         var buffer: [UInt8] = []
-        var context = HTMLContext(configuration ?? .default)
+        var context = HTML.Context(configuration ?? .default)
         T._render(document, into: &buffer, context: &context)
         self = buffer
     }

@@ -1,5 +1,5 @@
 //
-//  HTMLDocumentProtocolTests.swift
+//  HTML.DocumentProtocolTests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
@@ -9,18 +9,18 @@
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLDocumentProtocol Tests")
+@Suite("HTML.DocumentProtocol Tests")
 struct HTMLDocumentProtocolTests {
 
     @Test("Basic HTML document structure")
     func basicDocumentStructure() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Body content")
+                HTML.Text("Body content")
             }
         } head: {
             tag("title") {
-                HTMLText("Test Title")
+                HTML.Text("Test Title")
             }
         }
 
@@ -45,33 +45,33 @@ extension `Snapshot Tests` {
         @Test("Complete HTML document snapshot")
         func completeDocumentSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("main") {
                         tag("section") {
                             tag("h1") {
-                                HTMLText("Welcome to Our Site")
+                                HTML.Text("Welcome to Our Site")
                             }
                             tag("p") {
-                                HTMLText("This is a complete HTML document with proper structure.")
+                                HTML.Text("This is a complete HTML document with proper structure.")
                             }
                         }
                         tag("aside") {
                             tag("h2") {
-                                HTMLText("Sidebar")
+                                HTML.Text("Sidebar")
                             }
                             tag("ul") {
                                 tag("li") {
-                                    HTMLText("Link 1")
+                                    HTML.Text("Link 1")
                                 }
                                 tag("li") {
-                                    HTMLText("Link 2")
+                                    HTML.Text("Link 2")
                                 }
                             }
                         }
                     }
                 } head: {
                     tag("title") {
-                        HTMLText("My Website")
+                        HTML.Text("My Website")
                     }
                     tag("meta")
                         .attribute("charset", "utf-8")

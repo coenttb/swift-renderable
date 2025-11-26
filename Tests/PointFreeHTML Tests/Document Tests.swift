@@ -21,9 +21,9 @@ struct DocumentTests {
 
     @Test("Document produces valid HTML structure")
     func validHTMLStructure() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Content")
+                HTML.Text("Content")
             }
         }
 
@@ -38,9 +38,9 @@ struct DocumentTests {
 
     @Test("Document includes head content")
     func includesHeadContent() throws {
-        let document = HTMLDocument(
-            head: { tag("title") { HTMLText("Page Title") } },
-            body: { tag("main") { HTMLText("Main content") } }
+        let document = HTML.Document(
+            head: { tag("title") { HTML.Text("Page Title") } },
+            body: { tag("main") { HTML.Text("Main content") } }
         )
 
         let rendered = try String(document)
@@ -50,9 +50,9 @@ struct DocumentTests {
 
     @Test("Document includes style tag when styles present")
     func includesStyleTag() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Content")
+                HTML.Text("Content")
             }
             .inlineStyle("color", "red")
         }
@@ -66,9 +66,9 @@ struct DocumentTests {
 
     @Test("Document omits style tag when no styles")
     func omitsStyleTagWhenNoStyles() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Content")
+                HTML.Text("Content")
             }
         }
 
@@ -81,12 +81,12 @@ struct DocumentTests {
 
     @Test("Document renders body content")
     func rendersBodyContent() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("h1") {
-                HTMLText("Welcome")
+                HTML.Text("Welcome")
             }
             tag("p") {
-                HTMLText("This is a paragraph")
+                HTML.Text("This is a paragraph")
             }
         }
 
@@ -98,9 +98,9 @@ struct DocumentTests {
 
     @Test("Document preserves body attributes")
     func preservesBodyAttributes() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Content")
+                HTML.Text("Content")
             }
             .attribute("id", "main")
             .attribute("class", "container")
@@ -116,9 +116,9 @@ struct DocumentTests {
 
     @Test("Document collects styles in stylesheet")
     func collectsStylesInStylesheet() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Styled")
+                HTML.Text("Styled")
             }
             .inlineStyle("color", "red")
             .inlineStyle("margin", "10px")
@@ -132,14 +132,14 @@ struct DocumentTests {
 
     @Test("Document collects multiple element styles")
     func collectsMultipleElementStyles() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("First")
+                HTML.Text("First")
             }
             .inlineStyle("color", "red")
 
             tag("span") {
-                HTMLText("Second")
+                HTML.Text("Second")
             }
             .inlineStyle("color", "blue")
         }
@@ -154,9 +154,9 @@ struct DocumentTests {
 
     @Test("Document elements in correct order")
     func elementsInCorrectOrder() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Content")
+                HTML.Text("Content")
             }
         }
 
@@ -184,7 +184,7 @@ struct DocumentTests {
 
     @Test("Document with empty body")
     func emptyBody() throws {
-        let document = Document {
+        let document = HTML.Document {
             Empty()
         }
 
@@ -196,9 +196,9 @@ struct DocumentTests {
 
     @Test("Document with empty head")
     func emptyHead() throws {
-        let document = HTMLDocument(
+        let document = HTML.Document(
             head: { Empty() },
-            body: { tag("div") { HTMLText("Body") } }
+            body: { tag("div") { HTML.Text("Body") } }
         )
 
         let rendered = try String(document)
@@ -213,23 +213,23 @@ struct DocumentTests {
 
     @Test("Document with complex nested content")
     func complexNestedContent() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("header") {
                 tag("nav") {
                     tag("ul") {
-                        tag("li") { tag("a") { HTMLText("Home") }.attribute("href", "/") }
-                        tag("li") { tag("a") { HTMLText("About") }.attribute("href", "/about") }
+                        tag("li") { tag("a") { HTML.Text("Home") }.attribute("href", "/") }
+                        tag("li") { tag("a") { HTML.Text("About") }.attribute("href", "/about") }
                     }
                 }
             }
             tag("main") {
                 tag("article") {
-                    tag("h1") { HTMLText("Title") }
-                    tag("p") { HTMLText("Content") }
+                    tag("h1") { HTML.Text("Title") }
+                    tag("p") { HTML.Text("Content") }
                 }
             }
             tag("footer") {
-                tag("p") { HTMLText("Copyright 2024") }
+                tag("p") { HTML.Text("Copyright 2024") }
             }
         }
 
@@ -244,9 +244,9 @@ struct DocumentTests {
 
     @Test("Document with media query styles")
     func mediaQueryStyles() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Responsive")
+                HTML.Text("Responsive")
             }
             .inlineStyle("width", "100%", atRule: .init(rawValue: "@media (min-width: 768px)"), selector: nil, pseudo: nil)
         }
@@ -265,10 +265,10 @@ extension `Snapshot Tests` {
         @Test("Full document snapshot")
         func fullDocumentSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument(
+                of: HTML.Document(
                     head: {
                         tag("title") {
-                            HTMLText("Test Page")
+                            HTML.Text("Test Page")
                         }
                         tag("meta")
                             .attribute("charset", "utf-8")
@@ -276,10 +276,10 @@ extension `Snapshot Tests` {
                     body: {
                         tag("main") {
                             tag("h1") {
-                                HTMLText("Hello, World!")
+                                HTML.Text("Hello, World!")
                             }
                             tag("p") {
-                                HTMLText("This is a test document.")
+                                HTML.Text("This is a test document.")
                             }
                         }
                     }

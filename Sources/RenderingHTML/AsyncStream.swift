@@ -27,17 +27,17 @@ extension AsyncStream where Element == ArraySlice<UInt8> {
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
-    public init<T: HTML & Sendable>(
+    public init<T: HTML.View & Sendable>(
         _ html: T,
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
             Task { @Sendable in
                 // Render synchronously into buffer
                 var buffer: [UInt8] = []
-                var context = HTMLContext(config)
+                var context = HTML.Context(config)
                 T._render(html, into: &buffer, context: &context)
 
                 // Yield in chunks with cooperative scheduling
@@ -61,7 +61,7 @@ extension AsyncStream where Element == ArraySlice<UInt8> {
     }
 }
 
-extension HTML where Self: Sendable {
+extension HTML.View where Self: Sendable {
     /// Stream this HTML as async byte chunks (non-throwing).
     ///
     /// Convenience method that delegates to `AsyncStream.init(_:chunkSize:configuration:)`.
@@ -73,7 +73,7 @@ extension HTML where Self: Sendable {
     @inlinable
     public func asyncStreamNonThrowing(
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) -> AsyncStream<ArraySlice<UInt8>> {
         AsyncStream(self, chunkSize: chunkSize, configuration: configuration)
     }
@@ -91,17 +91,17 @@ extension AsyncStream where Element == ArraySlice<UInt8> {
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
     ///   - configuration: Rendering configuration. Uses default if nil.
     @inlinable
-    public init<T: HTMLDocumentProtocol & Sendable>(
+    public init<T: HTML.DocumentProtocol & Sendable>(
         document: T,
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
             Task { @Sendable in
                 // Two-phase render: body first to collect styles
                 var buffer: [UInt8] = []
-                var context = HTMLContext(config)
+                var context = HTML.Context(config)
                 T._render(document, into: &buffer, context: &context)
 
                 // Stream in chunks with cooperative scheduling
@@ -126,15 +126,15 @@ extension AsyncStream where Element == ArraySlice<UInt8> {
 
 extension AsyncStream where Element == ArraySlice<UInt8> {
     /// Progressive streaming for HTML fragments (non-throwing).
-    public init<T: HTML & Sendable>(
+    public init<T: HTML.View & Sendable>(
         progressive html: T,
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
             Task { @Sendable in
-                var context = HTMLContext(config)
+                var context = HTML.Context(config)
                 var buffer = ChunkingBuffer(chunkSize: chunkSize) { chunk in
                     continuation.yield(chunk)
                 }
@@ -147,15 +147,15 @@ extension AsyncStream where Element == ArraySlice<UInt8> {
     }
 
     /// Progressive streaming for HTML documents (non-throwing).
-    public init<T: HTMLDocumentProtocol & Sendable>(
+    public init<T: HTML.DocumentProtocol & Sendable>(
         progressiveDocument document: T,
         chunkSize: Int = 4096,
-        configuration: HTMLContext.Rendering? = nil
+        configuration: HTML.Context.Configuration? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
             Task { @Sendable in
-                var context = HTMLContext(config)
+                var context = HTML.Context(config)
                 var buffer = ChunkingBuffer(chunkSize: chunkSize) { chunk in
                     continuation.yield(chunk)
                 }

@@ -14,17 +14,17 @@ struct AnyHTMLTests {
 
     // MARK: - Initialization
 
-    @Test("AnyHTML wraps HTMLText")
+    @Test("AnyHTML wraps HTML.Text")
     func wrapsHTMLText() throws {
-        let anyHTML = AnyHTML(HTMLText("Hello"))
+        let anyHTML = AnyHTML(HTML.Text("Hello"))
         let rendered = try String(anyHTML)
         #expect(rendered == "Hello")
     }
 
-    @Test("AnyHTML wraps HTMLElement")
+    @Test("AnyHTML wraps HTML.Element")
     func wrapsHTMLElement() throws {
         let element = tag("div") {
-            HTMLText("Content")
+            HTML.Text("Content")
         }
         let anyHTML = AnyHTML(element)
         let rendered = try String(anyHTML)
@@ -44,7 +44,7 @@ struct AnyHTMLTests {
     func closureInitializer() throws {
         let anyHTML = AnyHTML {
             tag("span") {
-                HTMLText("From closure")
+                HTML.Text("From closure")
             }
         }
         let rendered = try String(anyHTML)
@@ -57,9 +57,9 @@ struct AnyHTMLTests {
     @Test("AnyHTML enables heterogeneous collections")
     func heterogeneousCollections() throws {
         let elements: [AnyHTML] = [
-            AnyHTML(HTMLText("Text")),
-            AnyHTML(tag("div") { HTMLText("Div") }),
-            AnyHTML(tag("span") { HTMLText("Span") })
+            AnyHTML(HTML.Text("Text")),
+            AnyHTML(tag("div") { HTML.Text("Div") }),
+            AnyHTML(tag("span") { HTML.Text("Span") })
         ]
 
         let html = Group {
@@ -77,13 +77,13 @@ struct AnyHTMLTests {
     @Test("AnyHTML preserves attributes")
     func preservesAttributes() throws {
         let element = tag("a") {
-            HTMLText("Link")
+            HTML.Text("Link")
         }
         .attribute("href", "/page")
         .attribute("class", "nav-link")
 
         let anyHTML = AnyHTML(element)
-        let rendered = try String(Document { anyHTML })
+        let rendered = try String(HTML.Document { anyHTML })
         #expect(rendered.contains("href=\"/page\""))
         #expect(rendered.contains("class=\"nav-link\""))
     }
@@ -91,12 +91,12 @@ struct AnyHTMLTests {
     @Test("AnyHTML preserves styles")
     func preservesStyles() throws {
         let element = tag("div") {
-            HTMLText("Styled")
+            HTML.Text("Styled")
         }
         .inlineStyle("color", "red")
 
         let anyHTML = AnyHTML(element)
-        let rendered = try String(Document { anyHTML })
+        let rendered = try String(HTML.Document { anyHTML })
         #expect(rendered.contains("color:red"))
     }
 
@@ -104,7 +104,7 @@ struct AnyHTMLTests {
 
     @Test("AnyHTML can wrap AnyHTML")
     func wrapsAnyHTML() throws {
-        let inner = AnyHTML(HTMLText("Inner"))
+        let inner = AnyHTML(HTML.Text("Inner"))
         let outer = AnyHTML(inner)
         let rendered = try String(outer)
         #expect(rendered == "Inner")
@@ -116,10 +116,10 @@ struct AnyHTMLTests {
     func nestedElements() throws {
         let article = tag("article") {
             tag("h1") {
-                HTMLText("Title")
+                HTML.Text("Title")
             }
             tag("p") {
-                HTMLText("Content")
+                HTML.Text("Content")
             }
         }
 
@@ -137,11 +137,11 @@ struct AnyHTMLTests {
         func createContent(type: String) -> AnyHTML {
             switch type {
             case "header":
-                return AnyHTML(tag("h1") { HTMLText("Header") })
+                return AnyHTML(tag("h1") { HTML.Text("Header") })
             case "paragraph":
-                return AnyHTML(tag("p") { HTMLText("Paragraph") })
+                return AnyHTML(tag("p") { HTML.Text("Paragraph") })
             default:
-                return AnyHTML(HTMLText("Default"))
+                return AnyHTML(HTML.Text("Default"))
             }
         }
 
@@ -163,13 +163,13 @@ extension `Snapshot Tests` {
         @Test("AnyHTML type erasure snapshot")
         func typeErasureSnapshot() {
             let elements: [AnyHTML] = [
-                AnyHTML(tag("h1") { HTMLText("Title") }),
-                AnyHTML(tag("p") { HTMLText("First paragraph") }),
-                AnyHTML(tag("p") { HTMLText("Second paragraph") })
+                AnyHTML(tag("h1") { HTML.Text("Title") }),
+                AnyHTML(tag("p") { HTML.Text("First paragraph") }),
+                AnyHTML(tag("p") { HTML.Text("Second paragraph") })
             ]
 
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("article") {
                         for element in elements {
                             element

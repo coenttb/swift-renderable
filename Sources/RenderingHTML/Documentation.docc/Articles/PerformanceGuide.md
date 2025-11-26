@@ -109,10 +109,10 @@ The style deduplication is automatic and powerful:
 
 ```swift
 // Efficient - these styles get deduplicated
-struct ProductList: HTML {
+struct ProductList: HTML.View {
     let products: [Product]
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             for product in products {
                 div { product.name }
@@ -153,10 +153,10 @@ Instead of one massive component, compose smaller ones:
 
 ```swift
 // Better: Small, focused components
-struct Dashboard: HTML {
+struct Dashboard: HTML.View {
     let data: DashboardData
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             Header(data.header)
             Sidebar(data.navigation)
@@ -167,7 +167,7 @@ struct Dashboard: HTML {
 }
 
 // Avoid: Everything in one giant component
-struct MonolithicDashboard: HTML {
+struct MonolithicDashboard: HTML.View {
     // Hundreds of lines of HTML...
 }
 ```
@@ -179,11 +179,11 @@ Smaller components are easier to understand, test, and reuse.
 Swift's conditionals are efficient - use them:
 
 ```swift
-struct UserProfile: HTML {
+struct UserProfile: HTML.View {
     let user: User?
     let showPrivate: Bool
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             if let user = user {
                 h1 { "Welcome, \(user.name)" }

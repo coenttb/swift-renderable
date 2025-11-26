@@ -1,5 +1,5 @@
 //
-//  HTMLDocument Tests.swift
+//  HTML.Document Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -9,16 +9,16 @@
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLDocument Tests")
+@Suite("HTML.Document Tests")
 struct HTMLDocumentTests {
 
     // MARK: - Initialization
 
-    @Test("HTMLDocument with body only")
+    @Test("HTML.Document with body only")
     func bodyOnly() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Content")
+                HTML.Text("Content")
             }
         }
 
@@ -31,15 +31,15 @@ struct HTMLDocumentTests {
         #expect(rendered.contains("</html>"))
     }
 
-    @Test("HTMLDocument with head and body")
+    @Test("HTML.Document with head and body")
     func headAndBody() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("main") {
-                HTMLText("Main content")
+                HTML.Text("Main content")
             }
         } head: {
             tag("title") {
-                HTMLText("Page Title")
+                HTML.Text("Page Title")
             }
         }
 
@@ -50,14 +50,14 @@ struct HTMLDocumentTests {
         #expect(rendered.contains("Main content"))
     }
 
-    @Test("HTMLDocument with disfavored initializer - head first")
+    @Test("HTML.Document with disfavored initializer - head first")
     func headFirstInitializer() throws {
-        let document = HTMLDocument(head: {
+        let document = HTML.Document(head: {
             tag("title") {
-                HTMLText("Title First")
+                HTML.Text("Title First")
             }
         }, body: {
-            HTMLText("Body content")
+            HTML.Text("Body content")
         })
 
         let rendered = try String(document)
@@ -65,10 +65,10 @@ struct HTMLDocumentTests {
         #expect(rendered.contains("Body content"))
     }
 
-    @Test("HTMLDocument with empty head")
+    @Test("HTML.Document with empty head")
     func emptyHead() throws {
-        let document = Document {
-            HTMLText("Just body")
+        let document = HTML.Document {
+            HTML.Text("Just body")
         }
 
         let rendered = try String(document)
@@ -79,9 +79,9 @@ struct HTMLDocumentTests {
 
     // MARK: - Document Structure
 
-    @Test("HTMLDocument includes doctype")
+    @Test("HTML.Document includes doctype")
     func includesDoctype() throws {
-        let document = Document {
+        let document = HTML.Document {
             Empty()
         }
 
@@ -89,11 +89,11 @@ struct HTMLDocumentTests {
         #expect(rendered.hasPrefix("<!doctype html>"))
     }
 
-    @Test("HTMLDocument includes style element in head")
+    @Test("HTML.Document includes style element in head")
     func includesStyleElement() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                HTMLText("Content")
+                HTML.Text("Content")
             }
             .inlineStyle("color", "red")
         }
@@ -106,11 +106,11 @@ struct HTMLDocumentTests {
 
     // MARK: - Complex Documents
 
-    @Test("HTMLDocument with meta tags")
+    @Test("HTML.Document with meta tags")
     func withMetaTags() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("h1") {
-                HTMLText("Hello")
+                HTML.Text("Hello")
             }
         } head: {
             tag("meta")
@@ -119,7 +119,7 @@ struct HTMLDocumentTests {
                 .attribute("name", "viewport")
                 .attribute("content", "width=device-width, initial-scale=1")
             tag("title") {
-                HTMLText("Test Page")
+                HTML.Text("Test Page")
             }
         }
 
@@ -129,17 +129,17 @@ struct HTMLDocumentTests {
         #expect(rendered.contains("width=device-width"))
     }
 
-    @Test("HTMLDocument with multiple body elements")
+    @Test("HTML.Document with multiple body elements")
     func multipleBodyElements() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("header") {
-                HTMLText("Header")
+                HTML.Text("Header")
             }
             tag("main") {
-                HTMLText("Main")
+                HTML.Text("Main")
             }
             tag("footer") {
-                HTMLText("Footer")
+                HTML.Text("Footer")
             }
         }
 
@@ -155,34 +155,34 @@ struct HTMLDocumentTests {
 extension `Snapshot Tests` {
     @Suite
     struct HTMLDocumentSnapshotTests {
-        @Test("HTMLDocument complete structure snapshot")
+        @Test("HTML.Document complete structure snapshot")
         func completeStructureSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("header") {
                         tag("nav") {
                             tag("a") {
-                                HTMLText("Home")
+                                HTML.Text("Home")
                             }
                             .attribute("href", "/")
                         }
                     }
                     tag("main") {
                         tag("h1") {
-                            HTMLText("Welcome")
+                            HTML.Text("Welcome")
                         }
                         tag("p") {
-                            HTMLText("This is the main content.")
+                            HTML.Text("This is the main content.")
                         }
                     }
                     tag("footer") {
                         tag("p") {
-                            HTMLText("© 2025")
+                            HTML.Text("© 2025")
                         }
                     }
                 } head: {
                     tag("title") {
-                        HTMLText("My Page")
+                        HTML.Text("My Page")
                     }
                     tag("meta")
                         .attribute("charset", "utf-8")
@@ -218,11 +218,11 @@ extension `Snapshot Tests` {
             }
         }
 
-        @Test("HTMLDocument minimal snapshot")
+        @Test("HTML.Document minimal snapshot")
         func minimalSnapshot() {
             assertInlineSnapshot(
-                of: Document {
-                    HTMLText("Hello")
+                of: HTML.Document {
+                    HTML.Text("Hello")
                 },
                 as: .html
             ) {

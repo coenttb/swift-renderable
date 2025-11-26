@@ -50,11 +50,11 @@ let blogPage = div {
 The builder supports `if`, `if-else`, and complex conditional logic through `buildEither` methods:
 
 ```swift
-struct UserCard: HTML {
+struct UserCard: HTML.View {
     let user: User
     let showActions: Bool
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             h3 { user.name }
             p { user.email }
@@ -84,10 +84,10 @@ struct UserCard: HTML {
 Any Swift iteration construct works within the builder, handled by `buildArray`:
 
 ```swift
-struct ProductList: HTML {
+struct ProductList: HTML.View {
     let products: [Product]
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             // For-in loop creates _HTMLArray internally
             for product in products {
@@ -107,10 +107,10 @@ struct ProductList: HTML {
 Optional values are handled seamlessly through `buildOptional`:
 
 ```swift
-struct ProfileView: HTML {
+struct ProfileView: HTML.View {
     let user: User
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             h2 { user.name }
             
@@ -171,14 +171,14 @@ struct TableRowBuilder {
     }
 }
 
-struct HTMLTable: HTML {
+struct HTMLTable: HTML.View {
     let rows: [[HTMLTableCell]]
     
     init(@TableRowBuilder builder: () -> [[HTMLTableCell]]) {
         self.rows = builder()
     }
     
-    var body: some HTML {
+    var body: some HTML.View {
         table {
             for row in rows {
                 tr {
@@ -197,10 +197,10 @@ struct HTMLTable: HTML {
 Builders compose naturally for complex content, enabling the recursive elegance described in the tour:
 
 ```swift
-struct Dashboard: HTML {
+struct Dashboard: HTML.View {
     let widgets: [Widget]
     
-    var body: some HTML {
+    var body: some HTML.View {
         div {
             header { /* header content */ }
             
@@ -243,7 +243,7 @@ The builder is designed for efficiency, as highlighted in the architecture tour:
 
 ## Integration with the HTML Protocol
 
-The builder works seamlessly with the recursive `HTML` protocol definition. When you define a `body` property with `@Builder`, the result builder transforms your declarative syntax into the appropriate `Content` type, which then participates in the elegant delegation pattern described in the architecture overview.
+The builder works seamlessly with the recursive `HTML` protocol definition. When you define a `body` property with `@HTML.Builder`, the result builder transforms your declarative syntax into the appropriate `Content` type, which then participates in the elegant delegation pattern described in the architecture overview.
 
 ## Topics
 

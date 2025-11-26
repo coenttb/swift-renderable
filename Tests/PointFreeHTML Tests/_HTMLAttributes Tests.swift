@@ -15,10 +15,10 @@ struct _HTMLAttributesTests {
     @Test("Single attribute")
     func singleAttribute() throws {
         let element = tag("div") {
-            HTMLText("content")
+            HTML.Text("content")
         }.attribute("class", "test-class")
         
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("class=\"test-class\""))
         #expect(rendered.contains("content"))
     }
@@ -26,12 +26,12 @@ struct _HTMLAttributesTests {
     @Test("Multiple attributes")
     func multipleAttributes() throws {
         let element = tag("div") {
-            HTMLText("content")
+            HTML.Text("content")
         }
             .attribute("class", "test-class")
             .attribute("id", "test-id")
         
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("class=\"test-class\""))
         #expect(rendered.contains("id=\"test-id\""))
     }
@@ -39,17 +39,17 @@ struct _HTMLAttributesTests {
     @Test("Nil attribute value omits attribute")
     func nilAttributeValue() throws {
         let element = tag("div") {
-            HTMLText("content")
+            HTML.Text("content")
         }.attribute("class", nil)
         
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(!rendered.contains("class="))
     }
     
     @Test("Empty string attribute value")
     func emptyStringAttributeValue() throws {
         let element = tag("div") {
-            HTMLText("content")
+            HTML.Text("content")
         }.attribute("hidden", "")
         
         let rendered = try String(element)
@@ -64,7 +64,7 @@ struct _HTMLAttributesTests {
             .attribute("placeholder", "Enter username")
             .attribute("required", "")
         
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         
         print("rendered", rendered)
         #expect(rendered.contains("type=\"text\""))
@@ -82,11 +82,11 @@ extension `Snapshot Tests` {
         @Test("Form with various attributes snapshot")
         func formWithAttributesSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("form") {
                         tag("div") {
                             tag("label") {
-                                HTMLText("Name:")
+                                HTML.Text("Name:")
                             }
                             .attribute("for", "name")
 
@@ -101,7 +101,7 @@ extension `Snapshot Tests` {
 
                         tag("div") {
                             tag("label") {
-                                HTMLText("Email:")
+                                HTML.Text("Email:")
                             }
                             .attribute("for", "email")
 
@@ -115,7 +115,7 @@ extension `Snapshot Tests` {
                         .attribute("class", "form-group")
 
                         tag("button") {
-                            HTMLText("Submit")
+                            HTML.Text("Submit")
                         }
                         .attribute("type", "submit")
                         .attribute("class", "btn-primary")
@@ -146,7 +146,7 @@ extension `Snapshot Tests` {
         @Test("Media attributes snapshot")
         func mediaAttributesSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         tag("img")
                             .attribute("src", "/images/hero.jpg")
@@ -159,7 +159,7 @@ extension `Snapshot Tests` {
                             tag("source")
                                 .attribute("src", "/videos/demo.mp4")
                                 .attribute("type", "video/mp4")
-                            HTMLText("Your browser does not support the video tag.")
+                            HTML.Text("Your browser does not support the video tag.")
                         }
                         .attribute("controls", "")
                         .attribute("width", "640")

@@ -1,5 +1,5 @@
 //
-//  HTMLTextTag Tests.swift
+//  HTML.TextTag Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -9,44 +9,44 @@
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLTextTag Tests")
+@Suite("HTML.TextTag Tests")
 struct HTMLTextTagTests {
 
     // MARK: - Initialization
 
-    @Test("HTMLTextTag string initialization")
+    @Test("HTML.TextTag string initialization")
     func stringInitialization() throws {
-        let textTag = HTMLTextTag("title")
+        let textTag = HTML.TextTag("title")
         #expect(textTag.rawValue == "title")
     }
 
-    @Test("HTMLTextTag string literal initialization")
+    @Test("HTML.TextTag string literal initialization")
     func stringLiteralInitialization() throws {
-        let textTag: HTMLTextTag = "option"
+        let textTag: HTML.TextTag = "option"
         #expect(textTag.rawValue == "option")
     }
 
     // MARK: - Call As Function
 
-    @Test("HTMLTextTag with empty content")
+    @Test("HTML.TextTag with empty content")
     func emptyContent() throws {
-        let textTag = HTMLTextTag("title")
+        let textTag = HTML.TextTag("title")
         let element = textTag()
         let rendered = try String(element)
         #expect(rendered == "<title></title>")
     }
 
-    @Test("HTMLTextTag with string content")
+    @Test("HTML.TextTag with string content")
     func stringContent() throws {
-        let textTag = HTMLTextTag("title")
+        let textTag = HTML.TextTag("title")
         let element = textTag("Page Title")
         let rendered = try String(element)
         #expect(rendered == "<title>Page Title</title>")
     }
 
-    @Test("HTMLTextTag with closure content")
+    @Test("HTML.TextTag with closure content")
     func closureContent() throws {
-        let textTag = HTMLTextTag("option")
+        let textTag = HTML.TextTag("option")
         let value = "Dynamic Value"
         let element = textTag { value }
         let rendered = try String(element)
@@ -55,9 +55,9 @@ struct HTMLTextTagTests {
 
     // MARK: - Common Text Tags
 
-    @Test("HTMLTextTag for title element")
+    @Test("HTML.TextTag for title element")
     func titleElement() throws {
-        let title = HTMLTextTag("title")
+        let title = HTML.TextTag("title")
         let element = title("My Website")
         let rendered = try String(element)
         #expect(rendered.contains("<title>"))
@@ -65,25 +65,25 @@ struct HTMLTextTagTests {
         #expect(rendered.contains("</title>"))
     }
 
-    @Test("HTMLTextTag for option element")
+    @Test("HTML.TextTag for option element")
     func optionElement() throws {
-        let option = HTMLTextTag("option")
+        let option = HTML.TextTag("option")
         let element = option("Select me")
         let rendered = try String(element)
         #expect(rendered == "<option>Select me</option>")
     }
 
-    @Test("HTMLTextTag for textarea element")
+    @Test("HTML.TextTag for textarea element")
     func textareaElement() throws {
-        let textarea = HTMLTextTag("textarea")
+        let textarea = HTML.TextTag("textarea")
         let element = textarea("Default text")
         let rendered = try String(element)
         #expect(rendered == "<textarea>Default text</textarea>")
     }
 
-    @Test("HTMLTextTag for label element")
+    @Test("HTML.TextTag for label element")
     func labelElement() throws {
-        let label = HTMLTextTag("label")
+        let label = HTML.TextTag("label")
         let element = label("Username:")
         let rendered = try String(element)
         #expect(rendered == "<label>Username:</label>")
@@ -91,9 +91,9 @@ struct HTMLTextTagTests {
 
     // MARK: - Escaping
 
-    @Test("HTMLTextTag escapes special characters")
+    @Test("HTML.TextTag escapes special characters")
     func escapesSpecialCharacters() throws {
-        let textTag = HTMLTextTag("title")
+        let textTag = HTML.TextTag("title")
         let element = textTag("Page <Title> & More")
         let rendered = try String(element)
         #expect(rendered.contains("&lt;Title&gt;"))
@@ -102,14 +102,14 @@ struct HTMLTextTagTests {
 
     // MARK: - Attributes
 
-    @Test("HTMLTextTag with attributes")
+    @Test("HTML.TextTag with attributes")
     func withAttributes() throws {
-        let option = HTMLTextTag("option")
+        let option = HTML.TextTag("option")
         let element = option("First")
             .attribute("value", "1")
             .attribute("selected", "")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("value=\"1\""))
         #expect(rendered.contains("selected"))
         #expect(rendered.contains("First"))
@@ -117,12 +117,12 @@ struct HTMLTextTagTests {
 
     // MARK: - In Document Context
 
-    @Test("HTMLTextTag in head")
+    @Test("HTML.TextTag in head")
     func inHead() throws {
-        let document = Document {
+        let document = HTML.Document {
             Empty()
         } head: {
-            HTMLTextTag("title")("Document Title")
+            HTML.TextTag("title")("Document Title")
             tag("meta")
                 .attribute("charset", "utf-8")
         }
@@ -131,16 +131,16 @@ struct HTMLTextTagTests {
         #expect(rendered.contains("<title>Document Title</title>"))
     }
 
-    @Test("HTMLTextTag in select element")
+    @Test("HTML.TextTag in select element")
     func inSelectElement() throws {
-        let option = HTMLTextTag("option")
+        let option = HTML.TextTag("option")
         let html = tag("select") {
             option("Option 1").attribute("value", "1")
             option("Option 2").attribute("value", "2")
             option("Option 3").attribute("value", "3")
         }
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
         #expect(rendered.contains("<select>"))
         #expect(rendered.contains("<option value=\"1\">Option 1</option>"))
         #expect(rendered.contains("<option value=\"2\">Option 2</option>"))
@@ -153,13 +153,13 @@ struct HTMLTextTagTests {
 extension `Snapshot Tests` {
     @Suite
     struct HTMLTextTagSnapshotTests {
-        @Test("HTMLTextTag in form snapshot")
+        @Test("HTML.TextTag in form snapshot")
         func inFormSnapshot() {
-            let option = HTMLTextTag("option")
-            let label = HTMLTextTag("label")
+            let option = HTML.TextTag("option")
+            let label = HTML.TextTag("label")
 
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("form") {
                         tag("div") {
                             label("Country:")

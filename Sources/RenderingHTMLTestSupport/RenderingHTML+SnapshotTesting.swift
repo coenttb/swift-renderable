@@ -8,32 +8,32 @@
 public import RenderingHTML
 import SnapshotTesting
 
-extension Snapshotting where Value: RenderingHTML.HTMLDocumentProtocol, Format == String {
+extension Snapshotting where Value: HTML.DocumentProtocol, Format == String {
     public static var html: Self {
         .html()
     }
 
     public static func html(
-        printerConfiguration: HTMLContext.Rendering = .pretty
+        printerConfiguration: HTML.Context.Configuration = .pretty
     ) -> Self {
         Snapshotting<String, String>.lines.pullback { value in
-            HTMLContext.Rendering.$current.withValue(printerConfiguration) {
+            HTML.Context.Configuration.$current.withValue(printerConfiguration) {
                 (try? String(value)) ?? "HTML rendering failed"
             }
         }
     }
 }
 
-extension Snapshotting where Value: RenderingHTML.HTML, Format == String {
+extension Snapshotting where Value: HTML.View, Format == String {
     public static var html: Self {
         .html()
     }
 
     public static func html(
-        printerConfiguration: HTMLContext.Rendering = .pretty
+        printerConfiguration: HTML.Context.Configuration = .pretty
     ) -> Self {
         Snapshotting<String, String>.lines.pullback { value in
-            HTMLContext.Rendering.$current.withValue(printerConfiguration) {
+            HTML.Context.Configuration.$current.withValue(printerConfiguration) {
                 (try? String(value)) ?? "HTML rendering failed"
             }
         }

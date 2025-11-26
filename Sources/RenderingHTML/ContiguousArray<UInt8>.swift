@@ -47,7 +47,7 @@ extension ContiguousArray<UInt8>  {
     /// ## Example
     ///
     /// ```swift
-    /// let document = Document {
+    /// let document = HTML.Document {
     ///     div {
     ///         h1 { "Hello, World!" }
     ///         p { "Welcome to PointFree HTML" }
@@ -68,11 +68,11 @@ extension ContiguousArray<UInt8>  {
     ///
     /// - ``Array/init(_:)-swift.method``: Convenience wrapper (incurs one copy)
     /// - ``String/init(_:encoding:)``: String derived from bytes (validates UTF-8)
-    /// - ``HTML/render()``: Legacy method (deprecated, use this instead)
+    /// - ``HTML.View/render()``: Legacy method (deprecated, use this instead)
     @inlinable
-    public init<T: HTML>(_ html: T) {
+    public init<T: HTML.View>(_ html: T) {
         var buffer: ContiguousArray<UInt8> = []
-        var context = HTMLContext(HTMLContext.Rendering.current)
+        var context = HTML.Context(HTML.Context.Configuration.current)
         T._render(html, into: &buffer, context: &context)
         self = buffer
     }

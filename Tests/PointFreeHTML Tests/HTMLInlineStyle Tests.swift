@@ -15,11 +15,11 @@ struct HTMLInlineStyleTests {
     @Test("Basic inline style")
     func basicInlineStyle() throws {
         let styledElement = tag("div") {
-            HTMLText("styled content")
+            HTML.Text("styled content")
         }
         .inlineStyle("color", "red")
 
-        let rendered = try String(Document { styledElement })
+        let rendered = try String(HTML.Document { styledElement })
         #expect(rendered.contains("color:red"))
         #expect(rendered.contains("styled content"))
     }
@@ -27,13 +27,13 @@ struct HTMLInlineStyleTests {
     @Test("Multiple inline styles")
     func multipleInlineStyles() throws {
         let styledElement = tag("div") {
-            HTMLText("content")
+            HTML.Text("content")
         }
         .inlineStyle("color", "red")
         .inlineStyle("background-color", "blue")
         .inlineStyle("font-size", "16px")
 
-        let rendered = try String(Document { styledElement })
+        let rendered = try String(HTML.Document { styledElement })
         #expect(rendered.contains("color:red"))
         #expect(rendered.contains("background-color:blue"))
         #expect(rendered.contains("font-size:16px"))
@@ -42,12 +42,12 @@ struct HTMLInlineStyleTests {
     @Test("Style chaining")
     func styleChaining() throws {
         let styledElement = tag("p") {
-            HTMLText("paragraph")
+            HTML.Text("paragraph")
         }
         .inlineStyle("margin", "10px")
         .inlineStyle("padding", "5px")
 
-        let rendered = try String(Document { styledElement })
+        let rendered = try String(HTML.Document { styledElement })
         #expect(rendered.contains("margin:10px"))
         #expect(rendered.contains("padding:5px"))
     }
@@ -55,12 +55,12 @@ struct HTMLInlineStyleTests {
     @Test("Style with attributes")
     func styleWithAttributes() throws {
         let element = tag("div") {
-            HTMLText("content")
+            HTML.Text("content")
         }
         .attribute("class", "test-class")
         .inlineStyle("display", "flex")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("class=\"test-class\""))
         #expect(rendered.contains("display:flex"))
     }
@@ -68,11 +68,11 @@ struct HTMLInlineStyleTests {
     @Test("Empty style value")
     func emptyStyleValue() throws {
         let styledElement = tag("div") {
-            HTMLText("content")
+            HTML.Text("content")
         }
         .inlineStyle("color", "")
 
-        let rendered = try String(Document { styledElement })
+        let rendered = try String(HTML.Document { styledElement })
         // Empty values might be omitted or rendered as empty
         #expect(rendered.contains("content"))
     }
@@ -89,9 +89,9 @@ extension `Snapshot Tests` {
         )
         func basicInlineStyleSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
-                        HTMLText("Styled content")
+                        HTML.Text("Styled content")
                     }
                     .inlineStyle("color", "red")
                     .inlineStyle("font-size", "18px")
@@ -119,16 +119,16 @@ extension `Snapshot Tests` {
         @Test("Complex styling snapshot")
         func complexStylingSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         tag("h1") {
-                            HTMLText("Welcome")
+                            HTML.Text("Welcome")
                         }
                         .inlineStyle("color", "navy")
                         .inlineStyle("font-family", "Arial, sans-serif")
 
                         tag("p") {
-                            HTMLText("This paragraph has styling.")
+                            HTML.Text("This paragraph has styling.")
                         }
                         .inlineStyle("color", "#333")
                         .inlineStyle("padding", "10px")
@@ -166,10 +166,10 @@ extension `Snapshot Tests` {
         @Test("Style with attributes snapshot")
         func styleWithAttributesSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         tag("a") {
-                            HTMLText("Styled link")
+                            HTML.Text("Styled link")
                         }
                         .attribute("href", "https://example.com")
                         .inlineStyle("color", "#007bff")

@@ -22,9 +22,9 @@ struct EmptyTests {
     @Test("Empty in composition")
     func emptyInComposition() throws {
         let group = Group {
-            HTMLText("before")
+            HTML.Text("before")
             Empty()
-            HTMLText("after")
+            HTML.Text("after")
         }
 
         let rendered = try String(group)
@@ -43,12 +43,12 @@ struct EmptyTests {
 
     @Test("Empty in conditional rendering")
     func emptyInConditional() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let showContent = false
 
-            var body: some HTML {
+            var body: some HTML.View {
                 if showContent {
-                    HTMLText("visible")
+                    HTML.Text("visible")
                 } else {
                     Empty()
                 }
@@ -84,15 +84,15 @@ extension `Snapshot Tests` {
             let showAlternate = true
 
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         tag("h1") {
-                            HTMLText("Content Display")
+                            HTML.Text("Content Display")
                         }
 
                         if showContent {
                             tag("section") {
-                                HTMLText("Main content here")
+                                HTML.Text("Main content here")
                             }
                         } else {
                             Empty()
@@ -100,14 +100,14 @@ extension `Snapshot Tests` {
 
                         if showAlternate {
                             tag("aside") {
-                                HTMLText("Alternate content")
+                                HTML.Text("Alternate content")
                             }
                         } else {
                             Empty()
                         }
 
                         tag("footer") {
-                            HTMLText("Footer always shows")
+                            HTML.Text("Footer always shows")
                         }
                     }
                     .attribute("class", "container")
@@ -137,22 +137,22 @@ extension `Snapshot Tests` {
         @Test("Empty mixed with content snapshot")
         func emptyMixedContentSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("article") {
                         tag("h1") {
-                            HTMLText("Article Title")
+                            HTML.Text("Article Title")
                         }
 
                         Empty()  // This should render nothing
 
                         tag("p") {
-                            HTMLText("First paragraph of content.")
+                            HTML.Text("First paragraph of content.")
                         }
 
                         Empty()  // This should render nothing
 
                         tag("p") {
-                            HTMLText("Second paragraph of content.")
+                            HTML.Text("Second paragraph of content.")
                         }
 
                         Empty()  // This should render nothing

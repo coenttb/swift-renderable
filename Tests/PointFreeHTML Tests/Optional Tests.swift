@@ -16,14 +16,14 @@ struct OptionalTests {
 
     @Test("Optional some renders content")
     func someRendersContent() throws {
-        let optionalHTML: HTMLText? = HTMLText("Present")
+        let optionalHTML: HTML.Text? = HTML.Text("Present")
         let rendered = try String(Group { optionalHTML })
         #expect(rendered == "Present")
     }
 
     @Test("Optional none renders nothing")
     func noneRendersNothing() throws {
-        let optionalHTML: HTMLText? = nil
+        let optionalHTML: HTML.Text? = nil
         let rendered = try String(Group { optionalHTML })
         #expect(rendered.isEmpty)
     }
@@ -32,8 +32,8 @@ struct OptionalTests {
 
     @Test("Optional element renders when present")
     func optionalElementPresent() throws {
-        let optionalElement: HTMLElement<HTMLText>? = tag("div") {
-            HTMLText("Content")
+        let optionalElement: HTML.Element<HTML.Text>? = tag("div") {
+            HTML.Text("Content")
         }
 
         let rendered = try String(Group { optionalElement })
@@ -43,7 +43,7 @@ struct OptionalTests {
 
     @Test("Optional element renders nothing when nil")
     func optionalElementNil() throws {
-        let optionalElement: HTMLElement<HTMLText>? = nil
+        let optionalElement: HTML.Element<HTML.Text>? = nil
 
         let rendered = try String(Group { optionalElement })
         #expect(rendered.isEmpty)
@@ -53,14 +53,14 @@ struct OptionalTests {
 
     @Test("Optional in builder with some value")
     func inBuilderSome() throws {
-        struct ConditionalContent: HTML {
+        struct ConditionalContent: HTML.View {
             let showOptional: Bool
 
-            var body: some HTML {
-                let optionalContent: HTMLText? = showOptional ? HTMLText("Optional present") : nil
+            var body: some HTML.View {
+                let optionalContent: HTML.Text? = showOptional ? HTML.Text("Optional present") : nil
                 Group {
                     tag("div") {
-                        HTMLText("Always present")
+                        HTML.Text("Always present")
                     }
                     optionalContent
                 }
@@ -74,14 +74,14 @@ struct OptionalTests {
 
     @Test("Optional in builder with none value")
     func inBuilderNone() throws {
-        struct ConditionalContent: HTML {
+        struct ConditionalContent: HTML.View {
             let showOptional: Bool
 
-            var body: some HTML {
-                let optionalContent: HTMLText? = showOptional ? HTMLText("Optional present") : nil
+            var body: some HTML.View {
+                let optionalContent: HTML.Text? = showOptional ? HTML.Text("Optional present") : nil
                 Group {
                     tag("div") {
-                        HTMLText("Always present")
+                        HTML.Text("Always present")
                     }
                     optionalContent
                 }
@@ -97,14 +97,14 @@ struct OptionalTests {
 
     @Test("Optional with attributes when present")
     func optionalWithAttributesPresent() throws {
-        let optionalElement: HTMLElement<HTMLText>? = tag("span") {
-            HTMLText("Styled")
+        let optionalElement: HTML.Element<HTML.Text>? = tag("span") {
+            HTML.Text("Styled")
         }
 
         // Since Optional<HTML> conforms to HTML but doesn't chain .attribute,
         // we test by rendering the base element with attributes first
         if let element = optionalElement?.attribute("class", "highlight") {
-            let rendered = try String(Document { element })
+            let rendered = try String(HTML.Document { element })
             #expect(rendered.contains("class=\"highlight\""))
         }
     }
@@ -113,8 +113,8 @@ struct OptionalTests {
 
     @Test("Nested optional HTML")
     func nestedOptional() throws {
-        let inner: HTMLText? = HTMLText("Inner")
-        let outer: HTMLText?? = inner
+        let inner: HTML.Text? = HTML.Text("Inner")
+        let outer: HTML.Text?? = inner
 
         // Both levels resolve to the value
         if let unwrapped = outer, let content = unwrapped {
@@ -127,8 +127,8 @@ struct OptionalTests {
 
     @Test("Optional Group")
     func optionalGroup() throws {
-        let group: Group<HTMLText>? = Group {
-            HTMLText("Grouped content")
+        let group: Group<HTML.Text>? = Group {
+            HTML.Text("Grouped content")
         }
 
         let rendered = try String(Group { group })
@@ -141,7 +141,7 @@ struct OptionalTests {
 
         let html = Group {
             for item in items {
-                let content: HTMLText? = item.map { HTMLText($0) }
+                let content: HTML.Text? = item.map { HTML.Text($0) }
                 content
             }
         }
@@ -160,13 +160,13 @@ struct OptionalTests {
         // Use AnyHTML to type-erase the styled element into an optional
         let optionalElement: AnyHTML? = AnyHTML(
             tag("div") {
-                HTMLText("Styled")
+                HTML.Text("Styled")
             }
             .inlineStyle("color", "blue")
         )
 
         if let element = optionalElement {
-            let rendered = try String(Document { element })
+            let rendered = try String(HTML.Document { element })
             #expect(rendered.contains("color:blue"))
         } else {
             Issue.record("Optional should not be nil")
@@ -181,15 +181,15 @@ extension `Snapshot Tests` {
     struct OptionalSnapshotTests {
         @Test("Optional content snapshot")
         func optionalContentSnapshot() {
-            struct OptionalList: HTML {
+            struct OptionalList: HTML.View {
                 let items: [String?]
 
-                var body: some HTML {
+                var body: some HTML.View {
                     tag("ul") {
                         for item in items {
                             if let text = item {
                                 tag("li") {
-                                    HTMLText(text)
+                                    HTML.Text(text)
                                 }
                             }
                         }
@@ -198,7 +198,7 @@ extension `Snapshot Tests` {
             }
 
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     OptionalList(items: ["First", nil, "Third", "Fourth", nil])
                 },
                 as: .html

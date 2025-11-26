@@ -18,9 +18,9 @@ struct IntegrationTests {
 
     @Test("Complete page with head and body")
     func completePage() throws {
-        let document = HTMLDocument(
+        let document = HTML.Document(
             head: {
-                tag("title") { HTMLText("My Page") }
+                tag("title") { HTML.Text("My Page") }
                 tag("meta").attribute("charset", "utf-8")
                 tag("meta")
                     .attribute("name", "viewport")
@@ -29,16 +29,16 @@ struct IntegrationTests {
             body: {
                 tag("header") {
                     tag("nav") {
-                        tag("a") { HTMLText("Home") }.attribute("href", "/")
-                        tag("a") { HTMLText("About") }.attribute("href", "/about")
+                        tag("a") { HTML.Text("Home") }.attribute("href", "/")
+                        tag("a") { HTML.Text("About") }.attribute("href", "/about")
                     }
                 }
                 tag("main") {
-                    tag("h1") { HTMLText("Welcome") }
-                    tag("p") { HTMLText("This is the main content.") }
+                    tag("h1") { HTML.Text("Welcome") }
+                    tag("p") { HTML.Text("This is the main content.") }
                 }
                 tag("footer") {
-                    tag("p") { HTMLText("© 2025") }
+                    tag("p") { HTML.Text("© 2025") }
                 }
             }
         )
@@ -57,37 +57,37 @@ struct IntegrationTests {
 
     @Test("Custom components compose correctly")
     func componentComposition() throws {
-        struct Button: HTML {
+        struct Button: HTML.View {
             let label: String
             let action: String
 
-            var body: some HTML {
+            var body: some HTML.View {
                 tag("button") {
-                    HTMLText(label)
+                    HTML.Text(label)
                 }
                 .attribute("onclick", action)
                 .attribute("class", "btn")
             }
         }
 
-        struct Card: HTML {
+        struct Card: HTML.View {
             let title: String
             let content: String
 
-            var body: some HTML {
+            var body: some HTML.View {
                 tag("article") {
-                    tag("h2") { HTMLText(title) }
-                    tag("p") { HTMLText(content) }
+                    tag("h2") { HTML.Text(title) }
+                    tag("p") { HTML.Text(content) }
                     Button(label: "Learn More", action: "handleClick()")
                 }
                 .attribute("class", "card")
             }
         }
 
-        struct CardList: HTML {
+        struct CardList: HTML.View {
             let cards: [(title: String, content: String)]
 
-            var body: some HTML {
+            var body: some HTML.View {
                 tag("section") {
                     for card in cards {
                         Card(title: card.title, content: card.content)
@@ -117,13 +117,13 @@ struct IntegrationTests {
     @Test("Responsive styles integration")
     func responsiveStyles() throws {
         let html = tag("div") {
-            tag("p") { HTMLText("Responsive text") }
+            tag("p") { HTML.Text("Responsive text") }
         }
         .inlineStyle("width", "100%")
         .inlineStyle("width", "50%", atRule: .init(rawValue: "@media (min-width: 768px)"), selector: nil, pseudo: nil)
         .inlineStyle("width", "33%", atRule: .init(rawValue: "@media (min-width: 1024px)"), selector: nil, pseudo: nil)
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
 
         #expect(rendered.contains("width:100%"))
         #expect(rendered.contains("@media (min-width: 768px)"))
@@ -133,14 +133,14 @@ struct IntegrationTests {
     @Test("Pseudo-class styles integration")
     func pseudoClassStyles() throws {
         let html = tag("a") {
-            HTMLText("Hover me")
+            HTML.Text("Hover me")
         }
         .attribute("href", "#")
         .inlineStyle("color", "blue")
         .inlineStyle("color", "red", pseudo: .hover)
         .inlineStyle("text-decoration", "underline", pseudo: .hover)
 
-        let rendered = try String(Document { html })
+        let rendered = try String(HTML.Document { html })
 
         #expect(rendered.contains("color:blue"))
         #expect(rendered.contains(":hover"))
@@ -152,7 +152,7 @@ struct IntegrationTests {
     func completeForm() throws {
         let html = tag("form") {
             tag("div") {
-                tag("label") { HTMLText("Name") }.attribute("for", "name")
+                tag("label") { HTML.Text("Name") }.attribute("for", "name")
                 tag("input")
                     .attribute("type", "text")
                     .attribute("id", "name")
@@ -160,20 +160,20 @@ struct IntegrationTests {
                     .attribute("required", "required")
             }
             tag("div") {
-                tag("label") { HTMLText("Email") }.attribute("for", "email")
+                tag("label") { HTML.Text("Email") }.attribute("for", "email")
                 tag("input")
                     .attribute("type", "email")
                     .attribute("id", "email")
                     .attribute("name", "email")
             }
             tag("div") {
-                tag("label") { HTMLText("Message") }.attribute("for", "message")
+                tag("label") { HTML.Text("Message") }.attribute("for", "message")
                 tag("textarea")
                     .attribute("id", "message")
                     .attribute("name", "message")
                     .attribute("rows", "5")
             }
-            tag("button") { HTMLText("Submit") }
+            tag("button") { HTML.Text("Submit") }
                 .attribute("type", "submit")
         }
         .attribute("method", "post")
@@ -208,15 +208,15 @@ struct IntegrationTests {
         let html = tag("table") {
             tag("thead") {
                 tag("tr") {
-                    tag("th") { HTMLText("Name") }
-                    tag("th") { HTMLText("Value") }
+                    tag("th") { HTML.Text("Name") }
+                    tag("th") { HTML.Text("Value") }
                 }
             }
             tag("tbody") {
                 for row in data {
                     tag("tr") {
-                        tag("td") { HTMLText(row.name) }
-                        tag("td") { HTMLText(String(row.value)) }
+                        tag("td") { HTML.Text(row.name) }
+                        tag("td") { HTML.Text(String(row.value)) }
                     }
                 }
             }
@@ -236,19 +236,19 @@ struct IntegrationTests {
 
     @Test("Conditional components")
     func conditionalComponents() throws {
-        struct UserProfile: HTML {
+        struct UserProfile: HTML.View {
             let user: (name: String, isAdmin: Bool)?
 
-            var body: some HTML {
+            var body: some HTML.View {
                 tag("div") {
                     if let user = user {
-                        tag("h1") { HTMLText("Welcome, \(user.name)") }
+                        tag("h1") { HTML.Text("Welcome, \(user.name)") }
                         if user.isAdmin {
-                            tag("span") { HTMLText("Admin") }
+                            tag("span") { HTML.Text("Admin") }
                                 .attribute("class", "badge")
                         }
                     } else {
-                        tag("p") { HTMLText("Please log in") }
+                        tag("p") { HTML.Text("Please log in") }
                     }
                 }
             }
@@ -268,10 +268,10 @@ struct IntegrationTests {
     @Test("Raw HTML within structured content")
     func rawHTMLIntegration() throws {
         let html = tag("div") {
-            tag("h1") { HTMLText("Title") }
-            HTMLRaw("<hr>")
-            tag("p") { HTMLText("Content after raw") }
-            HTMLRaw("<!-- This is a comment -->")
+            tag("h1") { HTML.Text("Title") }
+            HTML.Raw("<hr>")
+            tag("p") { HTML.Text("Content after raw") }
+            HTML.Raw("<!-- This is a comment -->")
         }
 
         let rendered = try String(html)
@@ -286,10 +286,10 @@ struct IntegrationTests {
     @Test("AnyHTML in heterogeneous collection")
     func anyHTMLCollection() throws {
         let components: [AnyHTML] = [
-            AnyHTML(tag("h1") { HTMLText("Header") }),
-            AnyHTML(tag("p") { HTMLText("Paragraph") }),
+            AnyHTML(tag("h1") { HTML.Text("Header") }),
+            AnyHTML(tag("p") { HTML.Text("Paragraph") }),
             AnyHTML(tag("ul") {
-                tag("li") { HTMLText("Item") }
+                tag("li") { HTML.Text("Item") }
             })
         ]
 
@@ -310,15 +310,15 @@ struct IntegrationTests {
 
     @Test("Email configuration applies to full document")
     func emailConfiguration() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                tag("p") { HTMLText("Email content") }
+                tag("p") { HTML.Text("Email content") }
                     .inlineStyle("color", "black")
             }
             .inlineStyle("max-width", "600px")
         }
 
-        let rendered: String = try HTMLContext.Rendering.$current.withValue(.email) {
+        let rendered: String = try HTML.Context.Configuration.$current.withValue(.email) {
             try String(document)
         }
 
@@ -327,22 +327,22 @@ struct IntegrationTests {
 
     @Test("Pretty configuration produces formatted output")
     func prettyConfiguration() throws {
-        let document = Document {
+        let document = HTML.Document {
             tag("div") {
-                tag("p") { HTMLText("Pretty printed") }
+                tag("p") { HTML.Text("Pretty printed") }
             }
         }
 
-        let rendered: String = HTMLContext.Rendering.$current.withValue(.pretty) {
+        let rendered: String = HTML.Context.Configuration.$current.withValue(.pretty) {
             try! String(document)
         }
 
         #expect(rendered.contains("\n"))
     }
 
-    // MARK: - HTMLForEach Integration
+    // MARK: - HTML.ForEach Integration
 
-    @Test("HTMLForEach with identifiable data")
+    @Test("HTML.ForEach with identifiable data")
     func htmlForEachIdentifiable() throws {
         struct Item: Identifiable {
             let id: Int
@@ -356,8 +356,8 @@ struct IntegrationTests {
         ]
 
         let html = tag("ul") {
-            HTMLForEach(items) { item in
-                tag("li") { HTMLText(item.name) }
+            HTML.ForEach(items) { item in
+                tag("li") { HTML.Text(item.name) }
                     .attribute("data-id", String(item.id))
             }
         }
@@ -377,10 +377,10 @@ struct IntegrationTests {
         let html = tag("div") {
             Group {
                 Group {
-                    tag("span") { HTMLText("Deeply") }
+                    tag("span") { HTML.Text("Deeply") }
                 }
                 Group {
-                    tag("span") { HTMLText("Nested") }
+                    tag("span") { HTML.Text("Nested") }
                 }
             }
         }
@@ -400,22 +400,22 @@ extension `Snapshot Tests` {
         @Test("Full page integration snapshot")
         func fullPageSnapshot() {
             assertInlineSnapshot(
-                of: HTMLDocument(
+                of: HTML.Document(
                     head: {
-                        tag("title") { HTMLText("Integration Test") }
+                        tag("title") { HTML.Text("Integration Test") }
                     },
                     body: {
                         tag("header") {
-                            tag("h1") { HTMLText("Welcome") }
+                            tag("h1") { HTML.Text("Welcome") }
                         }
                         tag("main") {
                             tag("article") {
-                                tag("h2") { HTMLText("Article Title") }
-                                tag("p") { HTMLText("Article content here.") }
+                                tag("h2") { HTML.Text("Article Title") }
+                                tag("p") { HTML.Text("Article content here.") }
                             }
                         }
                         tag("footer") {
-                            HTMLText("Footer")
+                            HTML.Text("Footer")
                         }
                     }
                 ),

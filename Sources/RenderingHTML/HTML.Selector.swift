@@ -1,5 +1,5 @@
 //
-//  Selector.swift
+//  HTML.Selector.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 16/04/2025.
@@ -7,80 +7,81 @@
 
 import Rendering
 
-/// Represents a CSS selector for targeting HTML elements.
-///
-/// `Selector` provides a type-safe way to construct CSS selectors using Swift syntax.
-/// It supports all CSS selector types including element selectors, class selectors,
-/// ID selectors, attribute selectors, and complex combinators.
-///
-/// ## Basic Usage
-///
-/// ```swift
-/// // Element selector
-/// let div: Selector = "div"
-///
-/// // Class selector
-/// let header: Selector = .class("header")
-///
-/// // ID selector
-/// let main: Selector = .id("main")
-///
-/// // Using with inline styles
-/// tag("div") { "Content" }
-///     .inlineStyle("color", "red", selector: .init(rawValue: "div"))
-/// ```
-///
-/// ## Combinators
-///
-/// CSS combinators allow you to select elements based on their relationship:
-///
-/// ```swift
-/// let div: Selector = "div"
-/// let p: Selector = "p"
-///
-/// // Child combinator: div > p
-/// let childSelector = p.child(of: div)
-///
-/// // Descendant combinator: div p
-/// let descendantSelector = p.descendant(of: div)
-///
-/// // Next sibling combinator: div + p
-/// let nextSiblingSelector = p.nextSibling(of: div)
-///
-/// // Subsequent sibling combinator: div ~ p
-/// let subsequentSiblingSelector = p.subsequentSibling(of: div)
-/// ```
-///
-/// ## Attribute Selectors
-///
-/// Target elements based on their attributes:
-///
-/// ```swift
-/// // Element with attribute: [disabled]
-/// let disabled: Selector = .hasAttribute("disabled")
-///
-/// // Attribute equals: [type="submit"]
-/// let submitButton: Selector = .attribute("type", equals: "submit")
-///
-/// // Attribute starts with: [href^="https"]
-/// let httpsLinks: Selector = .attribute("href", startsWith: "https")
-/// ```
-///
-/// ## Selector Lists and Compound Selectors
-///
-/// ```swift
-/// // Selector list (OR): h1, h2, h3
-/// let headings: Selector = (\"h1\" as Selector).or(\"h2\", \"h3\")
-///
-/// // Compound selector (AND): div.header#main
-/// let specificDiv: Selector = (\"div\" as Selector).and(.class(\"header\")).and(.id(\"main\"))
-///
-/// // Using convenience methods
-/// let navHeader: Selector = (\"div\" as Selector).withClass(\"nav\").withId(\"header\")
-/// ```
-public struct Selector: RawRepresentable, Hashable, Sendable, ExpressibleByStringLiteral,
-    ExpressibleByStringInterpolation
-{
+extension HTML {
+    /// Represents a CSS selector for targeting HTML elements.
+    ///
+    /// `HTML.Selector` provides a type-safe way to construct CSS selectors using Swift syntax.
+    /// It supports all CSS selector types including element selectors, class selectors,
+    /// ID selectors, attribute selectors, and complex combinators.
+    ///
+    /// ## Basic Usage
+    ///
+    /// ```swift
+    /// // Element selector
+    /// let div: HTML.Selector = "div"
+    ///
+    /// // Class selector
+    /// let header: HTML.Selector = .class("header")
+    ///
+    /// // ID selector
+    /// let main: HTML.Selector = .id("main")
+    ///
+    /// // Using with inline styles
+    /// tag("div") { "Content" }
+    ///     .inlineStyle("color", "red", selector: .init(rawValue: "div"))
+    /// ```
+    ///
+    /// ## Combinators
+    ///
+    /// CSS combinators allow you to select elements based on their relationship:
+    ///
+    /// ```swift
+    /// let div: HTML.Selector = "div"
+    /// let p: HTML.Selector = "p"
+    ///
+    /// // Child combinator: div > p
+    /// let childSelector = p.child(of: div)
+    ///
+    /// // Descendant combinator: div p
+    /// let descendantSelector = p.descendant(of: div)
+    ///
+    /// // Next sibling combinator: div + p
+    /// let nextSiblingSelector = p.nextSibling(of: div)
+    ///
+    /// // Subsequent sibling combinator: div ~ p
+    /// let subsequentSiblingSelector = p.subsequentSibling(of: div)
+    /// ```
+    ///
+    /// ## Attribute Selectors
+    ///
+    /// Target elements based on their attributes:
+    ///
+    /// ```swift
+    /// // Element with attribute: [disabled]
+    /// let disabled: HTML.Selector = .hasAttribute("disabled")
+    ///
+    /// // Attribute equals: [type="submit"]
+    /// let submitButton: HTML.Selector = .attribute("type", equals: "submit")
+    ///
+    /// // Attribute starts with: [href^="https"]
+    /// let httpsLinks: HTML.Selector = .attribute("href", startsWith: "https")
+    /// ```
+    ///
+    /// ## Selector Lists and Compound Selectors
+    ///
+    /// ```swift
+    /// // Selector list (OR): h1, h2, h3
+    /// let headings: HTML.Selector = ("h1" as HTML.Selector).or("h2", "h3")
+    ///
+    /// // Compound selector (AND): div.header#main
+    /// let specificDiv: HTML.Selector = ("div" as HTML.Selector).and(.class("header")).and(.id("main"))
+    ///
+    /// // Using convenience methods
+    /// let navHeader: HTML.Selector = ("div" as HTML.Selector).withClass("nav").withId("header")
+    /// ```
+    public struct Selector: RawRepresentable, Hashable, Sendable, ExpressibleByStringLiteral,
+        ExpressibleByStringInterpolation
+    {
     /// The raw CSS selector string.
     public var rawValue: String
 
@@ -102,10 +103,11 @@ public struct Selector: RawRepresentable, Hashable, Sendable, ExpressibleByStrin
     public init(stringLiteral value: String) {
         self.init(rawValue: value)
     }
+    }
 }
 
 // MARK: - CSS Combinators
-extension Selector {
+extension HTML.Selector {
 
     /// Creates a descendant combinator selector.
     ///
@@ -123,7 +125,7 @@ extension Selector {
     ///
     /// - Parameter other: The ancestor selector.
     /// - Returns: A new selector representing the descendant relationship.
-    public func descendant(of other: Selector) -> Selector {
+    public func descendant(of other: HTML.Selector) -> HTML.Selector {
         .init(rawValue: other.rawValue + " " + self.rawValue)
     }
 
@@ -133,8 +135,8 @@ extension Selector {
     /// Unlike the descendant combinator, this only matches immediate children, not deeper descendants.
     ///
     /// ```swift
-    /// let ul: Selector = "ul"
-    /// let li: Selector = "li"
+    /// let ul: HTML.Selector = "ul"
+    /// let li: HTML.Selector = "li"
     /// let selector = li.child(of: ul)  // "ul > li"
     /// ```
     ///
@@ -143,7 +145,7 @@ extension Selector {
     ///
     /// - Parameter other: The parent selector.
     /// - Returns: A new selector representing the child relationship.
-    public func child(of other: Selector) -> Selector {
+    public func child(of other: HTML.Selector) -> HTML.Selector {
         .init(rawValue: other.rawValue + " > " + self.rawValue)
     }
 
@@ -153,8 +155,8 @@ extension Selector {
     /// another element, and both elements share the same parent.
     ///
     /// ```swift
-    /// let h1: Selector = "h1"
-    /// let p: Selector = "p"
+    /// let h1: HTML.Selector = "h1"
+    /// let p: HTML.Selector = "p"
     /// let selector = p.nextSibling(of: h1)  // "h1 + p"
     /// ```
     ///
@@ -163,7 +165,7 @@ extension Selector {
     ///
     /// - Parameter other: The preceding sibling selector.
     /// - Returns: A new selector representing the next-sibling relationship.
-    public func nextSibling(of other: Selector) -> Selector {
+    public func nextSibling(of other: HTML.Selector) -> HTML.Selector {
         .init(rawValue: other.rawValue + " + " + self.rawValue)
     }
 
@@ -174,7 +176,7 @@ extension Selector {
     ///
     /// - Parameter other: The preceding sibling selector.
     /// - Returns: A new selector representing the next-sibling relationship.
-    public func adjacent(to other: Selector) -> Selector {
+    public func adjacent(to other: HTML.Selector) -> HTML.Selector {
         nextSibling(of: other)
     }
 
@@ -184,8 +186,8 @@ extension Selector {
     /// another element (not necessarily immediately), and both elements share the same parent.
     ///
     /// ```swift
-    /// let h1: Selector = "h1"
-    /// let p: Selector = "p"
+    /// let h1: HTML.Selector = "h1"
+    /// let p: HTML.Selector = "p"
     /// let selector = p.subsequentSibling(of: h1)  // "h1 ~ p"
     /// ```
     ///
@@ -194,7 +196,7 @@ extension Selector {
     ///
     /// - Parameter other: The preceding sibling selector.
     /// - Returns: A new selector representing the subsequent-sibling relationship.
-    public func subsequentSibling(of other: Selector) -> Selector {
+    public func subsequentSibling(of other: HTML.Selector) -> HTML.Selector {
         .init(rawValue: other.rawValue + " ~ " + self.rawValue)
     }
 
@@ -205,7 +207,7 @@ extension Selector {
     ///
     /// - Parameter other: The preceding sibling selector.
     /// - Returns: A new selector representing the subsequent-sibling relationship.
-    public func sibling(of other: Selector) -> Selector {
+    public func sibling(of other: HTML.Selector) -> HTML.Selector {
         subsequentSibling(of: other)
     }
 
@@ -215,8 +217,8 @@ extension Selector {
     /// This is a newer CSS feature primarily used with CSS Grid and table layouts.
     ///
     /// ```swift
-    /// let col: Selector = "col"
-    /// let td: Selector = "td"
+    /// let col: HTML.Selector = "col"
+    /// let td: HTML.Selector = "td"
     /// let selector = td.column(of: col)  // "col || td"
     /// ```
     ///
@@ -225,13 +227,13 @@ extension Selector {
     ///
     /// - Parameter other: The column selector.
     /// - Returns: A new selector representing the column relationship.
-    public func column(of other: Selector) -> Selector {
+    public func column(of other: HTML.Selector) -> HTML.Selector {
         .init(rawValue: other.rawValue + " || " + self.rawValue)
     }
 }
 
 // MARK: - Selector Lists and Compound Selectors
-extension Selector {
+extension HTML.Selector {
     /// Creates a selector list (comma-separated selectors).
     ///
     /// Selector lists allow you to apply styles to multiple different selectors.
@@ -252,7 +254,7 @@ extension Selector {
     ///
     /// - Parameter other: The additional selector to include in the list.
     /// - Returns: A new selector representing the selector list.
-    public func or(_ other: Selector) -> Selector {
+    public func or(_ other: HTML.Selector) -> HTML.Selector {
         .init(rawValue: self.rawValue + ", " + other.rawValue)
     }
 
@@ -267,15 +269,15 @@ extension Selector {
     ///     .inlineStyle("color", "blue", selector: "h1, h2, h3")
     ///
     /// // Using method (equivalent)
-    /// let h1: Selector = "h1"
-    /// let h2: Selector = "h2"
-    /// let h3: Selector = "h3"
-    /// let headings: Selector = h1.or(h2, h3)  // "h1, h2, h3"
+    /// let h1: HTML.Selector = "h1"
+    /// let h2: HTML.Selector = "h2"
+    /// let h3: HTML.Selector = "h3"
+    /// let headings: HTML.Selector = h1.or(h2, h3)  // "h1, h2, h3"
     /// ```
     ///
     /// - Parameter others: Additional selectors to include in the list.
     /// - Returns: A new selector representing the combined selector list.
-    public func or(_ others: Selector...) -> Selector {
+    public func or(_ others: HTML.Selector...) -> HTML.Selector {
         let allSelectors = [self] + others
         return .init(rawValue: allSelectors.map(\.rawValue).joined(separator: ", "))
     }
@@ -291,9 +293,9 @@ extension Selector {
     ///     .inlineStyle("background", "gray", selector: "div.header")
     ///
     /// // Using method (equivalent)
-    /// let div: Selector = "div"
-    /// let headerClass: Selector = .class("header")
-    /// let compound: Selector = div.and(headerClass)  // "div.header"
+    /// let div: HTML.Selector = "div"
+    /// let headerClass: HTML.Selector = .class("header")
+    /// let compound: HTML.Selector = div.and(headerClass)  // "div.header"
     /// ```
     ///
     /// This generates the CSS selector `div.header`, which matches `<div>` elements
@@ -301,13 +303,13 @@ extension Selector {
     ///
     /// - Parameter other: The selector to combine with this one.
     /// - Returns: A new compound selector.
-    public func and(_ other: Selector) -> Selector {
+    public func and(_ other: HTML.Selector) -> HTML.Selector {
         .init(rawValue: self.rawValue + other.rawValue)
     }
 }
 
 // MARK: - Convenience Methods
-extension Selector {
+extension HTML.Selector {
     /// Adds a CSS class to this selector.
     ///
     /// This is a convenience method for creating compound selectors with classes.
@@ -325,14 +327,14 @@ extension Selector {
     ///
     /// - Parameter className: The CSS class name to add.
     /// - Returns: A new selector with the class added.
-    public func withClass(_ className: String) -> Selector {
+    public func withClass(_ className: String) -> HTML.Selector {
         self.and(.class(className))
     }
 
     /// Adds a CSS ID to this selector.
     ///
     /// This is a convenience method for creating compound selectors with IDs.
-    /// It's equivalent to using `and(Selector.id(idName))`.
+    /// It's equivalent to using `and(HTML.Selector.id(idName))`.
     ///
     /// ```swift
     /// // Using string literal (most common)
@@ -340,20 +342,20 @@ extension Selector {
     ///     .inlineStyle("width", "100%", selector: "div#main")
     ///
     /// // Using method (equivalent)
-    /// let div: Selector = "div"
-    /// let mainDiv: Selector = div.withId("main")  // "div#main"
+    /// let div: HTML.Selector = "div"
+    /// let mainDiv: HTML.Selector = div.withId("main")  // "div#main"
     /// ```
     ///
     /// - Parameter idName: The CSS ID to add.
     /// - Returns: A new selector with the ID added.
-    public func withId(_ idName: String) -> Selector {
+    public func withId(_ idName: String) -> HTML.Selector {
         self.and(.id(idName))
     }
 
     /// Adds an attribute selector to this selector.
     ///
     /// This is a convenience method for creating compound selectors with attribute conditions.
-    /// It's equivalent to using `and(Selector.attribute(name, equals: value))`.
+    /// It's equivalent to using `and(HTML.Selector.attribute(name, equals: value))`.
     ///
     /// ```swift
     /// // Using string literal (most common)
@@ -361,15 +363,15 @@ extension Selector {
     ///     .inlineStyle("background", "green", selector: "input[type=\"submit\"]")
     ///
     /// // Using method (equivalent)
-    /// let input: Selector = "input"
-    /// let submitButton: Selector = input.withAttribute("type", equals: "submit")  // "input[type=\"submit\"]"
+    /// let input: HTML.Selector = "input"
+    /// let submitButton: HTML.Selector = input.withAttribute("type", equals: "submit")  // "input[type=\"submit\"]"
     /// ```
     ///
     /// - Parameters:
     ///   - name: The attribute name.
     ///   - value: The required attribute value.
     /// - Returns: A new selector with the attribute condition added.
-    public func withAttribute(_ name: String, equals value: String) -> Selector {
+    public func withAttribute(_ name: String, equals value: String) -> HTML.Selector {
         self.and(.attribute(name, equals: value))
     }
 
@@ -385,19 +387,19 @@ extension Selector {
     ///     .inlineStyle("background", "red", selector: "button:hover")
     ///
     /// // Using method (equivalent)
-    /// let button: Selector = "button"
-    /// let hoverButton: Selector = button.withPseudo(.hover)  // "button:hover"
+    /// let button: HTML.Selector = "button"
+    /// let hoverButton: HTML.Selector = button.withPseudo(.hover)  // "button:hover"
     /// ```
     ///
     /// - Parameter pseudo: The pseudo-class or pseudo-element to add.
     /// - Returns: A new selector with the pseudo added.
-    public func withPseudo(_ pseudo: Pseudo) -> Selector {
+    public func withPseudo(_ pseudo: HTML.Pseudo) -> HTML.Selector {
         .init(rawValue: self.rawValue + pseudo.rawValue)
     }
 }
 
 // MARK: - Universal and Namespace Selectors
-extension Selector {
+extension HTML.Selector {
     /// Universal selector: `*`
     public static let universal: Self = "*"
 
@@ -406,13 +408,13 @@ extension Selector {
     ///
     /// ```swift
     /// // Using string literal (most common)
-    /// let svgCircle: Selector = "svg|circle"
+    /// let svgCircle: HTML.Selector = "svg|circle"
     ///
     /// // Using method (equivalent)
-    /// let circle: Selector = "circle"
-    /// let result: Selector = circle.namespace("svg")  // "svg|circle"
+    /// let circle: HTML.Selector = "circle"
+    /// let result: HTML.Selector = circle.namespace("svg")  // "svg|circle"
     /// ```
-    public func namespace(_ ns: String) -> Selector {
+    public func namespace(_ ns: String) -> HTML.Selector {
         .init(rawValue: "\(ns)|\(self.rawValue)")
     }
 
@@ -420,19 +422,19 @@ extension Selector {
     ///
     /// ```swift
     /// // Using string literal (most common)
-    /// let svgCircle: Selector = "svg|circle"
+    /// let svgCircle: HTML.Selector = "svg|circle"
     ///
     /// // Using static method (equivalent)
-    /// let circle: Selector = "circle"
-    /// let result: Selector = .namespace("svg", element: circle)  // "svg|circle"
+    /// let circle: HTML.Selector = "circle"
+    /// let result: HTML.Selector = .namespace("svg", element: circle)  // "svg|circle"
     /// ```
-    public static func namespace(_ ns: String, element: Selector) -> Selector {
+    public static func namespace(_ ns: String, element: HTML.Selector) -> HTML.Selector {
         element.namespace(ns)
     }
 }
 
 // MARK: - Attribute Selectors
-extension Selector {
+extension HTML.Selector {
     /// Attribute exists: `[attr]`
     public static func hasAttribute(_ name: String) -> Self {
         "[\(name)]"
@@ -470,7 +472,7 @@ extension Selector {
 }
 
 // MARK: - Class and ID Selectors
-extension Selector {
+extension HTML.Selector {
     /// Class selector: `.class-name`
     public static func `class`(_ name: String) -> Self {
         ".\(name)"
@@ -483,7 +485,7 @@ extension Selector {
 }
 
 // MARK: - Form Input Types
-extension Selector {
+extension HTML.Selector {
     /// Input type selector: `input[type="text"]`
     public static func inputType(_ type: String) -> Self {
         "input[type=\"\(type)\"]"

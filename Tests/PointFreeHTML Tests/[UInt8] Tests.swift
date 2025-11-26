@@ -17,7 +17,7 @@ struct UInt8ArrayTests {
     @Test("[UInt8] init from HTML")
     func initFromHTML() throws {
         let html = tag("div") {
-            HTMLText("Hello")
+            HTML.Text("Hello")
         }
         let bytes = [UInt8](html)
         let string = String(decoding: bytes, as: UTF8.self)
@@ -38,10 +38,10 @@ struct UInt8ArrayTests {
         let html = Group {
             tag("div") {
                 tag("h1") {
-                    HTMLText("Title")
+                    HTML.Text("Title")
                 }
                 tag("p") {
-                    HTMLText("Content with & special < chars >")
+                    HTML.Text("Content with & special < chars >")
                 }
             }
         }
@@ -57,7 +57,7 @@ struct UInt8ArrayTests {
     @Test("[UInt8] async init from HTML")
     func asyncInitFromHTML() async {
         let html = tag("span") {
-            HTMLText("Async content")
+            HTML.Text("Async content")
         }
         let bytes = await [UInt8](html)
         let string = String(decoding: bytes, as: UTF8.self)
@@ -68,7 +68,7 @@ struct UInt8ArrayTests {
     @Test("[UInt8] async init with configuration")
     func asyncInitWithConfiguration() async {
         let html = tag("div") {
-            HTMLText("Configured")
+            HTML.Text("Configured")
         }
         let bytes = await [UInt8](html, configuration: .pretty)
         let string = String(decoding: bytes, as: UTF8.self)
@@ -77,9 +77,9 @@ struct UInt8ArrayTests {
 
     @Test("[UInt8] async init from document")
     func asyncInitFromDocument() async {
-        let document = Document {
+        let document = HTML.Document {
             tag("p") {
-                HTMLText("Document content")
+                HTML.Text("Document content")
             }
         }
         let bytes = await [UInt8](document: document)
@@ -130,7 +130,7 @@ struct UInt8ArrayTests {
     @Test("HTML asyncBytes method")
     func asyncBytesMethod() async {
         let html = tag("article") {
-            HTMLText("Async bytes content")
+            HTML.Text("Async bytes content")
         }
         let bytes = await html.asyncBytes()
         let string = String(decoding: bytes, as: UTF8.self)
@@ -141,7 +141,7 @@ struct UInt8ArrayTests {
     @Test("HTML asyncBytes with configuration")
     func asyncBytesWithConfiguration() async {
         let html = tag("section") {
-            HTMLText("Configured bytes")
+            HTML.Text("Configured bytes")
         }
         let bytes = await html.asyncBytes(configuration: .pretty)
         let string = String(decoding: bytes, as: UTF8.self)
@@ -157,13 +157,13 @@ extension `Snapshot Tests` {
         @Test("[UInt8] document rendering snapshot")
         func documentRenderingSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("main") {
                         tag("h1") {
-                            HTMLText("Byte Array Test")
+                            HTML.Text("Byte Array Test")
                         }
                         tag("p") {
-                            HTMLText("Testing [UInt8] rendering path")
+                            HTML.Text("Testing [UInt8] rendering path")
                         }
                     }
                 },

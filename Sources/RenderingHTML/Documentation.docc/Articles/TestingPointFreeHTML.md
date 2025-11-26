@@ -34,8 +34,8 @@ When you're integrating libraries, test just the glue code. Here's a real exampl
 ```swift
 extension HTML_Standard_Elements.Anchor {
     public func callAsFunction(
-        @Builder _ content: () -> some HTML
-    ) -> some HTML {
+        @HTML.Builder _ content: () -> some HTML
+    ) -> some HTML.View {
         HTMLElement(tag: Self.tag) { content() }
             .attributionSrc(self.attributionsrc)
             .download(self.download)
@@ -68,7 +68,7 @@ A snapshot test works well here:
 @Test("HTML element with attributes and styles")
 func anchorElementWithStyling() {
     assertInlineSnapshot(
-        of: Document {
+        of: HTML.Document {
             Anchor(href: "#") {
                 "Click here!"
             }

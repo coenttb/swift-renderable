@@ -1,5 +1,5 @@
 //
-//  HTMLElementTests.swift
+//  HTML.ElementTests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 20/07/2025.
@@ -9,53 +9,53 @@
 import RenderingHTMLTestSupport
 import Testing
 
-@Suite("HTMLElement Tests")
+@Suite("HTML.Element Tests")
 struct HTMLElementTests {
 
-    @Test("HTMLElement with basic tag")
+    @Test("HTML.Element with basic tag")
     func basicHTMLElement() throws {
         let element = tag("div") {
-            HTMLText("content")
+            HTML.Text("content")
         }
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("content"))
         #expect(rendered.contains("</div>"))
     }
 
-    @Test("HTMLElement empty")
+    @Test("HTML.Element empty")
     func emptyHTMLElement() throws {
         let element = tag("div")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("</div>"))
     }
 
-    @Test("HTMLElement with multiple children")
+    @Test("HTML.Element with multiple children")
     func elementWithMultipleChildren() throws {
         let element = tag("div") {
-            HTMLText("first")
-            HTMLText("second")
+            HTML.Text("first")
+            HTML.Text("second")
         }
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("first"))
         #expect(rendered.contains("second"))
         #expect(rendered.contains("</div>"))
     }
 
-    @Test("HTMLElement with nested elements")
+    @Test("HTML.Element with nested elements")
     func nestedElements() throws {
         let element = tag("div") {
             tag("p") {
-                HTMLText("paragraph content")
+                HTML.Text("paragraph content")
             }
         }
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("<div>"))
         #expect(rendered.contains("<p>"))
         #expect(rendered.contains("paragraph content"))
@@ -63,13 +63,13 @@ struct HTMLElementTests {
         #expect(rendered.contains("</div>"))
     }
 
-    @Test("HTMLElement with custom tag")
+    @Test("HTML.Element with custom tag")
     func customTagElement() throws {
         let element = tag("custom-element") {
-            HTMLText("custom content")
+            HTML.Text("custom content")
         }
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("<custom-element>"))
         #expect(rendered.contains("custom content"))
         #expect(rendered.contains("</custom-element>"))
@@ -84,7 +84,7 @@ struct HTMLElementTests {
             .attribute("class", "container main")
             .attribute("data-value", "12345")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("id=\"simple-id\""))
         #expect(rendered.contains("class=\"container main\""))
         #expect(rendered.contains("data-value=\"12345\""))
@@ -95,7 +95,7 @@ struct HTMLElementTests {
         let element = tag("div")
             .attribute("data-message", "He said \"Hello\"")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("data-message=\"He said &quot;Hello&quot;\""))
         #expect(!rendered.contains("He said \"Hello\""))
     }
@@ -105,7 +105,7 @@ struct HTMLElementTests {
         let element = tag("div")
             .attribute("data-message", "It's working")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("data-message=\"It&#39;s working\""))
     }
 
@@ -114,7 +114,7 @@ struct HTMLElementTests {
         let element = tag("a")
             .attribute("href", "/search?q=foo&bar=baz")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("href=\"/search?q=foo&amp;bar=baz\""))
         #expect(!rendered.contains("&bar="))
     }
@@ -124,7 +124,7 @@ struct HTMLElementTests {
         let element = tag("div")
             .attribute("data-condition", "x<10")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("data-condition=\"x&lt;10\""))
         #expect(!rendered.contains("x<10\""))
     }
@@ -134,7 +134,7 @@ struct HTMLElementTests {
         let element = tag("div")
             .attribute("data-condition", "x>10")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("data-condition=\"x&gt;10\""))
         #expect(!rendered.contains("x>10\""))
     }
@@ -144,7 +144,7 @@ struct HTMLElementTests {
         let element = tag("div")
             .attribute("data-complex", "<tag attr=\"value\" & 'quotes'>")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         #expect(rendered.contains("&lt;tag attr=&quot;value&quot; &amp; &#39;quotes&#39;&gt;"))
     }
 
@@ -154,7 +154,7 @@ struct HTMLElementTests {
             .attribute("required", "")
             .attribute("disabled", "")
 
-        let rendered = try String(Document { element })
+        let rendered = try String(HTML.Document { element })
         // Empty string attributes are rendered as boolean attributes (no value)
         #expect(rendered.contains("required"))
         #expect(rendered.contains("disabled"))
@@ -166,12 +166,12 @@ struct HTMLElementTests {
 extension `Snapshot Tests` {
     @Suite
     struct HTMLElementSnapshotTests {
-        @Test("HTMLElement basic structure snapshot")
+        @Test("HTML.Element basic structure snapshot")
         func basicElementSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
-                        HTMLText("Hello, World!")
+                        HTML.Text("Hello, World!")
                     }
                 },
                 as: .html
@@ -190,12 +190,12 @@ extension `Snapshot Tests` {
             }
         }
 
-        @Test("HTMLElement with attributes snapshot")
+        @Test("HTML.Element with attributes snapshot")
         func elementWithAttributesSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
-                        HTMLText("Content with attributes")
+                        HTML.Text("Content with attributes")
                     }
                     .attribute("class", "container")
                     .attribute("id", "main-div")
@@ -217,29 +217,29 @@ extension `Snapshot Tests` {
             }
         }
 
-        @Test("HTMLElement nested structure snapshot")
+        @Test("HTML.Element nested structure snapshot")
         func nestedElementSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("article") {
                         tag("header") {
                             tag("h1") {
-                                HTMLText("Article Title")
+                                HTML.Text("Article Title")
                             }
                             tag("p") {
-                                HTMLText("By Author Name")
+                                HTML.Text("By Author Name")
                             }
                         }
                         tag("section") {
                             tag("p") {
-                                HTMLText("This is the first paragraph of the article.")
+                                HTML.Text("This is the first paragraph of the article.")
                             }
                             tag("p") {
-                                HTMLText("This is the second paragraph with more content.")
+                                HTML.Text("This is the second paragraph with more content.")
                             }
                         }
                         tag("footer") {
-                            HTMLText("Published on January 1, 2025")
+                            HTML.Text("Published on January 1, 2025")
                         }
                     }
                 },
@@ -273,20 +273,20 @@ extension `Snapshot Tests` {
             }
         }
 
-        @Test("HTMLElement with mixed content snapshot")
+        @Test("HTML.Element with mixed content snapshot")
         func mixedContentSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
-                        HTMLText("Text before ")
+                        HTML.Text("Text before ")
                         tag("strong") {
-                            HTMLText("bold text")
+                            HTML.Text("bold text")
                         }
-                        HTMLText(" and text after ")
+                        HTML.Text(" and text after ")
                         tag("em") {
-                            HTMLText("italic text")
+                            HTML.Text("italic text")
                         }
-                        HTMLText(".")
+                        HTML.Text(".")
                     }
                 },
                 as: .html
@@ -308,7 +308,7 @@ extension `Snapshot Tests` {
         @Test("Attribute escaping snapshot - no escaping needed")
         func attributeEscapingSnapshotNoEscape() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("input")
                         .attribute("type", "text")
                         .attribute("name", "username")
@@ -332,7 +332,7 @@ extension `Snapshot Tests` {
         @Test("Attribute escaping snapshot - with escaping")
         func attributeEscapingSnapshotWithEscape() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div")
                         .attribute("data-message", "Say \"Hello\" & 'Goodbye'")
                         .attribute("data-condition", "x < 10 && y > 5")

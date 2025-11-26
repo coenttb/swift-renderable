@@ -18,7 +18,7 @@ struct NeverTests {
     func conformsToHTML() {
         // This test verifies that Never conforms to HTML at compile time
         // The conformance enables types with `body: Never` to work properly
-        func acceptsHTML<T: HTML>(_ type: T.Type) -> Bool {
+        func acceptsHTML<T: HTML.View>(_ type: T.Type) -> Bool {
             return true
         }
 
@@ -31,13 +31,13 @@ struct NeverTests {
     func neverBodyAllowsCustomRendering() throws {
         // Types that use custom rendering declare `body: Never`
         // This tests that such types work correctly
-        struct CustomHTML: HTML {
+        struct CustomHTML: HTML.View {
             var body: Never { fatalError() }
 
             static func _render<Buffer: RangeReplaceableCollection>(
                 _ html: Self,
                 into buffer: inout Buffer,
-                context: inout HTMLContext
+                context: inout HTML.Context
             ) where Buffer.Element == UInt8 {
                 buffer.append(contentsOf: "Custom".utf8)
             }
@@ -47,10 +47,10 @@ struct NeverTests {
         #expect(rendered == "Custom")
     }
 
-    @Test("Never in HTMLText body")
+    @Test("Never in HTML.Text body")
     func neverInHTMLTextBody() throws {
-        // HTMLText uses `body: Never` because it renders directly
-        let text = HTMLText("Direct render")
+        // HTML.Text uses `body: Never` because it renders directly
+        let text = HTML.Text("Direct render")
         let rendered = try String(text)
         #expect(rendered == "Direct render")
     }
@@ -63,10 +63,10 @@ struct NeverTests {
         #expect(rendered.isEmpty)
     }
 
-    @Test("Never in HTMLRaw body")
+    @Test("Never in HTML.Raw body")
     func neverInHTMLRawBody() throws {
-        // HTMLRaw uses `body: Never` because it renders directly
-        let raw = HTMLRaw("<b>Bold</b>")
+        // HTML.Raw uses `body: Never` because it renders directly
+        let raw = HTML.Raw("<b>Bold</b>")
         let rendered = try String(raw)
         #expect(rendered == "<b>Bold</b>")
     }
@@ -77,16 +77,16 @@ struct NeverTests {
     func compiletimeSafety() {
         // Types with `body: Never` indicate they override `_render`
         // This test verifies the type system accepts these types
-        func usesHTML<T: HTML>(_ html: T) -> String {
+        func usesHTML<T: HTML.View>(_ html: T) -> String {
             return String(describing: type(of: html))
         }
 
-        let text = HTMLText("test")
+        let text = HTML.Text("test")
         let empty = Empty()
-        let raw = HTMLRaw("raw")
+        let raw = HTML.Raw("raw")
 
-        #expect(usesHTML(text) == "HTMLText")
+        #expect(usesHTML(text) == "Text")
         #expect(usesHTML(empty) == "Empty")
-        #expect(usesHTML(raw) == "Raw")  // HTMLRaw is typealias for Raw
+        #expect(usesHTML(raw) == "Raw")  // HTML.Raw is typealias for Raw
     }
 }

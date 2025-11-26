@@ -1,5 +1,5 @@
 //
-//  Group.swift
+//  Group+HTML.swift
 //
 //
 //  Created by Point-Free, Inc
@@ -16,7 +16,7 @@ public import Rendering
 ///
 /// Example:
 /// ```swift
-/// func navigation() -> some HTML {
+/// func navigation() -> some HTML.View {
 ///     Group {
 ///         a().href("/home") { "Home" }
 ///         a().href("/about") { "About" }
@@ -24,7 +24,7 @@ public import Rendering
 ///     }
 /// }
 ///
-/// var body: some HTML {
+/// var body: some HTML.View {
 ///     nav {
 ///         navigation()
 ///     }
@@ -40,4 +40,4 @@ public import Rendering
 /// </nav>
 /// ```
 
-extension Group: HTML where Content: HTML {}
+extension Group: HTML.View where Content: HTML.View {}

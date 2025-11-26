@@ -13,9 +13,9 @@ struct HTMLTests {
 
     @Test("HTML protocol basic functionality")
     func htmlProtocolBasics() throws {
-        struct TestHTML: HTML {
-            var body: some HTML {
-                HTMLText("test content")
+        struct TestHTML: HTML.View {
+            var body: some HTML.View {
+                HTML.Text("test content")
             }
         }
 
@@ -26,8 +26,8 @@ struct HTMLTests {
 
     @Test("AnyHTML type erasure")
     func anyHTMLTypeErasure() throws {
-        let html1 = HTMLText("first")
-        let html2 = HTMLText("second")
+        let html1 = HTML.Text("first")
+        let html2 = HTML.Text("second")
 
         let anyHTML1 = AnyHTML(html1)
         let anyHTML2 = AnyHTML(html2)
@@ -38,18 +38,18 @@ struct HTMLTests {
 
     @Test("HTML composition")
     func htmlComposition() throws {
-        struct ParentHTML: HTML {
-            var body: some HTML {
+        struct ParentHTML: HTML.View {
+            var body: some HTML.View {
                 Group {
-                    HTMLText("parent ")
+                    HTML.Text("parent ")
                     ChildHTML()
                 }
             }
         }
 
-        struct ChildHTML: HTML {
-            var body: some HTML {
-                HTMLText("child")
+        struct ChildHTML: HTML.View {
+            var body: some HTML.View {
+                HTML.Text("child")
             }
         }
 

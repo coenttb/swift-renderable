@@ -15,9 +15,9 @@ struct GroupTests {
     @Test("Group with multiple elements")
     func groupWithMultipleElements() throws {
         let group = Group {
-            HTMLText("first")
-            HTMLText("second")
-            HTMLText("third")
+            HTML.Text("first")
+            HTML.Text("second")
+            HTML.Text("third")
         }
 
         let rendered = try String(group)
@@ -27,14 +27,14 @@ struct GroupTests {
     @Test("Group with mixed content types")
     func groupWithMixedContent() throws {
         let group = Group {
-            HTMLText("text")
+            HTML.Text("text")
             tag("span") {
-                HTMLText("span content")
+                HTML.Text("span content")
             }
-            HTMLText("more text")
+            HTML.Text("more text")
         }
 
-        let rendered = try String(Document { group })
+        let rendered = try String(HTML.Document { group })
         #expect(rendered.contains("text"))
         #expect(rendered.contains("<span>"))
         #expect(rendered.contains("span content"))
@@ -55,12 +55,12 @@ struct GroupTests {
     @Test("Nested Groups")
     func nestedGroups() throws {
         let outerGroup = Group {
-            HTMLText("outer start")
+            HTML.Text("outer start")
             Group {
-                HTMLText("inner1")
-                HTMLText("inner2")
+                HTML.Text("inner1")
+                HTML.Text("inner2")
             }
-            HTMLText("outer end")
+            HTML.Text("outer end")
         }
 
         let rendered = try String(outerGroup)
@@ -69,19 +69,19 @@ struct GroupTests {
 
     @Test("Group with conditionals")
     func groupWithConditionals() throws {
-        struct TestHTML: HTML {
+        struct TestHTML: HTML.View {
             let showFirst = true
             let showSecond = false
 
-            var body: some HTML {
+            var body: some HTML.View {
                 Group {
                     if showFirst {
-                        HTMLText("first")
+                        HTML.Text("first")
                     }
                     if showSecond {
-                        HTMLText("second")
+                        HTML.Text("second")
                     }
-                    HTMLText("always")
+                    HTML.Text("always")
                 }
             }
         }
@@ -95,8 +95,8 @@ struct GroupTests {
     func groupAsTransparentContainer() throws {
         let element = tag("div") {
             Group {
-                tag("p") { HTMLText("paragraph 1") }
-                tag("p") { HTMLText("paragraph 2") }
+                tag("p") { HTML.Text("paragraph 1") }
+                tag("p") { HTML.Text("paragraph 2") }
             }
         }
 
@@ -117,24 +117,24 @@ extension `Snapshot Tests` {
         @Test("Group transparent container snapshot")
         func transparentContainerSnapshot() {
             assertInlineSnapshot(
-                of: Document {
+                of: HTML.Document {
                     tag("div") {
                         Group {
                             tag("h2") {
-                                HTMLText("Section Title")
+                                HTML.Text("Section Title")
                             }
                             tag("p") {
-                                HTMLText("First paragraph in the group.")
+                                HTML.Text("First paragraph in the group.")
                             }
                             tag("p") {
-                                HTMLText("Second paragraph in the group.")
+                                HTML.Text("Second paragraph in the group.")
                             }
                             tag("ul") {
                                 tag("li") {
-                                    HTMLText("List item 1")
+                                    HTML.Text("List item 1")
                                 }
                                 tag("li") {
-                                    HTMLText("List item 2")
+                                    HTML.Text("List item 2")
                                 }
                             }
                         }
