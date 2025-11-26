@@ -1,5 +1,5 @@
 //
-//  AnyRendering Tests.swift
+//  AnyRenderable Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
@@ -9,38 +9,38 @@
 import Testing
 
 @Suite
-struct `AnyRendering Tests` {
+struct `AnyRenderable Tests` {
 
     // MARK: - Type Erasure
 
     @Test
-    func `AnyRendering erases concrete type`() {
+    func `AnyRenderable erases concrete type`() {
         let element = TestElement(id: "content")
-        let any = AnyRendering<Void, [UInt8]>(element)
+        let any = AnyRenderable<Void, [UInt8]>(element)
         _ = any // Verify it compiles and works
         #expect(Bool(true))
     }
 
     @Test
-    func `AnyRendering from different types`() {
+    func `AnyRenderable from different types`() {
         let element1 = TestElement(id: "first")
-        let any1 = AnyRendering<Void, [UInt8]>(element1)
+        let any1 = AnyRenderable<Void, [UInt8]>(element1)
 
         let element2 = OtherElement()
-        let any2 = AnyRendering<Void, [UInt8]>(element2)
+        let any2 = AnyRenderable<Void, [UInt8]>(element2)
 
-        // Both should be AnyRendering with same type parameters
-        let _: AnyRendering<Void, [UInt8]> = any1
-        let _: AnyRendering<Void, [UInt8]> = any2
+        // Both should be AnyRenderable with same type parameters
+        let _: AnyRenderable<Void, [UInt8]> = any1
+        let _: AnyRenderable<Void, [UInt8]> = any2
         #expect(Bool(true))
     }
 
     // MARK: - Rendering
 
     @Test
-    func `AnyRendering can render to buffer`() {
+    func `AnyRenderable can render to buffer`() {
         let element = TestElement(id: "test")
-        let any = AnyRendering<Void, [UInt8]>(element)
+        let any = AnyRenderable<Void, [UInt8]>(element)
 
         var buffer: [UInt8] = []
         var context: Void = ()
@@ -52,8 +52,8 @@ struct `AnyRendering Tests` {
     // MARK: - Sendable
 
     @Test
-    func `AnyRendering is Sendable`() {
-        let any = AnyRendering<Void, [UInt8]>(TestElement(id: "test"))
+    func `AnyRenderable is Sendable`() {
+        let any = AnyRenderable<Void, [UInt8]>(TestElement(id: "test"))
         Task {
             _ = any
         }
