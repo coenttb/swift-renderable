@@ -57,6 +57,50 @@ extension HTML {
     ///
     /// Async rendering allows suspension at element boundaries, enabling true
     /// progressive streaming where memory is bounded to O(chunkSize).
+    ///
+    /// ## Choosing the Right Streaming API
+    ///
+    /// Use this decision tree to select the appropriate API:
+    ///
+    /// ```
+    /// Need true backpressure (bounded memory)?
+    /// ├── YES → Use asyncChannel() (requires AsyncRendering + Sendable)
+    /// └── NO → Need to handle errors/cancellation?
+    ///     ├── YES → Use asyncThrowingStream()
+    ///     └── NO → Need async iteration?
+    ///         ├── YES → Use asyncStream()
+    ///         └── NO → Use bytes property (sync)
+    /// ```
+    ///
+    /// ## Memory Characteristics
+    ///
+    /// | API                    | Memory        | Backpressure | Requirements              |
+    /// |------------------------|---------------|--------------|---------------------------|
+    /// | `bytes`                | O(doc)        | N/A          | `HTML.View`               |
+    /// | `asyncStream()`        | O(doc)        | No           | `HTML.View & Sendable`    |
+    /// | `asyncThrowingStream()`| O(doc)        | No           | `HTML.View & Sendable`    |
+    /// | `asyncChannel()`       | **O(chunk)**  | **Yes**      | `AsyncRendering & Sendable` |
+    ///
+    /// ## Example Usage
+    ///
+    /// ```swift
+    /// // Simple sync rendering (small documents)
+    /// let html = myView.bytes
+    ///
+    /// // Async iteration without backpressure
+    /// for await chunk in myView.asyncStream(chunkSize: 4096) {
+    ///     await response.write(chunk)
+    /// }
+    ///
+    /// // True streaming with backpressure (large documents)
+    /// for await chunk in myView.asyncChannel(chunkSize: 4096) {
+    ///     await response.write(chunk)
+    /// }
+    /// ```
+    ///
+    /// - Note: Only `asyncChannel()` provides bounded memory throughout the
+    ///   entire rendering process. Other async methods buffer the complete
+    ///   document before streaming chunks.
     public protocol AsyncView: HTML.View, AsyncRendering where Content: AsyncRendering {}
 }
 
