@@ -5,9 +5,9 @@ import PackageDescription
 
 extension String {
     static let rendering: Self = "Rendering"
-    static let renderingHTML: Self = "RenderingHTML"
-    static let renderingTestSupport: Self = "RenderingTestSupport"
-    static let renderingHTMLTestSupport: Self = "RenderingHTMLTestSupport"
+    static let renderingHTML: Self = "Rendering HTML"
+    static let renderingTestSupport: Self = "Rendering TestSupport"
+    static let renderingHTMLTestSupport: Self = "Rendering HTML TestSupport"
 }
 
 extension Target.Dependency {
@@ -77,6 +77,7 @@ let package = Package(
             name: .renderingTestSupport,
             dependencies: [
                 .rendering,
+                .inlineSnapshotTesting,
             ]
         ),
         .target(
