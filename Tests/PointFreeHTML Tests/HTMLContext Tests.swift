@@ -24,10 +24,10 @@ struct HTMLContextTests {
 
     @Test("HTMLContext with custom configuration")
     func customConfigurationInitialization() {
-        let config = HTMLPrinter.Configuration.pretty
+        let config = HTMLContext.Rendering.pretty
         let context = HTMLContext(config)
-        #expect(context.configuration.indentation == config.indentation)
-        #expect(context.configuration.newline == config.newline)
+        #expect(context.rendering.indentation == config.indentation)
+        #expect(context.rendering.newline == config.newline)
     }
 
     // MARK: - Class Name Generation
@@ -121,8 +121,8 @@ struct HTMLContextTests {
 
     @Test("HTMLContext stylesheet with forceImportant")
     func stylesheetWithForceImportant() {
-        var config = HTMLPrinter.Configuration.default
-        config = HTMLPrinter.Configuration(
+        var config = HTMLContext.Rendering.default
+        config = HTMLContext.Rendering(
             forceImportant: true,
             indentation: config.indentation,
             newline: config.newline,
@@ -167,7 +167,7 @@ struct HTMLContextTests {
         var context = HTMLContext(.pretty)
         #expect(context.currentIndentation.isEmpty)
 
-        context.currentIndentation.append(contentsOf: context.configuration.indentation)
+        context.currentIndentation.append(contentsOf: context.rendering.indentation)
         #expect(!context.currentIndentation.isEmpty)
     }
 }

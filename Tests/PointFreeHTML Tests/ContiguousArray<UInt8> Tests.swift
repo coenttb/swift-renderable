@@ -138,7 +138,7 @@ struct ContiguousArrayUInt8Tests {
             HTMLText("Content")
         }
 
-        HTMLPrinter.Configuration.$current.withValue(.pretty) {
+        HTMLContext.Rendering.$current.withValue(.pretty) {
             let bytes = ContiguousArray<UInt8>(html)
             let string = String(decoding: bytes, as: UTF8.self)
             // Pretty configuration adds indentation

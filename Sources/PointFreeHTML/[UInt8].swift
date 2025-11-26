@@ -27,7 +27,7 @@ extension [UInt8] {
     @inlinable
     public init<T: HTML>(
         _ html: T,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) async {
         // Yield to allow other tasks to run
         await Task.yield()
@@ -104,7 +104,7 @@ extension HTML {
     /// - Returns: Complete rendered bytes.
     @inlinable
     public func asyncBytes(
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) async -> [UInt8] {
         await [UInt8](self, configuration: configuration)
     }
@@ -128,7 +128,7 @@ extension Array where Element == UInt8 {
     @inlinable
     public init<T: HTMLDocumentProtocol>(
         document: T,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) async {
         await Task.yield()
 

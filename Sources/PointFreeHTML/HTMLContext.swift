@@ -17,7 +17,7 @@ public import OrderedCollections
 /// ## Design Philosophy
 ///
 /// The rendering state is decoupled from the output destination:
-/// - **Context**: Attributes, styles, indentation, configuration
+/// - **Context**: Attributes, styles, indentation, rendering configuration
 /// - **Buffer**: Where bytes are written (generic, caller-controlled)
 ///
 /// This enables the same rendering logic to write to `[UInt8]`, `ContiguousArray<UInt8>`,
@@ -30,7 +30,7 @@ public struct HTMLContext: Sendable {
     public var styles: OrderedDictionary<StyleKey, String> = [:]
 
     /// Configuration for rendering, including formatting options.
-    public let configuration: HTMLPrinter.Configuration
+    public let rendering: Rendering
 
     /// The current indentation level for pretty-printing.
     public var currentIndentation: [UInt8] = []
@@ -45,11 +45,11 @@ public struct HTMLContext: Sendable {
     /// Same style always returns same class name within a single render.
     private var seenStyles: [Style: String] = [:]
 
-    /// Creates a new HTML rendering context with the specified configuration.
+    /// Creates a new HTML rendering context with the specified rendering configuration.
     ///
-    /// - Parameter configuration: The configuration to use for rendering.
-    public init(_ configuration: HTMLPrinter.Configuration = .current) {
-        self.configuration = configuration
+    /// - Parameter rendering: The rendering configuration to use. Defaults to current task-local value.
+    public init(_ rendering: Rendering = .current) {
+        self.rendering = rendering
     }
 
     // MARK: - Class Name Generation
@@ -93,32 +93,32 @@ public struct HTMLContext: Sendable {
         }
 
         var sheet = ContiguousArray<UInt8>()
-        sheet.append(contentsOf: configuration.newline)
+        sheet.append(contentsOf: rendering.newline)
 
         for (mediaQuery, stylesForMedia) in grouped.sorted(by: { $0.key == nil ? $1.key != nil : false }) {
             if let mediaQuery {
                 sheet.append(contentsOf: mediaQuery.rawValue.utf8)
                 sheet.append(0x7B) // {
-                sheet.append(contentsOf: configuration.newline)
+                sheet.append(contentsOf: rendering.newline)
             }
 
             for (selector, style) in stylesForMedia {
                 if mediaQuery != nil {
-                    sheet.append(contentsOf: configuration.indentation)
+                    sheet.append(contentsOf: rendering.indentation)
                 }
                 sheet.append(contentsOf: selector.utf8)
                 sheet.append(0x7B) // {
                 sheet.append(contentsOf: style.utf8)
-                if configuration.forceImportant {
+                if rendering.forceImportant {
                     sheet.append(contentsOf: " !important".utf8)
                 }
                 sheet.append(0x7D) // }
-                sheet.append(contentsOf: configuration.newline)
+                sheet.append(contentsOf: rendering.newline)
             }
 
             if mediaQuery != nil {
                 sheet.append(0x7D) // }
-                sheet.append(contentsOf: configuration.newline)
+                sheet.append(contentsOf: rendering.newline)
             }
         }
         return sheet

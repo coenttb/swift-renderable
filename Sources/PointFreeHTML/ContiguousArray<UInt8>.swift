@@ -18,7 +18,7 @@ extension ContiguousArray<UInt8>  {
     ///
     /// This is the most efficient way to get bytes from HTML:
     /// - **Zero-copy**: Returns the printer's byte buffer directly
-    /// - **No allocations**: Beyond what HTMLPrinter already creates
+    /// - **No allocations**: Beyond the internal buffer
     /// - **Cache-friendly**: Contiguous memory layout
     /// - **~3,500 documents/second** (~280µs per complete HTML document)
     /// - Optimized with fast-path attribute escaping and UTF-8 elimination
@@ -37,7 +37,7 @@ extension ContiguousArray<UInt8>  {
     /// Rendering behavior is controlled via task-local configuration:
     ///
     /// ```swift
-    /// HTMLPrinter.Configuration.$current.withValue(.pretty) {
+    /// HTMLContext.Rendering.$current.withValue(.pretty) {
     ///     let bytes = ContiguousArray(myHTMLDocument)
     /// }
     /// ```
@@ -69,8 +69,9 @@ extension ContiguousArray<UInt8>  {
     /// - ``HTML/render()``: Legacy method (deprecated, use this instead)
     @inlinable
     public init<T: HTML>(_ html: T) {
-        var printer = HTMLPrinter(HTMLPrinter.Configuration.current)
-        T._render(html, into: &printer)
-        self = printer.bytes
+        var buffer: ContiguousArray<UInt8> = []
+        var context = HTMLContext(HTMLContext.Rendering.current)
+        T._render(html, into: &buffer, context: &context)
+        self = buffer
     }
 }

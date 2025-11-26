@@ -1,5 +1,5 @@
 //
-//  HTMLPrinter.Configuration Tests.swift
+//  HTMLContext.Rendering Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -9,14 +9,14 @@
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite("HTMLPrinter.Configuration Tests")
-struct HTMLPrinterConfigurationTests {
+@Suite("HTMLContext.Rendering Tests")
+struct HTMLContextRenderingTests {
 
     // MARK: - Preset Configurations
 
     @Test("Configuration.default properties")
     func defaultProperties() {
-        let config = HTMLPrinter.Configuration.default
+        let config = HTMLContext.Rendering.default
         #expect(config.forceImportant == false)
         #expect(config.indentation.isEmpty)
         #expect(config.newline.isEmpty)
@@ -25,7 +25,7 @@ struct HTMLPrinterConfigurationTests {
 
     @Test("Configuration.pretty properties")
     func prettyProperties() {
-        let config = HTMLPrinter.Configuration.pretty
+        let config = HTMLContext.Rendering.pretty
         #expect(config.forceImportant == false)
         #expect(config.indentation == [0x20, 0x20]) // Two spaces
         #expect(config.newline == [0x0A]) // LF
@@ -34,7 +34,7 @@ struct HTMLPrinterConfigurationTests {
 
     @Test("Configuration.email properties")
     func emailProperties() {
-        let config = HTMLPrinter.Configuration.email
+        let config = HTMLContext.Rendering.email
         #expect(config.forceImportant == true)
         #expect(config.indentation == [0x20]) // One space
         #expect(config.newline == [0x0A]) // LF
@@ -43,7 +43,7 @@ struct HTMLPrinterConfigurationTests {
 
     @Test("Configuration.optimized properties")
     func optimizedProperties() {
-        let config = HTMLPrinter.Configuration.optimized
+        let config = HTMLContext.Rendering.optimized
         #expect(config.forceImportant == false)
         #expect(config.indentation.isEmpty)
         #expect(config.newline.isEmpty)
@@ -54,7 +54,7 @@ struct HTMLPrinterConfigurationTests {
 
     @Test("Configuration custom initialization")
     func customInitialization() {
-        let config = HTMLPrinter.Configuration(
+        let config = HTMLContext.Rendering(
             forceImportant: true,
             indentation: [0x09], // Tab
             newline: [0x0D, 0x0A], // CRLF
@@ -71,8 +71,8 @@ struct HTMLPrinterConfigurationTests {
 
     @Test("Configuration TaskLocal current defaults to default")
     func taskLocalDefaultsToDefault() {
-        let current = HTMLPrinter.Configuration.current
-        let defaultConfig = HTMLPrinter.Configuration.default
+        let current = HTMLContext.Rendering.current
+        let defaultConfig = HTMLContext.Rendering.default
         #expect(current.forceImportant == defaultConfig.forceImportant)
         #expect(current.indentation == defaultConfig.indentation)
         #expect(current.newline == defaultConfig.newline)
@@ -82,15 +82,15 @@ struct HTMLPrinterConfigurationTests {
     @Test("Configuration TaskLocal withValue scoped")
     func taskLocalWithValueScoped() throws {
         // Outside scope should use default
-        #expect(HTMLPrinter.Configuration.current.forceImportant == false)
+        #expect(HTMLContext.Rendering.current.forceImportant == false)
 
-        HTMLPrinter.Configuration.$current.withValue(.email) {
+        HTMLContext.Rendering.$current.withValue(.email) {
             // Inside scope should use email config
-            #expect(HTMLPrinter.Configuration.current.forceImportant == true)
+            #expect(HTMLContext.Rendering.current.forceImportant == true)
         }
 
         // Outside scope should still use default
-        #expect(HTMLPrinter.Configuration.current.forceImportant == false)
+        #expect(HTMLContext.Rendering.current.forceImportant == false)
     }
 
     @Test("Configuration TaskLocal affects rendering")
@@ -106,7 +106,7 @@ struct HTMLPrinterConfigurationTests {
         #expect(!defaultRendered.contains("!important"))
 
         // Email rendering (with !important)
-        let emailRendered: String = try HTMLPrinter.Configuration.$current.withValue(.email) {
+        let emailRendered: String = try HTMLContext.Rendering.$current.withValue(.email) {
             try String(HTMLDocument { html })
         }
         #expect(emailRendered.contains("!important"))
@@ -116,7 +116,7 @@ struct HTMLPrinterConfigurationTests {
 
     @Test("Configuration is Sendable")
     func isSendable() async {
-        let config = HTMLPrinter.Configuration.pretty
+        let config = HTMLContext.Rendering.pretty
 
         let result = await Task {
             config.reservedCapacity
@@ -148,7 +148,7 @@ struct HTMLPrinterConfigurationTests {
             }
         }
 
-        let rendered: String = HTMLPrinter.Configuration.$current.withValue(.pretty) {
+        let rendered: String = HTMLContext.Rendering.$current.withValue(.pretty) {
             try! String(html)
         }
 
@@ -163,7 +163,7 @@ struct HTMLPrinterConfigurationTests {
         }
         .inlineStyle("color", "blue")
 
-        let rendered: String = try HTMLPrinter.Configuration.$current.withValue(.email) {
+        let rendered: String = try HTMLContext.Rendering.$current.withValue(.email) {
             try String(HTMLDocument { html })
         }
 
@@ -175,10 +175,10 @@ struct HTMLPrinterConfigurationTests {
 
 extension `Snapshot Tests` {
     @Suite
-    struct HTMLPrinterConfigurationSnapshotTests {
+    struct HTMLContextRenderingSnapshotTests {
         @Test("Configuration.pretty rendering snapshot")
         func prettyRenderingSnapshot() {
-            HTMLPrinter.Configuration.$current.withValue(.pretty) {
+            HTMLContext.Rendering.$current.withValue(.pretty) {
                 assertInlineSnapshot(
                     of: HTMLDocument {
                         tag("main") {

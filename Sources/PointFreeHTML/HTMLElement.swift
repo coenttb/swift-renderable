@@ -60,7 +60,7 @@ public struct HTMLElement<Content: HTML>: HTML {
         let htmlIsBlock = html.isBlock
         // Add newline and indentation for block elements
         if htmlIsBlock {
-            buffer.append(contentsOf: context.configuration.newline)
+            buffer.append(contentsOf: context.rendering.newline)
             buffer.append(contentsOf: context.currentIndentation)
         }
         
@@ -109,7 +109,7 @@ public struct HTMLElement<Content: HTML>: HTML {
             }
             context.attributes.removeAll()
             if htmlIsBlock && !isPreElement {
-                context.currentIndentation += context.configuration.indentation
+                context.currentIndentation += context.rendering.indentation
             }
             Content._render(content, into: &buffer, context: &context)
         }
@@ -117,7 +117,7 @@ public struct HTMLElement<Content: HTML>: HTML {
         // Add closing tag unless it's a void element
         if !HTMLVoidTag.allTags.contains(html.tag) {
             if htmlIsBlock && !isPreElement {
-                buffer.append(contentsOf: context.configuration.newline)
+                buffer.append(contentsOf: context.rendering.newline)
                 buffer.append(contentsOf: context.currentIndentation)
             }
             buffer.append(.ascii.lessThanSign)

@@ -56,7 +56,7 @@ extension HTMLDocumentProtocol {
     ) where Buffer.Element == UInt8 {
         // Phase 1: Render body to collect styles
         var bodyBuffer: [UInt8] = []
-        var bodyContext = HTMLContext(context.configuration)
+        var bodyContext = HTMLContext(context.rendering)
         Content._render(html.body, into: &bodyBuffer, context: &bodyContext)
 
         // Transfer collected styles to main context
@@ -86,7 +86,7 @@ extension HTMLDocumentProtocol where Self: Sendable {
     @inlinable
     public func asyncDocumentStream(
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
         AsyncThrowingStream(document: self, chunkSize: chunkSize, configuration: configuration)
     }
@@ -102,7 +102,7 @@ extension HTMLDocumentProtocol where Self: Sendable {
     @inlinable
     public func asyncDocumentStreamNonThrowing(
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) -> AsyncStream<ArraySlice<UInt8>> {
         AsyncStream(document: self, chunkSize: chunkSize, configuration: configuration)
     }
@@ -117,7 +117,7 @@ extension HTMLDocumentProtocol {
     /// - Returns: Complete rendered bytes.
     @inlinable
     public func asyncDocumentBytes(
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) async -> [UInt8] {
         await [UInt8](document: self, configuration: configuration)
     }
@@ -130,7 +130,7 @@ extension HTMLDocumentProtocol {
     /// - Returns: Rendered HTML document string.
     @inlinable
     public func asyncDocumentString(
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) async -> String {
         await String(document: self, configuration: configuration)
     }
@@ -159,8 +159,9 @@ extension HTMLDocumentProtocol {
     ///   ```
     @available(*, deprecated, message: "Use ContiguousArray(html) or String(html) instead. The RFC pattern makes bytes canonical and String derived.")
     public func render() -> ContiguousArray<UInt8> {
-        var printer = HTMLPrinter(HTMLPrinter.Configuration.current)
-        Self._render(self, into: &printer)
-        return printer.bytes
+        var buffer: ContiguousArray<UInt8> = []
+        var context = HTMLContext(HTMLContext.Rendering.current)
+        Self._render(self, into: &buffer, context: &context)
+        return buffer
     }
 }

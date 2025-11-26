@@ -1,5 +1,5 @@
 //
-//  HTMLPrinter.Error Tests.swift
+//  HTMLContext.Rendering.Error Tests.swift
 //  pointfree-html
 //
 //  Created by Coen ten Thije Boonkkamp on 25/11/2025.
@@ -9,20 +9,20 @@
 import PointFreeHTMLTestSupport
 import Testing
 
-@Suite("HTMLPrinter.Error Tests")
-struct HTMLPrinterErrorTests {
+@Suite("HTMLContext.Rendering.Error Tests")
+struct HTMLContextRenderingErrorTests {
 
     // MARK: - Initialization
 
     @Test("Error initialization with message")
     func initWithMessage() {
-        let error = HTMLPrinter.Error(message: "Failed to render HTML")
+        let error = HTMLContext.Rendering.Error(message: "Failed to render HTML")
         #expect(error.message == "Failed to render HTML")
     }
 
     @Test("Error with empty message")
     func emptyMessage() {
-        let error = HTMLPrinter.Error(message: "")
+        let error = HTMLContext.Rendering.Error(message: "")
         #expect(error.message.isEmpty)
     }
 
@@ -30,20 +30,20 @@ struct HTMLPrinterErrorTests {
 
     @Test("Error conforms to Swift.Error")
     func conformsToSwiftError() {
-        let error: any Swift.Error = HTMLPrinter.Error(message: "Test error")
-        #expect(error is HTMLPrinter.Error)
+        let error: any Swift.Error = HTMLContext.Rendering.Error(message: "Test error")
+        #expect(error is HTMLContext.Rendering.Error)
     }
 
     @Test("Error can be thrown and caught")
     func canBeThrown() {
         func throwingFunction() throws {
-            throw HTMLPrinter.Error(message: "Intentional error")
+            throw HTMLContext.Rendering.Error(message: "Intentional error")
         }
 
         do {
             try throwingFunction()
             Issue.record("Expected error to be thrown")
-        } catch let error as HTMLPrinter.Error {
+        } catch let error as HTMLContext.Rendering.Error {
             #expect(error.message == "Intentional error")
         } catch {
             Issue.record("Unexpected error type: \(type(of: error))")
@@ -54,7 +54,7 @@ struct HTMLPrinterErrorTests {
 
     @Test("Error with descriptive message")
     func descriptiveMessage() {
-        let error = HTMLPrinter.Error(message: "Invalid UTF-8 sequence at byte offset 42")
+        let error = HTMLContext.Rendering.Error(message: "Invalid UTF-8 sequence at byte offset 42")
         #expect(error.message.contains("UTF-8"))
         #expect(error.message.contains("42"))
     }
@@ -66,7 +66,7 @@ struct HTMLPrinterErrorTests {
         - Invalid attribute value
         - Missing closing tag
         """
-        let error = HTMLPrinter.Error(message: message)
+        let error = HTMLContext.Rendering.Error(message: message)
         #expect(error.message.contains("Rendering failed"))
         #expect(error.message.contains("Invalid attribute"))
         #expect(error.message.contains("Missing closing tag"))
@@ -92,19 +92,19 @@ struct HTMLPrinterErrorTests {
 
     @Test("Error can be handled with do-catch")
     func doCatchHandling() {
-        let error = HTMLPrinter.Error(message: "Test")
+        let error = HTMLContext.Rendering.Error(message: "Test")
 
         do {
             throw error
         } catch {
-            #expect(error is HTMLPrinter.Error)
+            #expect(error is HTMLContext.Rendering.Error)
         }
     }
 
     @Test("Error can be used with Result type")
     func resultTypeUsage() {
-        let result: Result<String, HTMLPrinter.Error> = .failure(
-            HTMLPrinter.Error(message: "Rendering failed")
+        let result: Result<String, HTMLContext.Rendering.Error> = .failure(
+            HTMLContext.Rendering.Error(message: "Rendering failed")
         )
 
         switch result {
@@ -118,13 +118,13 @@ struct HTMLPrinterErrorTests {
     @Test("Error can be used with async throws")
     func asyncThrows() async {
         func asyncRenderer() async throws -> String {
-            throw HTMLPrinter.Error(message: "Async rendering failed")
+            throw HTMLContext.Rendering.Error(message: "Async rendering failed")
         }
 
         do {
             _ = try await asyncRenderer()
             Issue.record("Expected error")
-        } catch let error as HTMLPrinter.Error {
+        } catch let error as HTMLContext.Rendering.Error {
             #expect(error.message == "Async rendering failed")
         } catch {
             Issue.record("Wrong error type")
@@ -135,7 +135,7 @@ struct HTMLPrinterErrorTests {
 
     @Test("Error message preserves special characters")
     func preservesSpecialCharacters() {
-        let error = HTMLPrinter.Error(message: "Error with <html> & \"quotes\"")
+        let error = HTMLContext.Rendering.Error(message: "Error with <html> & \"quotes\"")
         #expect(error.message.contains("<html>"))
         #expect(error.message.contains("&"))
         #expect(error.message.contains("\"quotes\""))
@@ -143,7 +143,7 @@ struct HTMLPrinterErrorTests {
 
     @Test("Error message preserves Unicode")
     func preservesUnicode() {
-        let error = HTMLPrinter.Error(message: "Error: 日本語 🚫")
+        let error = HTMLContext.Rendering.Error(message: "Error: 日本語 🚫")
         #expect(error.message.contains("日本語"))
         #expect(error.message.contains("🚫"))
     }

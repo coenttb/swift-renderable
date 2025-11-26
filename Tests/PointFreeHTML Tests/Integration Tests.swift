@@ -318,7 +318,7 @@ struct IntegrationTests {
             .inlineStyle("max-width", "600px")
         }
 
-        let rendered: String = try HTMLPrinter.Configuration.$current.withValue(.email) {
+        let rendered: String = try HTMLContext.Rendering.$current.withValue(.email) {
             try String(document)
         }
 
@@ -333,7 +333,7 @@ struct IntegrationTests {
             }
         }
 
-        let rendered: String = HTMLPrinter.Configuration.$current.withValue(.pretty) {
+        let rendered: String = HTMLContext.Rendering.$current.withValue(.pretty) {
             try! String(document)
         }
 

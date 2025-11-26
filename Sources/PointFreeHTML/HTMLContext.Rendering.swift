@@ -1,13 +1,13 @@
 //
-//  File.swift
+//  HTMLContext.Rendering.swift
 //  pointfree-html
 //
-//  Created by Coen ten Thije Boonkkamp on 25/11/2025.
+//  Configuration and error types for HTML rendering.
 //
 
 import INCITS_4_1986
 
-extension HTMLPrinter {
+extension HTMLContext {
 
     /// Configuration options for HTML rendering.
     ///
@@ -21,11 +21,11 @@ extension HTMLPrinter {
     /// configuration explicitly:
     ///
     /// ```swift
-    /// HTMLPrinter.Configuration.$current.withValue(.pretty) {
-    ///     let html = document.render()
+    /// HTMLContext.Rendering.$current.withValue(.pretty) {
+    ///     let html = ContiguousArray(document)
     /// }
     /// ```
-    public struct Configuration: Sendable {
+    public struct Rendering: Sendable {
         /// Task-local configuration for HTML rendering.
         ///
         /// This enables configuration without explicit parameter passing.
@@ -39,24 +39,25 @@ extension HTMLPrinter {
         /// let minified = ContiguousArray(html)
         ///
         /// // Pretty-printed
-        /// HTMLPrinter.Configuration.$current.withValue(.pretty) {
+        /// HTMLContext.Rendering.$current.withValue(.pretty) {
         ///     let pretty = ContiguousArray(html)
         /// }
         /// ```
         @TaskLocal public static var current: Self = .default
+
         /// Whether to add `!important` to all CSS rules.
         package let forceImportant: Bool
-        
+
         /// The bytes to use for indentation.
         ///
         /// Stored as bytes to avoid UTF-8 conversion overhead during rendering.
         package let indentation: [UInt8]
-        
+
         /// The bytes to use for newlines.
         ///
         /// Stored as bytes to avoid UTF-8 conversion overhead during rendering.
         package let newline: [UInt8]
-        
+
         /// Reserved capacity for the byte buffer (in bytes).
         ///
         /// Pre-allocating capacity avoids multiple reallocations during rendering.
@@ -91,7 +92,7 @@ extension HTMLPrinter {
         ///
         /// Pre-allocates 1KB to handle most simple documents without reallocation.
         public static let `default` = Self(forceImportant: false, indentation: [], newline: [], reservedCapacity: 1024)
-        
+
         /// Pretty-printing configuration with 2-space indentation and newlines.
         ///
         /// Pre-allocates 2KB to accommodate additional whitespace from formatting.
@@ -101,7 +102,7 @@ extension HTMLPrinter {
             newline: [.ascii.lf],
             reservedCapacity: 2048
         )
-        
+
         /// Configuration optimized for email HTML with forced important styles.
         ///
         /// Pre-allocates 2KB as email HTML tends to be verbose with inline styles.
@@ -111,7 +112,7 @@ extension HTMLPrinter {
             newline: [.ascii.lf],
             reservedCapacity: 2048
         )
-        
+
         /// Performance-optimized configuration for typical documents (~4KB).
         ///
         /// Pre-allocates 4096 bytes to avoid reallocations for most documents.
@@ -120,6 +121,13 @@ extension HTMLPrinter {
     }
 }
 
-
-
-
+extension HTMLContext.Rendering {
+    /// An error type representing HTML rendering failures.
+    ///
+    /// This error is thrown when there's a problem rendering HTML content
+    /// or when the rendered bytes cannot be converted to a string.
+    public struct Error: Swift.Error {
+        /// A description of what went wrong during HTML rendering.
+        public let message: String
+    }
+}

@@ -67,26 +67,6 @@ extension HTML {
     ) where Buffer.Element == UInt8 {
         Content._render(html.body, into: &buffer, context: &context)
     }
-
-    /// Convenience method to render into HTMLPrinter.
-    ///
-    /// This bridges HTMLPrinter to the canonical generic render method,
-    /// allowing backward compatibility with code that uses HTMLPrinter directly.
-    public static func _render(_ html: Self, into printer: inout HTMLPrinter) {
-        // Bridge HTMLPrinter state to HTMLContext
-        var context = HTMLContext(printer.configuration)
-        context.attributes = printer.attributes
-        context.styles = printer.styles
-        context.currentIndentation = printer.currentIndentation
-
-        // Use the canonical render method
-        Self._render(html, into: &printer.bytes, context: &context)
-
-        // Sync state back to printer
-        printer.attributes = context.attributes
-        printer.styles = context.styles
-        printer.currentIndentation = context.currentIndentation
-    }
 }
 
 // MARK: - UInt8.Streaming Compatible
@@ -140,14 +120,14 @@ extension HTML where Self: Sendable {
     ///
     /// - Parameters:
     ///   - chunkSize: Size of each yielded chunk in bytes. Default is 4096.
-    ///   - configuration: Rendering configuration. Uses default if nil.
+    ///   - rendering: Rendering configuration. Uses default if nil.
     /// - Returns: An AsyncThrowingStream yielding byte chunks.
     @inlinable
     public func asyncStream(
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        rendering: HTMLContext.Rendering? = nil
     ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
-        AsyncThrowingStream(self, chunkSize: chunkSize, configuration: configuration)
+        AsyncThrowingStream(self, chunkSize: chunkSize, configuration: rendering)
     }
 }
 
@@ -189,42 +169,11 @@ extension HTML {
 
 
 extension HTML {
-    func render(into printer: inout HTMLPrinter) {
-        Self._render(self, into: &printer)
-    }
-
     @inlinable
     func render<Buffer: RangeReplaceableCollection>(
         into buffer: inout Buffer,
         context: inout HTMLContext
     ) where Buffer.Element == UInt8 {
         Self._render(self, into: &buffer, context: &context)
-    }
-}
-
-extension HTML {
-    /// Renders this HTML element to bytes.
-    ///
-    /// This method creates a printer with the current configuration and
-    /// renders the HTML element into it, then returns the resulting bytes.
-    ///
-    /// - Returns: A buffer of bytes representing the rendered HTML.
-    ///
-    /// - Warning: This method is deprecated. Use the RFC pattern initialization instead:
-    ///   ```swift
-    ///   // Old (deprecated)
-    ///   let bytes = html.render()
-    ///
-    ///   // New (RFC pattern - zero-copy)
-    ///   let bytes = ContiguousArray(html)
-    ///
-    ///   // Or for String output
-    ///   let string = try String(html)
-    ///   ```
-    @available(*, deprecated, message: "Use ContiguousArray(html) or String(html) instead. The RFC pattern makes bytes canonical and String derived.")
-    public func render() -> ContiguousArray<UInt8> {
-        var printer = HTMLPrinter(HTMLPrinter.Configuration.current)
-        Self._render(self, into: &printer)
-        return printer.bytes
     }
 }

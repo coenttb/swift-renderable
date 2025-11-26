@@ -29,7 +29,7 @@ extension AsyncStream where Element == ArraySlice<UInt8> {
     public init<T: HTML & Sendable>(
         _ html: T,
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
@@ -72,7 +72,7 @@ extension HTML where Self: Sendable {
     @inlinable
     public func asyncStreamNonThrowing(
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) -> AsyncStream<ArraySlice<UInt8>> {
         AsyncStream(self, chunkSize: chunkSize, configuration: configuration)
     }
@@ -93,7 +93,7 @@ extension AsyncStream where Element == ArraySlice<UInt8> {
     public init<T: HTMLDocumentProtocol & Sendable>(
         document: T,
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in

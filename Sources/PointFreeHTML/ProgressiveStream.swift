@@ -134,7 +134,7 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
     public init<T: HTML & Sendable>(
         progressive html: T,
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
@@ -200,7 +200,7 @@ extension AsyncThrowingStream where Element == ArraySlice<UInt8>, Failure == any
     public init<T: HTMLDocumentProtocol & Sendable>(
         progressiveDocument document: T,
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
@@ -263,7 +263,7 @@ extension AsyncStream where Element == ArraySlice<UInt8> {
     public init<T: HTML & Sendable>(
         progressive html: T,
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
@@ -284,7 +284,7 @@ extension AsyncStream where Element == ArraySlice<UInt8> {
     public init<T: HTMLDocumentProtocol & Sendable>(
         progressiveDocument document: T,
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) {
         let config = configuration ?? .default
         self.init { continuation in
@@ -349,7 +349,7 @@ extension HTML where Self: Sendable {
     /// - Returns: An AsyncThrowingStream yielding byte chunks progressively.
     public func progressiveStream(
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
         AsyncThrowingStream(progressive: self, chunkSize: chunkSize, configuration: configuration)
     }
@@ -367,7 +367,7 @@ extension HTMLDocumentProtocol where Self: Sendable {
     /// - Returns: An AsyncThrowingStream yielding byte chunks progressively.
     public func progressiveDocumentStream(
         chunkSize: Int = 4096,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) -> AsyncThrowingStream<ArraySlice<UInt8>, any Error> {
         AsyncThrowingStream(progressiveDocument: self, chunkSize: chunkSize, configuration: configuration)
     }

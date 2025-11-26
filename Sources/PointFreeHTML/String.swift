@@ -52,7 +52,7 @@ extension String {
     ///   - html: The HTML content to render as a string
     ///   - encoding: The character encoding to use when converting bytes to string (default: UTF-8)
     ///
-    /// - Throws: `HTMLPrinter.Error` if the rendered bytes cannot be converted to a string
+    /// - Throws: `HTMLContext.Rendering.Error` if the rendered bytes cannot be converted to a string
     ///   using the specified encoding
     ///
     /// ## See Also
@@ -62,7 +62,7 @@ extension String {
     public init<Encoding>(
         html: some HTML,
         as encoding: Encoding.Type = UTF8.self
-    ) throws(HTMLPrinter.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
+    ) throws(HTMLContext.Rendering.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
         let bytes = ContiguousArray(html)
         self = String(decoding: bytes, as: encoding)
     }
@@ -70,7 +70,7 @@ extension String {
     public init<Encoding>(
         _ html: some HTML,
         as encoding: Encoding.Type = UTF8.self
-    ) throws(HTMLPrinter.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
+    ) throws(HTMLContext.Rendering.Error) where Encoding: _UnicodeEncoding, Encoding.CodeUnit == UInt8 {
         self = try .init(html: html, as: encoding)
     }
 }
@@ -93,7 +93,7 @@ extension String {
     @inlinable
     public init<T: HTML>(
         _ html: T,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) async {
         let bytes = await [UInt8](html, configuration: configuration)
         self = String(decoding: bytes, as: UTF8.self)
@@ -110,7 +110,7 @@ extension HTML {
     /// - Returns: Rendered HTML string.
     @inlinable
     public func asyncString(
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) async -> String {
         await String(self, configuration: configuration)
     }
@@ -134,7 +134,7 @@ extension String {
     @inlinable
     public init<T: HTMLDocumentProtocol>(
         document: T,
-        configuration: HTMLPrinter.Configuration? = nil
+        configuration: HTMLContext.Rendering? = nil
     ) async {
         let bytes = await [UInt8](document: document, configuration: configuration)
         self = String(decoding: bytes, as: UTF8.self)

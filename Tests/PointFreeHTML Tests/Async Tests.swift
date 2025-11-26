@@ -77,13 +77,13 @@ struct AsyncTests {
     func taskLocalIsolation() async {
         let results = await withTaskGroup(of: Bool.self) { group in
             group.addTask {
-                HTMLPrinter.Configuration.$current.withValue(.email) {
-                    HTMLPrinter.Configuration.current.forceImportant
+                HTMLContext.Rendering.$current.withValue(.email) {
+                    HTMLContext.Rendering.current.forceImportant
                 }
             }
             group.addTask {
-                HTMLPrinter.Configuration.$current.withValue(.default) {
-                    HTMLPrinter.Configuration.current.forceImportant
+                HTMLContext.Rendering.$current.withValue(.default) {
+                    HTMLContext.Rendering.current.forceImportant
                 }
             }
 
