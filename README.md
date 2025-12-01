@@ -55,7 +55,7 @@ PointFreeHTML follows the RFC pattern where **bytes are canonical**. All renderi
 
 ### Complete Examples
 
-For comprehensive examples of building HTML elements and components, see [swift-html](https://github.com/coenttb/swift-html), which provides a complete developer experience built on top of PointFreeHTML.
+For comprehensive examples of building HTML elements and components, see [swift-html](https://github.com/coenttb/swift-html), which provides a complete developer experience built on top of HTML_Renderable.
 
 See [swift-html-css-pointfree](https://github.com/coenttb/swift-html-css-pointfree) for an example of how third-party libraries can integrate PointFreeHTML as their rendering engine.
 
@@ -137,7 +137,7 @@ Add the package dependency in Xcode:
 PointFreeHTML includes support for snapshot testing:
 
 ```swift
-import PointFreeHTMLTestSupport
+import HTML_Renderable_TestSupport
 
 @Test
 func testMyComponent() {
