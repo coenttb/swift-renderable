@@ -5,8 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-@testable import Renderable
 import Testing
+
+@testable import Renderable
 
 @Suite
 struct `AnyRenderable Tests` {
@@ -17,7 +18,7 @@ struct `AnyRenderable Tests` {
     func `AnyRenderable erases concrete type`() {
         let element = TestElement(id: "content")
         let any = AnyRenderable<Void, [UInt8]>(element)
-        _ = any // Verify it compiles and works
+        _ = any  // Verify it compiles and works
         #expect(Bool(true))
     }
 
@@ -57,7 +58,7 @@ struct `AnyRenderable Tests` {
         Task {
             _ = any
         }
-        #expect(Bool(true)) // Compile-time check
+        #expect(Bool(true))  // Compile-time check
     }
 }
 

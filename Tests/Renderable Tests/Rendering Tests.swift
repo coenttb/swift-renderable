@@ -5,8 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-@testable import Renderable
 import Testing
+
+@testable import Renderable
 
 @Suite
 struct `Rendering Tests` {

@@ -5,8 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-@testable import Renderable
 import Testing
+
+@testable import Renderable
 
 @Suite
 struct `AsyncChunkingBuffer Tests` {
@@ -19,7 +20,7 @@ struct `AsyncChunkingBuffer Tests` {
         let buffer = AsyncChunkingBuffer(chunkSize: 5, continuation: continuation)
 
         Task {
-            await buffer.append(contentsOf: "1234567890".utf8) // 10 bytes
+            await buffer.append(contentsOf: "1234567890".utf8)  // 10 bytes
             await buffer.finish()
         }
 
@@ -39,7 +40,7 @@ struct `AsyncChunkingBuffer Tests` {
         let buffer = AsyncChunkingBuffer(chunkSize: 5, continuation: continuation)
 
         Task {
-            await buffer.append(contentsOf: "1234567".utf8) // 7 bytes
+            await buffer.append(contentsOf: "1234567".utf8)  // 7 bytes
             await buffer.finish()
         }
 
@@ -125,7 +126,11 @@ struct `AsyncChunkingBuffer Tests` {
     func `AsyncChunkingBuffer respects yield interval`() async {
         let (stream, continuation) = AsyncStream<ArraySlice<UInt8>>.makeStream()
         // Small yield interval to trigger yielding
-        let buffer = AsyncChunkingBuffer(chunkSize: 10, yieldInterval: 5, continuation: continuation)
+        let buffer = AsyncChunkingBuffer(
+            chunkSize: 10,
+            yieldInterval: 5,
+            continuation: continuation
+        )
 
         Task {
             await buffer.append(contentsOf: "12345678901234567890".utf8)
@@ -163,6 +168,6 @@ struct `AsyncChunkingBuffer Tests` {
         }
 
         #expect(totalBytes == 1000)
-        #expect(chunkCount == 10) // 1000 / 100 = 10 chunks
+        #expect(chunkCount == 10)  // 1000 / 100 = 10 chunks
     }
 }

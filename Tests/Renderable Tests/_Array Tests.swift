@@ -5,8 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-@testable import Renderable
 import Testing
+
+@testable import Renderable
 
 // Note: _Array requires Element: Rendering, so we use a test helper type.
 // Full rendering behavior tests are in domain-specific test modules.
@@ -43,7 +44,7 @@ struct `_Array Tests` {
         Task {
             _ = array.elements
         }
-        #expect(Bool(true)) // Compile-time check
+        #expect(Bool(true))  // Compile-time check
     }
 }
 

@@ -5,8 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-@testable import Renderable
 import Testing
+
+@testable import Renderable
 
 @Suite
 struct `_Empty Tests` {
@@ -16,7 +17,7 @@ struct `_Empty Tests` {
     @Test
     func `Empty can be instantiated`() {
         let empty = Empty()
-        _ = empty // Verify it exists
+        _ = empty  // Verify it exists
         #expect(true)
     }
 
@@ -28,6 +29,6 @@ struct `_Empty Tests` {
         Task {
             _ = empty
         }
-        #expect(true) // Compile-time check
+        #expect(true)  // Compile-time check
     }
 }

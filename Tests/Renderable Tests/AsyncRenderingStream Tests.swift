@@ -5,9 +5,10 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-@testable import Renderable
-import Testing
 import AsyncAlgorithms
+import Testing
+
+@testable import Renderable
 
 @Suite
 struct `AsyncRenderableStream Tests` {
@@ -17,14 +18,14 @@ struct `AsyncRenderableStream Tests` {
     @Test
     func `AsyncRenderableStream can be created with default chunk size`() async {
         let stream = AsyncRenderingStream()
-        _ = stream // Verify it compiles
+        _ = stream  // Verify it compiles
         #expect(Bool(true))
     }
 
     @Test
     func `AsyncRenderableStream can be created with custom chunk size`() async {
         let stream = AsyncRenderingStream(chunkSize: 100)
-        _ = stream // Verify it compiles
+        _ = stream  // Verify it compiles
         #expect(Bool(true))
     }
 
@@ -32,7 +33,7 @@ struct `AsyncRenderableStream Tests` {
     func `AsyncRenderableStream can be created with external channel`() async {
         let channel = AsyncChannel<ArraySlice<UInt8>>()
         let stream = AsyncRenderingStream(channel: channel, chunkSize: 1024)
-        _ = stream // Verify it compiles
+        _ = stream  // Verify it compiles
         #expect(Bool(true))
     }
 
@@ -62,7 +63,7 @@ struct `AsyncRenderableStream Tests` {
         let stream = AsyncRenderingStream(chunkSize: chunkSize)
 
         Task {
-            await stream.write("1234567890".utf8) // 10 bytes -> should produce 2 chunks of 5
+            await stream.write("1234567890".utf8)  // 10 bytes -> should produce 2 chunks of 5
             await stream.finish()
         }
 
@@ -82,7 +83,7 @@ struct `AsyncRenderableStream Tests` {
         let stream = AsyncRenderingStream(chunkSize: chunkSize)
 
         Task {
-            await stream.write("1234567".utf8) // 7 bytes -> 1 chunk of 5, 1 chunk of 2
+            await stream.write("1234567".utf8)  // 7 bytes -> 1 chunk of 5, 1 chunk of 2
             await stream.finish()
         }
 
@@ -165,7 +166,7 @@ struct `AsyncRenderableStream Tests` {
     func `AsyncRenderableStream chunks property returns AsyncChannel`() async {
         let stream = AsyncRenderingStream()
         let _: AsyncChannel<ArraySlice<UInt8>> = stream.chunks
-        #expect(Bool(true)) // Compile-time check
+        #expect(Bool(true))  // Compile-time check
     }
 
     // MARK: - Sendable
@@ -179,6 +180,6 @@ struct `AsyncRenderableStream Tests` {
         }
         // Consume to prevent hanging
         for await _ in stream.chunks {}
-        #expect(Bool(true)) // Compile-time check
+        #expect(Bool(true))  // Compile-time check
     }
 }

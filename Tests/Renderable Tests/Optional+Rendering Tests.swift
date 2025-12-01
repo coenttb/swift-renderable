@@ -5,8 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-@testable import Renderable
 import Testing
+
+@testable import Renderable
 
 @Suite
 struct `Optional+Rendering Tests` {
@@ -34,7 +35,7 @@ struct `Optional+Rendering Tests` {
         Task {
             _ = optional
         }
-        #expect(Bool(true)) // Compile-time check
+        #expect(Bool(true))  // Compile-time check
     }
 }
 

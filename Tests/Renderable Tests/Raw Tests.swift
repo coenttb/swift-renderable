@@ -5,8 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-@testable import Renderable
 import Testing
+
+@testable import Renderable
 
 @Suite
 struct `Raw Tests` {
@@ -27,7 +28,7 @@ struct `Raw Tests` {
 
     @Test
     func `Raw init from UInt8 array`() {
-        let bytes: [UInt8] = [72, 105] // "Hi"
+        let bytes: [UInt8] = [72, 105]  // "Hi"
         let raw = Raw(bytes)
         #expect(Array(raw.bytes) == bytes)
     }
@@ -70,6 +71,6 @@ struct `Raw Tests` {
         Task {
             _ = raw.bytes
         }
-        #expect(Bool(true)) // Compile-time check
+        #expect(Bool(true))  // Compile-time check
     }
 }
