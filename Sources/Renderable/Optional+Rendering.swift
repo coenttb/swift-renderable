@@ -20,8 +20,7 @@ extension Optional: Renderable where Wrapped: Renderable {
         Wrapped._render(markup, into: &buffer, context: &context)
     }
 
-    /// This type uses direct rendering and doesn't have a body.
-    public var body: Never { fatalError() }
+    public var body: Never { fatalError("This type uses direct rendering and doesn't have a body.") }
 }
 
 extension Optional: AsyncRenderable where Wrapped: AsyncRenderable {

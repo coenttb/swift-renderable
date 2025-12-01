@@ -43,7 +43,7 @@ private struct TestRendering: Renderable, AsyncRenderable {
     typealias Context = Void
     typealias Content = Never
 
-    var body: Never { fatalError() }
+    var body: Never { fatalError("This type uses direct rendering and doesn't have a body.") }
 
     static func _render<Buffer: RangeReplaceableCollection>(
         _ markup: TestRendering,

@@ -55,4 +55,3 @@ extension ForEach: Sendable where Content: Sendable {}
 extension ForEach: Hashable where Content: Hashable {}
 extension ForEach: Equatable where Content: Equatable {}
 extension ForEach: Codable where Content: Codable {}
-

@@ -54,4 +54,3 @@ extension Renderable where Content: Renderable, Content.Context == Context {
         Content._render(markup.body, into: &buffer, context: &context)
     }
 }
-
