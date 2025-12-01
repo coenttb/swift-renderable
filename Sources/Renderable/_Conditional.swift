@@ -33,8 +33,7 @@ where First.Context == Second.Context {
         }
     }
 
-    /// This type uses direct rendering and doesn't have a body.
-    public var body: Never { fatalError() }
+    public var body: Never { fatalError("This type uses direct rendering and doesn't have a body.") }
 }
 
 extension _Conditional: Sendable where First: Sendable, Second: Sendable {}

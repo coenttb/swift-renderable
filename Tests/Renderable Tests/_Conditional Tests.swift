@@ -70,7 +70,7 @@ private struct TestElement: Renderable, Sendable {
     typealias Content = Never
 
     init(id: String = "") { self.id = id }
-    var body: Never { fatalError() }
+    var body: Never { fatalError("This type uses direct rendering and doesn't have a body.") }
 
     static func _render<Buffer: RangeReplaceableCollection>(
         _ markup: TestElement,
@@ -82,7 +82,7 @@ private struct TestElement: Renderable, Sendable {
 private struct OtherElement: Renderable, Sendable {
     typealias Context = Void
     typealias Content = Never
-    var body: Never { fatalError() }
+    var body: Never { fatalError("This type uses direct rendering and doesn't have a body.") }
 
     static func _render<Buffer: RangeReplaceableCollection>(
         _ markup: OtherElement,
