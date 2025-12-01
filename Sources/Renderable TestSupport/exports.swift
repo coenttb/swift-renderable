@@ -7,4 +7,4 @@
 
 @_exported import Renderable
 @_exported import InlineSnapshotTesting
-
+@_exported import TestingPerformance

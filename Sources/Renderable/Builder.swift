@@ -15,7 +15,7 @@
 /// ```swift
 /// let content = div {
 ///     h1 { "Hello, World!" }
-///     p { "Welcome to PointFreeHTML." }
+///     p { "Welcome to HTML_Renderable." }
 ///     if showButton {
 ///         button { "Click me" }
 ///     }

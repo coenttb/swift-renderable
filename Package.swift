@@ -19,6 +19,9 @@ extension Target.Dependency {
     static var asyncAlgorithms: Self {
         .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
     }
+    static var testingPerformance: Self {
+        .product(name: "TestingPerformance", package: "swift-testing-performance")
+    }
 }
 
 let package = Package(
@@ -37,6 +40,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms.git", from: "1.0.0"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.3"),
+        .package(url: "https://github.com/coenttb/swift-testing-performance", from: "0.1.0"),
     ],
     targets: [
         .target(
@@ -50,6 +54,7 @@ let package = Package(
             dependencies: [
                 .renderable,
                 .inlineSnapshotTesting,
+                .testingPerformance
             ]
         ),
         .testTarget(

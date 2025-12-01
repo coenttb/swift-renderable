@@ -16,12 +16,12 @@ This document describes the architectural restructuring of the `pointfree-html` 
 swift-renderable/                    (generic rendering engine)
 └── Renderable                       (protocols only)
 
-swift-html-renderable/               (NEW: HTML rendering layer)
+swift-html-rendering/               (NEW: HTML rendering layer)
 ├── Renderable HTML                  (moved from pointfree-html)
 ├── HTML Elements Renderable         (from swift-html-css-pointfree)
 └── HTML Attributes Renderable       (from swift-html-css-pointfree)
 
-swift-css-renderable/                (NEW: CSS rendering layer)
+swift-css-rendering/                (NEW: CSS rendering layer)
 └── CSS Renderable                   (from swift-html-css-pointfree)
 
 swift-svg-renderable/                (NEW: SVG rendering layer)
@@ -32,7 +32,7 @@ swift-html/                          (unchanged: conveniences)
 ├── Components
 ├── Themes
 ├── HTMLCSSRenderable                (umbrella re-exports, from swift-html-css-pointfree)
-└── Re-exports swift-html-renderable + swift-css-renderable
+└── Re-exports swift-html-rendering + swift-css-rendering
 
 swift-svg/                           (updated)
 └── Re-exports swift-svg-renderable
@@ -45,10 +45,10 @@ swift-svg/                           (updated)
 | Old Package | New Package(s) | Contents |
 |-------------|----------------|----------|
 | `pointfree-html` | `swift-renderable` | Generic `Renderable` protocol only |
-| `pointfree-html` (Rendering HTML) | `swift-html-renderable` | `HTML.Context`, `HTML.View`, rendering logic |
-| `swift-html-css-pointfree` / `HTMLElementsPointFreeHTML` | `swift-html-renderable` | Element rendering conformances |
-| `swift-html-css-pointfree` / `HTMLAttributesPointFreeHTML` | `swift-html-renderable` | Attribute rendering conformances |
-| `swift-html-css-pointfree` / `CSSPointFreeHTML` | `swift-css-renderable` | CSS property rendering |
+| `pointfree-html` (Rendering HTML) | `swift-html-rendering` | `HTML.Context`, `HTML.View`, rendering logic |
+| `swift-html-css-pointfree` / `HTMLElementsPointFreeHTML` | `swift-html-rendering` | Element rendering conformances |
+| `swift-html-css-pointfree` / `HTMLAttributesPointFreeHTML` | `swift-html-rendering` | Attribute rendering conformances |
+| `swift-html-css-pointfree` / `CSSPointFreeHTML` | `swift-css-rendering` | CSS property rendering |
 | `swift-html-css-pointfree` / `HTMLCSSPointFreeHTML` | `swift-html` | Umbrella re-exports (just imports) |
 | `swift-svg-printer` | `swift-svg-renderable` | SVG rendering using Renderable |
 | `swift-html` | `swift-html` (updated) | Conveniences + umbrella imports |
@@ -132,15 +132,15 @@ standard
 2. Keep only `Renderable` module (generic protocols)
 3. Remove `Rendering HTML` target
 
-### Phase 2: Create swift-html-renderable
-1. Create new repository `swift-html-renderable`
+### Phase 2: Create swift-html-rendering
+1. Create new repository `swift-html-rendering`
 2. Move `Rendering HTML` from old pointfree-html
 3. Move HTML parts from `swift-html-css-pointfree`:
    - `HTMLElementsPointFreeHTML` → `HTMLElementsRenderable`
    - `HTMLAttributesPointFreeHTML` → `HTMLAttributesRenderable`
 
-### Phase 3: Create swift-css-renderable
-1. Create new repository `swift-css-renderable`
+### Phase 3: Create swift-css-rendering
+1. Create new repository `swift-css-rendering`
 2. Move CSS parts from `swift-html-css-pointfree`:
    - `CSSPointFreeHTML` → `CSSRenderable`
 
@@ -165,8 +165,8 @@ All rendering packages live in `coenttb/`:
 | Package | Location | Status |
 |---------|----------|--------|
 | `swift-renderable` | `/Users/coen/Developer/coenttb/swift-renderable` | Rename from pointfree-html |
-| `swift-html-renderable` | `/Users/coen/Developer/coenttb/swift-html-renderable` | NEW |
-| `swift-css-renderable` | `/Users/coen/Developer/coenttb/swift-css-renderable` | NEW |
+| `swift-html-rendering` | `/Users/coen/Developer/coenttb/swift-html-rendering` | NEW |
+| `swift-css-rendering` | `/Users/coen/Developer/coenttb/swift-css-rendering` | NEW |
 | `swift-svg-renderable` | `/Users/coen/Developer/coenttb/swift-svg-renderable` | NEW |
 | `swift-html` | `/Users/coen/Developer/coenttb/swift-html` | Update deps |
 | `swift-svg` | `/Users/coen/Developer/coenttb/swift-svg` | Update deps |
@@ -183,7 +183,7 @@ Type packages remain in `swift-standards/`:
 
 ## Key Benefits
 
-1. **CSS Independence**: `swift-css-renderable` can be used for CSS-in-Swift without HTML
+1. **CSS Independence**: `swift-css-rendering` can be used for CSS-in-Swift without HTML
 2. **SVG Unification**: SVG joins the ecosystem with consistent patterns
 3. **Granular Dependencies**: Only pull what you need
 4. **Clear Boundaries**: Each package has single responsibility
@@ -217,8 +217,8 @@ This is categorically superior because:
 ## Execution Order
 
 1. **First**: Rename `pointfree-html` → `swift-renderable` (this repo)
-2. **Second**: Create `swift-html-renderable` with moved code
-3. **Third**: Create `swift-css-renderable` with moved code
+2. **Second**: Create `swift-html-rendering` with moved code
+3. **Third**: Create `swift-css-rendering` with moved code
 4. **Fourth**: Create `swift-svg-renderable` (port from swift-svg-printer)
 5. **Fifth**: Update `swift-html` dependencies
 6. **Sixth**: Update `swift-svg` dependencies
