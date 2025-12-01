@@ -23,7 +23,8 @@
 ///
 /// Note: This is a simple struct. Domain-specific modules (like RenderingHTML)
 /// provide the `Renderable` conformance with the appropriate `Context` type.
-public struct AnyRenderable<Context, Bytes>: @unchecked Sendable where Bytes: RangeReplaceableCollection, Bytes.Element == UInt8 {
+public struct AnyRenderable<Context, Bytes>: @unchecked Sendable
+where Bytes: RangeReplaceableCollection, Bytes.Element == UInt8 {
     /// The type-erased base content.
     public let base: any Renderable
 

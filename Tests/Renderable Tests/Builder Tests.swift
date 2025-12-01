@@ -5,8 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-@testable import Renderable
 import Testing
+
+@testable import Renderable
 
 // Note: Builder tests that require @Builder usage are in domain-specific
 // test modules (e.g., Rendering HTML Tests) since @Builder requires Rendering conformance.

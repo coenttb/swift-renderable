@@ -46,7 +46,7 @@ let package = Package(
         .target(
             name: .renderable,
             dependencies: [
-                .asyncAlgorithms,
+                .asyncAlgorithms
             ]
         ),
         .target(
@@ -54,7 +54,7 @@ let package = Package(
             dependencies: [
                 .renderable,
                 .inlineSnapshotTesting,
-                .testingPerformance
+                .testingPerformance,
             ]
         ),
         .testTarget(
@@ -74,9 +74,10 @@ extension String {
 
 for target in package.targets where ![.system, .binary, .plugin].contains(target.type) {
     let existing = target.swiftSettings ?? []
-    target.swiftSettings = existing + [
-        .enableUpcomingFeature("ExistentialAny"),
-        .enableUpcomingFeature("InternalImportsByDefault"),
-        .enableUpcomingFeature("MemberImportsByDefault")
-    ]
+    target.swiftSettings =
+        existing + [
+            .enableUpcomingFeature("ExistentialAny"),
+            .enableUpcomingFeature("InternalImportsByDefault"),
+            .enableUpcomingFeature("MemberImportsByDefault"),
+        ]
 }

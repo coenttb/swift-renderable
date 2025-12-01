@@ -32,7 +32,9 @@ public struct _Array<Element: Renderable>: Renderable {
         }
     }
 
-    public var body: Never { fatalError("This type uses direct rendering and doesn't have a body.") }
+    public var body: Never {
+        fatalError("This type uses direct rendering and doesn't have a body.")
+    }
 }
 
 extension _Array: Sendable where Element: Sendable {}

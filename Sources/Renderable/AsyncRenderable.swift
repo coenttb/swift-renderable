@@ -101,17 +101,21 @@ public func _renderAsyncDynamic<T: Renderable, Stream: AsyncRenderingStreamProto
 
         func callRender<A: AsyncRenderable>(_ type: A.Type) async {
             guard let typedMarkup = markup as? A else {
-                assertionFailure("""
+                assertionFailure(
+                    """
                     _renderAsyncDynamic: Failed to cast markup of type \(T.self) to \(A.self). \
                     This indicates a type system inconsistency.
-                    """)
+                    """
+                )
                 return
             }
             guard var typedContext = anyContext as? A.Context else {
-                assertionFailure("""
+                assertionFailure(
+                    """
                     _renderAsyncDynamic: Failed to cast context of type \(T.Context.self) to \(A.Context.self). \
                     Context mutations may be lost. Ensure AsyncRenderable types use compatible Context types.
-                    """)
+                    """
+                )
                 return
             }
             await A._renderAsync(typedMarkup, into: stream, context: &typedContext)
@@ -124,10 +128,12 @@ public func _renderAsyncDynamic<T: Renderable, Stream: AsyncRenderingStreamProto
         if let updatedContext = anyContext as? T.Context {
             context = updatedContext
         } else if didRender {
-            assertionFailure("""
+            assertionFailure(
+                """
                 _renderAsyncDynamic: Failed to cast updated context back to \(T.Context.self). \
                 Context mutations from async rendering were lost.
-                """)
+                """
+            )
         }
 
         // If we failed to render via async path, fall back to sync
