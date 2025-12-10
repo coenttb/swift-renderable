@@ -30,6 +30,7 @@ extension Group: Codable where Content: Codable {}
 
 extension Group: Renderable where Content: Renderable {
     public typealias Context = Content.Context
+    public typealias Output = Content.Output
 
     public var body: Content { content }
 }

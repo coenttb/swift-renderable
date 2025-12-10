@@ -10,9 +10,13 @@
 /// The async rendering path allows suspension at element boundaries,
 /// enabling true progressive streaming where memory is bounded to O(chunkSize).
 ///
-/// Types conforming to `AsyncRenderable` must also conform to `Rendering`.
-/// The async path is used for progressive streaming scenarios where backpressure
-/// is needed to prevent unbounded memory growth.
+/// Types conforming to `AsyncRenderable` must also conform to `Renderable`
+/// with `Output == UInt8` (byte-based output). This is because async streaming
+/// is designed for progressive byte output (e.g., HTML streaming) where
+/// backpressure is needed to prevent unbounded memory growth.
+///
+/// For non-byte output types (e.g., PDF operations), use synchronous rendering
+/// as those formats typically require full document assembly.
 ///
 /// ## Example
 ///
@@ -29,7 +33,7 @@
 ///     }
 /// }
 /// ```
-public protocol AsyncRenderable: Renderable {
+public protocol AsyncRenderable: Renderable where Output == UInt8 {
     /// Async render that can suspend at element boundaries.
     ///
     /// - Parameters:
@@ -55,7 +59,8 @@ extension AsyncRenderable where Content: AsyncRenderable, Content.Context == Con
     }
 }
 
-extension AsyncRenderable where Content: Renderable, Content.Context == Context {
+extension AsyncRenderable
+where Content: Renderable, Content.Context == Context, Content.Output == UInt8 {
     /// Fallback implementation that recursively renders the body asynchronously.
     ///
     /// This fallback traverses the view tree by getting the body and dispatching
@@ -92,7 +97,7 @@ public func _renderAsyncDynamic<T: Renderable, Stream: AsyncRenderingStreamProto
     _ markup: T,
     into stream: Stream,
     context: inout T.Context
-) async {
+) async where T.Output == UInt8 {
     // Check if T conforms to AsyncRenderable at runtime
     if let asyncType = T.self as? any AsyncRenderable.Type {
         // Open the existential to call _renderAsync with proper context handling

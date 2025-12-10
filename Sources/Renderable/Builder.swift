@@ -7,9 +7,13 @@
 
 /// A result builder that enables declarative content construction with a SwiftUI-like syntax.
 ///
-/// `HTMLBuilder` provides a DSL for constructing HTML content in Swift code.
-/// It transforms multiple statements in a closure into a single HTML value,
-/// allowing for a natural, hierarchical representation of HTML structure.
+/// `Builder` provides a DSL for constructing content in Swift code.
+/// It transforms multiple statements in a closure into a single value,
+/// allowing for a natural, hierarchical representation of structure.
+///
+/// This builder is generic and works with any type. Domain-specific modules
+/// (like HTML Renderable, PDF Rendering) constrain the types appropriately
+/// through their protocol requirements.
 ///
 /// Example:
 /// ```swift
@@ -25,31 +29,31 @@
 /// }
 /// ```
 ///
-/// The `HTMLBuilder` supports Swift language features like conditionals, loops,
-/// and optional unwrapping within the HTML construction DSL.
+/// The `Builder` supports Swift language features like conditionals, loops,
+/// and optional unwrapping within the construction DSL.
 @resultBuilder
 public enum Builder {
-    /// Combines an array of components into a single HTML component.
+    /// Combines an array of components into a single component.
     ///
-    /// - Parameter components: An array of HTML components to combine.
-    /// - Returns: A single HTML component representing the array of components.
-    public static func buildArray<Element: Renderable>(_ components: [Element]) -> _Array<Element> {
+    /// - Parameter components: An array of components to combine.
+    /// - Returns: A single component representing the array of components.
+    public static func buildArray<Element>(_ components: [Element]) -> _Array<Element> {
         _Array(components)
     }
 
     /// Passes through a single content component unchanged.
     ///
-    /// - Parameter content: The HTML component to pass through.
-    /// - Returns: The same HTML component.
-    public static func buildBlock<Content: Renderable>(_ content: Content) -> Content {
+    /// - Parameter content: The component to pass through.
+    /// - Returns: The same component.
+    public static func buildBlock<Content>(_ content: Content) -> Content {
         content
     }
 
-    /// Combines multiple HTML components into a tuple of components.
+    /// Combines multiple components into a tuple of components.
     ///
-    /// - Parameter content: The HTML components to combine.
-    /// - Returns: A tuple of HTML components.
-    public static func buildBlock<each Content: Renderable>(
+    /// - Parameter content: The components to combine.
+    /// - Returns: A tuple of components.
+    public static func buildBlock<each Content>(
         _ content: repeat each Content
     ) -> _Tuple<repeat each Content> {
         _Tuple(repeat each content)
@@ -57,9 +61,9 @@ public enum Builder {
 
     /// Handles the "if" or "true" case in a conditional statement.
     ///
-    /// - Parameter component: The HTML component for the "if" or "true" case.
-    /// - Returns: A conditional HTML component representing the "if" or "true" case.
-    public static func buildEither<First: Renderable, Second: Renderable>(
+    /// - Parameter component: The component for the "if" or "true" case.
+    /// - Returns: A conditional component representing the "if" or "true" case.
+    public static func buildEither<First, Second>(
         first component: First
     ) -> _Conditional<First, Second> {
         .first(component)
@@ -67,35 +71,35 @@ public enum Builder {
 
     /// Handles the "else" or "false" case in a conditional statement.
     ///
-    /// - Parameter component: The HTML component for the "else" or "false" case.
-    /// - Returns: A conditional HTML component representing the "else" or "false" case.
-    public static func buildEither<First: Renderable, Second: Renderable>(
+    /// - Parameter component: The component for the "else" or "false" case.
+    /// - Returns: A conditional component representing the "else" or "false" case.
+    public static func buildEither<First, Second>(
         second component: Second
     ) -> _Conditional<First, Second> {
         .second(component)
     }
 
-    /// Converts any HTML expression to itself.
+    /// Converts any expression to itself.
     ///
-    /// - Parameter expression: The HTML expression to convert.
-    /// - Returns: The same HTML expression.
-    public static func buildExpression<T: Renderable>(_ expression: T) -> T {
+    /// - Parameter expression: The expression to convert.
+    /// - Returns: The same expression.
+    public static func buildExpression<T>(_ expression: T) -> T {
         expression
     }
 
-    /// Handles optional HTML components.
+    /// Handles optional components.
     ///
-    /// - Parameter component: An optional HTML component.
-    /// - Returns: The same optional HTML component.
-    public static func buildOptional<T: Renderable>(_ component: T?) -> T? {
+    /// - Parameter component: An optional component.
+    /// - Returns: The same optional component.
+    public static func buildOptional<T>(_ component: T?) -> T? {
         component
     }
 
     /// Finalizes the result of the builder.
     ///
-    /// - Parameter component: The HTML component to finalize.
-    /// - Returns: The final HTML component.
-    public static func buildFinalResult<T: Renderable>(_ component: T) -> T {
+    /// - Parameter component: The component to finalize.
+    /// - Returns: The final component.
+    public static func buildFinalResult<T>(_ component: T) -> T {
         component
     }
 }

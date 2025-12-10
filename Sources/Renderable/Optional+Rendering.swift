@@ -9,13 +9,14 @@
 extension Optional: Renderable where Wrapped: Renderable {
     public typealias Context = Wrapped.Context
     public typealias Content = Never
+    public typealias Output = Wrapped.Output
 
     /// Renders the optional element if it exists.
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ markup: Self,
         into buffer: inout Buffer,
         context: inout Wrapped.Context
-    ) where Buffer.Element == UInt8 {
+    ) where Buffer.Element == Output {
         guard let markup else { return }
         Wrapped._render(markup, into: &buffer, context: &context)
     }

@@ -34,7 +34,7 @@ where Bytes: RangeReplaceableCollection, Bytes.Element == UInt8 {
     /// Creates a type-erased wrapper around the given rendering content.
     ///
     /// - Parameter base: The rendering content to wrap.
-    public init<T: Renderable>(_ base: T) where T.Context == Context {
+    public init<T: Renderable>(_ base: T) where T.Context == Context, T.Output == UInt8 {
         self.base = base
         self.renderFunction = { buffer, context in
             T._render(base, into: &buffer, context: &context)

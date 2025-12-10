@@ -42,8 +42,9 @@ public struct ForEach<Content: Renderable> {
     }
 }
 
-extension ForEach: Renderable {
+extension ForEach: Renderable where Content: Renderable {
     public typealias Context = Content.Context
+    public typealias Output = Content.Output
 
     /// The body of this component, which is the array of content.
     public var body: _Array<Content> {

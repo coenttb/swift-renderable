@@ -72,6 +72,7 @@ private struct TestElement: Renderable, Sendable {
     let id: String
     typealias Context = Void
     typealias Content = Never
+    typealias Output = UInt8
 
     var body: Never { fatalError("This type uses direct rendering and doesn't have a body.") }
 
@@ -79,5 +80,5 @@ private struct TestElement: Renderable, Sendable {
         _ markup: TestElement,
         into buffer: inout Buffer,
         context: inout Void
-    ) where Buffer.Element == UInt8 {}
+    ) where Buffer.Element == Output {}
 }

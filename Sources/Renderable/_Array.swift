@@ -9,10 +9,7 @@
 ///
 /// This type is used internally by result builders to handle
 /// arrays of elements, such as those created by `for` loops.
-public struct _Array<Element: Renderable>: Renderable {
-    public typealias Content = Never
-    public typealias Context = Element.Context
-
+public struct _Array<Element> {
     /// The array of elements contained in this container.
     public let elements: [Element]
 
@@ -20,13 +17,26 @@ public struct _Array<Element: Renderable>: Renderable {
     public init(_ elements: [Element]) {
         self.elements = elements
     }
+}
+
+extension _Array: Sendable where Element: Sendable {}
+extension _Array: Hashable where Element: Hashable {}
+extension _Array: Equatable where Element: Equatable {}
+extension _Array: Codable where Element: Codable {}
+
+// MARK: - Renderable Conformance
+
+extension _Array: Renderable where Element: Renderable {
+    public typealias Content = Never
+    public typealias Context = Element.Context
+    public typealias Output = Element.Output
 
     /// Renders all elements in the array into the buffer.
     public static func _render<Buffer: RangeReplaceableCollection>(
         _ markup: Self,
         into buffer: inout Buffer,
         context: inout Element.Context
-    ) where Buffer.Element == UInt8 {
+    ) where Buffer.Element == Output {
         for element in markup.elements {
             Element._render(element, into: &buffer, context: &context)
         }
@@ -37,10 +47,7 @@ public struct _Array<Element: Renderable>: Renderable {
     }
 }
 
-extension _Array: Sendable where Element: Sendable {}
-extension _Array: Hashable where Element: Hashable {}
-extension _Array: Equatable where Element: Equatable {}
-extension _Array: Codable where Element: Codable {}
+// MARK: - AsyncRenderable Conformance
 
 extension _Array: AsyncRenderable where Element: AsyncRenderable {
     /// Async renders all elements in the array, yielding at element boundaries.
