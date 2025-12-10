@@ -26,21 +26,29 @@ extension Rendering {
     ///
     /// - Note: This component works around a bug in `buildArray` that causes
     ///   build failures when the element is `some Rendering.Protocol`.
-    public struct ForEach<Content: Rendering.`Protocol`> {
+    public struct ForEach<Content> {
         /// The array of content generated from the collection.
         public let content: Rendering._Array<Content>
 
-        /// Creates a new component that generates content for each element in a collection.
-        ///
-        /// - Parameters:
-        ///   - data: The collection to iterate over.
-        ///   - content: A closure that transforms each element of the collection into content.
-        public init<Data: RandomAccessCollection>(
-            _ data: Data,
-            @Rendering.Builder content: (Data.Element) -> Content
+        public init(
+            content: Rendering._Array<Content>
         ) {
-            self.content = Rendering.Builder.buildArray(data.map(content))
+            self.content = content
         }
+    }
+}
+
+extension Rendering.ForEach {
+    /// Creates a new component that generates content for each element in a collection.
+    ///
+    /// - Parameters:
+    ///   - data: The collection to iterate over.
+    ///   - content: A closure that transforms each element of the collection into content.
+    public init<Data: RandomAccessCollection>(
+        _ data: Data,
+        @Rendering.Builder content: (Data.Element) -> Content
+    ) {
+        self.content = Rendering.Builder.buildArray(data.map(content))
     }
 }
 
