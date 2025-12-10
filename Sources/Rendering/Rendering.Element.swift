@@ -7,9 +7,6 @@
 
 import OrderedCollections
 
-/// Namespace for rendering primitives shared between HTML and PDF.
-public enum Rendering {}
-
 extension Rendering {
     /// A generic element with a tag name, attributes, and content.
     ///
@@ -109,10 +106,10 @@ extension Rendering.Element: Sendable where Content: Sendable {}
 extension Rendering.Element: Equatable where Content: Equatable {}
 extension Rendering.Element: Hashable where Content: Hashable {}
 
-// NOTE: Rendering.Element does NOT conform to Renderable here.
+// NOTE: Rendering.Element does NOT conform to Rendering.Protocol here.
 // Format-specific packages (swift-html-rendering, swift-pdf-rendering) provide
 // the conformance through their own protocols (HTML.View, PDF.View) that inherit
-// from Renderable. This avoids conflicts between multiple _render implementations.
+// from Rendering.Protocol. This avoids conflicts between multiple _render implementations.
 
 // MARK: - Attribute Modification
 

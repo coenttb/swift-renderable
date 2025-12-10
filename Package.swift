@@ -3,15 +3,15 @@
 import PackageDescription
 
 extension String {
-    static let renderable: Self = "Renderable"
-    static let renderableTestSupport: Self = "Renderable TestSupport"
     static let rendering: Self = "Rendering"
+    static let renderingAsync: Self = "RenderingAsync"
+    static let renderingTestSupport: Self = "Rendering TestSupport"
 }
 
 extension Target.Dependency {
-    static var renderable: Self { .target(name: .renderable) }
-    static var renderableTestSupport: Self { .target(name: .renderableTestSupport) }
     static var rendering: Self { .target(name: .rendering) }
+    static var renderingAsync: Self { .target(name: .renderingAsync) }
+    static var renderingTestSupport: Self { .target(name: .renderingTestSupport) }
 }
 
 extension Target.Dependency {
@@ -36,9 +36,9 @@ let package = Package(
         .visionOS(.v26),
     ],
     products: [
-        .library(name: .renderable, targets: [.renderable]),
-        .library(name: .renderableTestSupport, targets: [.renderableTestSupport]),
         .library(name: .rendering, targets: [.rendering]),
+        .library(name: .renderingAsync, targets: [.renderingAsync]),
+        .library(name: .renderingTestSupport, targets: [.renderingTestSupport]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms.git", from: "1.0.0"),
@@ -48,30 +48,40 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: .renderable,
-            dependencies: [
-                .asyncAlgorithms
-            ]
-        ),
-        .target(
             name: .rendering,
             dependencies: [
                 .product(name: "OrderedCollections", package: "swift-collections"),
             ]
         ),
         .target(
-            name: .renderableTestSupport,
+            name: .renderingAsync,
             dependencies: [
-                .renderable,
+                .rendering,
+                .asyncAlgorithms,
+            ]
+        ),
+        .target(
+            name: .renderingTestSupport,
+            dependencies: [
+                .rendering,
+                .renderingAsync,
                 .inlineSnapshotTesting,
                 .testingPerformance,
             ]
         ),
         .testTarget(
-            name: .renderable.tests,
+            name: .rendering.tests,
             dependencies: [
-                .renderable,
-                .renderableTestSupport,
+                .rendering,
+                .renderingTestSupport,
+            ]
+        ),
+        .testTarget(
+            name: .renderingAsync.tests,
+            dependencies: [
+                .rendering,
+                .renderingAsync,
+                .renderingTestSupport,
             ]
         ),
     ],

@@ -5,12 +5,15 @@
 //  Created by Coen ten Thije Boonkkamp on 08/12/2025.
 //
 
-// This module provides shared rendering primitives used by both
-// HTML and PDF rendering.
-//
-// The main type is `Rendering.Element<Content>` which provides
-// a unified element structure that can be rendered to multiple formats.
-//
-// See Rendering.Element.swift for the implementation.
-
-@_exported import OrderedCollections
+/// Namespace for rendering types and protocols.
+///
+/// The `Rendering` enum provides a namespace for all rendering-related types:
+/// - `Rendering.Protocol` - The core rendering protocol
+/// - `Rendering.Builder` - Result builder for DSL composition
+/// - `Rendering._Tuple`, `Rendering._Conditional`, `Rendering._Array` - Composition primitives
+/// - `Rendering.Empty`, `Rendering.Group`, `Rendering.ForEach` - Container types
+/// - `Rendering.Raw`, `Rendering.AnyView` - Utility types
+///
+/// For async streaming support, import `RenderingAsync` which extends this namespace
+/// with `Rendering.Async.Protocol` and related types.
+public enum Rendering {}
