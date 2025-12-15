@@ -210,7 +210,7 @@ struct `Builder Tests` {
             }
         }
         let result = render(group)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     // MARK: - Integration: For Loops via ForEach
@@ -232,6 +232,6 @@ struct `Builder Tests` {
             TestRenderable(item)
         }
         let result = render(forEach)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 }

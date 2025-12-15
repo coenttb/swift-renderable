@@ -127,9 +127,9 @@ struct `_Tuple Tests` {
             TestRenderable(""),
             TestRenderable("")
         )
-        #expect(tuple.content.0.value == "")
-        #expect(tuple.content.1.value == "")
-        #expect(tuple.content.2.value == "")
+        #expect(tuple.content.0.value.isEmpty)
+        #expect(tuple.content.1.value.isEmpty)
+        #expect(tuple.content.2.value.isEmpty)
     }
 
     // MARK: - Nested Tuples
@@ -152,7 +152,7 @@ private struct OtherRenderable: Rendering.`Protocol`, Sendable {
     typealias Content = Never
     typealias Output = UInt8
 
-    var body: Never { fatalError() }
+    var body: Never { fatalError("OtherRenderable does not use body") }
 
     static func _render<Buffer: RangeReplaceableCollection>(
         _ markup: OtherRenderable,

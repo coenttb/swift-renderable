@@ -51,7 +51,7 @@ struct `Group Tests` {
             TestRenderable("")
         }
         let result = render(group)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     // MARK: - Body Property
@@ -201,6 +201,6 @@ struct `Group Tests` {
             }
         }
         let result = render(group)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 }

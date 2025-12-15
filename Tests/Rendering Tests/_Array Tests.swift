@@ -54,7 +54,7 @@ struct `_Array Tests` {
     func `renders empty array as empty string`() {
         let array = Rendering._Array<TestRenderable>([])
         let result = render(array)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     @Test

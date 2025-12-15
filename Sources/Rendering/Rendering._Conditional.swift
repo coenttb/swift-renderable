@@ -28,8 +28,7 @@ extension Rendering._Conditional: Codable where First: Codable, Second: Codable 
 extension Rendering._Conditional: Rendering.`Protocol`
 where
     First: Rendering.`Protocol`, Second: Rendering.`Protocol`, First.Context == Second.Context,
-    First.Output == Second.Output
-{
+    First.Output == Second.Output {
     public typealias Content = Never
     public typealias Context = First.Context
     public typealias Output = First.Output

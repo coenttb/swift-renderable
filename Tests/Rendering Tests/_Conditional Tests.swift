@@ -260,7 +260,7 @@ struct `_Conditional Tests` {
         let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(
             TestRenderable("")
         )
-        #expect(render(conditional) == "")
+        #expect(render(conditional).isEmpty)
     }
 
     @Test
@@ -268,7 +268,7 @@ struct `_Conditional Tests` {
         let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.second(
             TestRenderable("")
         )
-        #expect(render(conditional) == "")
+        #expect(render(conditional).isEmpty)
     }
 }
 

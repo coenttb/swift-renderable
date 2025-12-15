@@ -28,7 +28,7 @@ struct `Optional_Async Tests` {
     func `nil value renders nothing asynchronously`() async {
         let optional: AsyncTestRenderable? = nil
         let result = await renderAsync(optional)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     // MARK: - Context Propagation

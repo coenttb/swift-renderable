@@ -34,7 +34,7 @@ struct `ForEach Tests` {
         }
 
         let result = render(forEach)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     @Test

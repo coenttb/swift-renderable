@@ -26,7 +26,7 @@ struct `Async_Protocol Tests` {
     func `_renderAsync handles empty content`() async {
         let renderable = AsyncTestRenderable("")
         let result = await renderAsync(renderable)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     @Test

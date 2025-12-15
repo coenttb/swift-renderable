@@ -73,7 +73,7 @@ struct `_Conditional_Async Tests` {
             .first(AsyncTestRenderable(""))
 
         let result = await renderAsync(conditional)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     // MARK: - Protocol Conformance

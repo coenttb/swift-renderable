@@ -25,7 +25,7 @@ struct `Optional+Rendering Tests` {
     func `some value with empty content renders empty`() {
         let optional: TestRenderable? = TestRenderable("")
         let result = render(optional)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     // MARK: - Nil Value
@@ -34,7 +34,7 @@ struct `Optional+Rendering Tests` {
     func `nil value renders nothing`() {
         let optional: TestRenderable? = nil
         let result = render(optional)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     @Test
@@ -89,7 +89,7 @@ struct `Optional+Rendering Tests` {
         var context = TestContext(renderCount: 5)
         let result = render(optional, context: &context)
 
-        #expect(result == "")
+        #expect(result.isEmpty)
         #expect(context.renderCount == 5)
     }
 
@@ -146,7 +146,7 @@ struct `Optional+Rendering Tests` {
         let result1 = render(optional1)
         let result2 = render(optional2)
 
-        #expect(result1 == "")
+        #expect(result1.isEmpty)
         #expect(result2 == "fallback")
     }
 

@@ -12,8 +12,7 @@ import Rendering
 extension Rendering._Conditional: Rendering.Async.`Protocol`
 where
     First: Rendering.Async.`Protocol`, Second: Rendering.Async.`Protocol`,
-    First.Context == Second.Context
-{
+    First.Context == Second.Context {
     /// Async renders either the first or second component based on the case.
     public static func _renderAsync<Sink: Rendering.Async.Sink.`Protocol`>(
         _ markup: Self,

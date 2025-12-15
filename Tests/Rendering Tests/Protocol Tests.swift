@@ -39,7 +39,7 @@ struct `Protocol Tests` {
     func `_render handles empty content`() {
         let renderable = TestRenderable("")
         let result = render(renderable)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     @Test
@@ -105,7 +105,7 @@ struct `Protocol Tests` {
     func `body delegation with empty children`() {
         let composite = CompositeRenderable(children: [])
         let result = render(composite)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     // MARK: - Buffer Types

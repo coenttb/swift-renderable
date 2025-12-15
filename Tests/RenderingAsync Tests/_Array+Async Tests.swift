@@ -31,7 +31,7 @@ struct `_Array_Async Tests` {
     func `empty _Array renders nothing asynchronously`() async {
         let array = Rendering._Array<AsyncTestRenderable>([])
         let result = await renderAsync(array)
-        #expect(result == "")
+        #expect(result.isEmpty)
     }
 
     @Test

@@ -112,7 +112,7 @@ struct `Element Tests` {
         let element = Rendering.Element<String>(tagName: "input", content: nil)
             .attribute("disabled", "")
 
-        #expect(element.attributes["disabled"] == "")
+        #expect(element.attributes["disabled"]?.isEmpty == true)
     }
 
     @Test
