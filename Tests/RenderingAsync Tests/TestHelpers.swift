@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import Rendering
 @testable import RenderingAsync
 
@@ -124,7 +125,10 @@ where T.Context == Void, T: Sendable {
 ///
 /// Note: For tests with context, we use a simple buffer approach without AsyncChannel
 /// to avoid the backpressure deadlock issue while still testing context propagation.
-func renderAsync<T: Rendering.Async.`Protocol`>(_ renderable: T, context: inout T.Context) async -> String {
+func renderAsync<T: Rendering.Async.`Protocol`>(
+    _ renderable: T,
+    context: inout T.Context
+) async -> String {
     // For context tests, use a simple collecting sink approach
     // We render to a temporary buffer first, avoiding AsyncChannel backpressure
     var buffer: [UInt8] = []

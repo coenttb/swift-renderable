@@ -7,6 +7,7 @@
 
 import Foundation
 import Testing
+
 @testable import Rendering
 
 // MARK: - Test Rendering Types
@@ -90,7 +91,8 @@ struct CompositeRenderable: Rendering.`Protocol`, Sendable {
 // MARK: - Render Helpers
 
 /// Renders a renderable to a String for easy testing
-func render<T: Rendering.`Protocol`>(_ renderable: T) -> String where T.Context == Void, T.Output == UInt8 {
+func render<T: Rendering.`Protocol`>(_ renderable: T) -> String
+where T.Context == Void, T.Output == UInt8 {
     var buffer: [UInt8] = []
     var context: Void = ()
     T._render(renderable, into: &buffer, context: &context)
@@ -98,14 +100,16 @@ func render<T: Rendering.`Protocol`>(_ renderable: T) -> String where T.Context 
 }
 
 /// Renders a renderable with context to a String
-func render<T: Rendering.`Protocol`>(_ renderable: T, context: inout T.Context) -> String where T.Output == UInt8 {
+func render<T: Rendering.`Protocol`>(_ renderable: T, context: inout T.Context) -> String
+where T.Output == UInt8 {
     var buffer: [UInt8] = []
     T._render(renderable, into: &buffer, context: &context)
     return String(decoding: buffer, as: UTF8.self)
 }
 
 /// Renders a renderable to bytes
-func renderBytes<T: Rendering.`Protocol`>(_ renderable: T) -> [UInt8] where T.Context == Void, T.Output == UInt8 {
+func renderBytes<T: Rendering.`Protocol`>(_ renderable: T) -> [UInt8]
+where T.Context == Void, T.Output == UInt8 {
     var buffer: [UInt8] = []
     var context: Void = ()
     T._render(renderable, into: &buffer, context: &context)

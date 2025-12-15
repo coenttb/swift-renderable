@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import Rendering
 
 @Suite
@@ -55,7 +56,7 @@ struct `Protocol Tests` {
         ("with\nnewlines", "with\nnewlines"),
         ("<html>tags</html>", "<html>tags</html>"),
         ("\"quotes\"", "\"quotes\""),
-        ("special: &<>", "special: &<>")
+        ("special: &<>", "special: &<>"),
     ])
     func `_render preserves content exactly`(input: String, expected: String) {
         let renderable = TestRenderable(input)
@@ -94,7 +95,7 @@ struct `Protocol Tests` {
     func `default _render delegates to body`() {
         let composite = CompositeRenderable(children: [
             TestRenderable("one"),
-            TestRenderable("two")
+            TestRenderable("two"),
         ])
         let result = render(composite)
         #expect(result == "onetwo")

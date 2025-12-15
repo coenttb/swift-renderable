@@ -7,6 +7,7 @@
 
 import Foundation
 import Testing
+
 @testable import Rendering
 
 @Suite
@@ -43,7 +44,7 @@ struct `_Array Tests` {
         let array = Rendering._Array([
             TestRenderable("one"),
             TestRenderable("two"),
-            TestRenderable("three")
+            TestRenderable("three"),
         ])
         let result = render(array)
         #expect(result == "onetwothree")
@@ -154,7 +155,7 @@ struct `_Array Tests` {
         let original = Rendering._Array([
             TestRenderable("first"),
             TestRenderable("second"),
-            TestRenderable("third")
+            TestRenderable("third"),
         ])
 
         let encoder = JSONEncoder()
@@ -183,7 +184,7 @@ struct `_Array Tests` {
         let array = Rendering._Array([
             ContextualRenderable("a"),
             ContextualRenderable("b"),
-            ContextualRenderable("c")
+            ContextualRenderable("c"),
         ])
         var context = TestContext()
         let result = render(array, context: &context)

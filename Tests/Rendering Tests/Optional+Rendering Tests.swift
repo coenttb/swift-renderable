@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import Rendering
 
 @Suite
@@ -158,7 +159,7 @@ struct `Optional+Rendering Tests` {
             nil,
             TestRenderable("b"),
             nil,
-            TestRenderable("c")
+            TestRenderable("c"),
         ]
 
         var results: [String] = []
@@ -184,7 +185,7 @@ struct `Optional+Rendering Tests` {
         ("test", "test"),
         ("", ""),
         ("unicode: 日本語", "unicode: 日本語"),
-        ("<html>", "<html>")
+        ("<html>", "<html>"),
     ])
     func `optional preserves content when present`(input: String, expected: String) {
         let optional: TestRenderable? = TestRenderable(input)

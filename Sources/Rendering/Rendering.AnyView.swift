@@ -35,7 +35,8 @@ extension Rendering {
         /// Creates a type-erased wrapper around the given rendering content.
         ///
         /// - Parameter base: The rendering content to wrap.
-        public init<T: Rendering.`Protocol`>(_ base: T) where T.Context == Context, T.Output == UInt8 {
+        public init<T: Rendering.`Protocol`>(_ base: T)
+        where T.Context == Context, T.Output == UInt8 {
             self.base = base
             self.renderFunction = { buffer, context in
                 T._render(base, into: &buffer, context: &context)
@@ -55,4 +56,4 @@ extension Rendering {
 
 /// Typealias for backwards compatibility.
 public typealias AnyRenderable<Context, Bytes> = Rendering.AnyView<Context, Bytes>
-    where Bytes: RangeReplaceableCollection, Bytes.Element == UInt8
+where Bytes: RangeReplaceableCollection, Bytes.Element == UInt8

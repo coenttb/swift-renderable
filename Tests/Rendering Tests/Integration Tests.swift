@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import Rendering
 
 /// Integration tests that verify composition patterns across types.
@@ -180,7 +181,7 @@ struct `Integration Tests` {
         let array = Rendering._Array([
             TestRenderable("1"),
             TestRenderable("2"),
-            TestRenderable("3")
+            TestRenderable("3"),
         ])
         let result = render(array)
         #expect(result == "123")
@@ -188,14 +189,18 @@ struct `Integration Tests` {
 
     @Test
     func `_Conditional renders first branch`() {
-        let conditional: Rendering._Conditional<TestRenderable, TestRenderable> = .first(TestRenderable("first"))
+        let conditional: Rendering._Conditional<TestRenderable, TestRenderable> = .first(
+            TestRenderable("first")
+        )
         let result = render(conditional)
         #expect(result == "first")
     }
 
     @Test
     func `_Conditional renders second branch`() {
-        let conditional: Rendering._Conditional<TestRenderable, TestRenderable> = .second(TestRenderable("second"))
+        let conditional: Rendering._Conditional<TestRenderable, TestRenderable> = .second(
+            TestRenderable("second")
+        )
         let result = render(conditional)
         #expect(result == "second")
     }
@@ -205,7 +210,7 @@ struct `Integration Tests` {
         let items: [Rendering.AnyView<Void, [UInt8]>] = [
             Rendering.AnyView(TestRenderable("a")),
             Rendering.AnyView(TestRenderable("b")),
-            Rendering.AnyView(TestRenderable("c"))
+            Rendering.AnyView(TestRenderable("c")),
         ]
         var result = ""
         for item in items {

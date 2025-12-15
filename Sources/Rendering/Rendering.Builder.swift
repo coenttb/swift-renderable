@@ -38,7 +38,8 @@ extension Rendering {
         ///
         /// - Parameter components: An array of components to combine.
         /// - Returns: A single component representing the array of components.
-        public static func buildArray<Element>(_ components: [Element]) -> Rendering._Array<Element> {
+        public static func buildArray<Element>(_ components: [Element]) -> Rendering._Array<Element>
+        {
             Rendering._Array(components)
         }
 

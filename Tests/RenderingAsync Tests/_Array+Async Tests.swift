@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import Rendering
 @testable import RenderingAsync
 
@@ -19,7 +20,7 @@ struct `_Array_Async Tests` {
         let array = Rendering._Array([
             AsyncTestRenderable("one"),
             AsyncTestRenderable("two"),
-            AsyncTestRenderable("three")
+            AsyncTestRenderable("three"),
         ])
 
         let result = await renderAsync(array)
@@ -47,7 +48,7 @@ struct `_Array_Async Tests` {
         let array = Rendering._Array([
             AsyncContextualRenderable("a"),
             AsyncContextualRenderable("b"),
-            AsyncContextualRenderable("c")
+            AsyncContextualRenderable("c"),
         ])
 
         var context = AsyncTestContext()

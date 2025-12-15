@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import Rendering
 @testable import RenderingAsync
 
@@ -90,7 +91,7 @@ struct `Async_Protocol Tests` {
         ("with spaces", "with spaces"),
         ("special: <>&\"'", "special: <>&\"'"),
         ("unicode: café", "unicode: café"),
-        ("emoji: 🚀", "emoji: 🚀")
+        ("emoji: 🚀", "emoji: 🚀"),
     ])
     func `_renderAsync preserves content`(input: String, expected: String) async {
         let renderable = AsyncTestRenderable(input)

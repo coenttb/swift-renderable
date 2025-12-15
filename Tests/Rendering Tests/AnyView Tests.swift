@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import Rendering
 
 @Suite
@@ -104,7 +105,7 @@ struct `AnyView Tests` {
         let items: [Rendering.AnyView<Void, [UInt8]>] = [
             Rendering.AnyView(TestRenderable("one")),
             Rendering.AnyView(OtherTestRenderable("two")),
-            Rendering.AnyView(TestRenderable("three"))
+            Rendering.AnyView(TestRenderable("three")),
         ]
 
         var results: [String] = []

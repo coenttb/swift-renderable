@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-import Rendering
 public import AsyncAlgorithms
+import Rendering
 
 extension Rendering.Async.Sink {
     /// An actor-based sink that accepts bytes and sends chunks with backpressure.

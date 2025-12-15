@@ -7,6 +7,7 @@
 
 import Foundation
 import Testing
+
 @testable import Rendering
 
 @Suite
@@ -16,7 +17,9 @@ struct `_Conditional Tests` {
 
     @Test
     func `first branch stores value correctly`() {
-        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable("first"))
+        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("first")
+        )
         switch conditional {
         case .first(let element):
             #expect(element.value == "first")
@@ -27,7 +30,9 @@ struct `_Conditional Tests` {
 
     @Test
     func `first branch renders first content`() {
-        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable("FIRST"))
+        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("FIRST")
+        )
         let result = render(conditional)
         #expect(result == "FIRST")
     }
@@ -36,7 +41,9 @@ struct `_Conditional Tests` {
 
     @Test
     func `second branch stores value correctly`() {
-        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.second(TestRenderable("second"))
+        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.second(
+            TestRenderable("second")
+        )
         switch conditional {
         case .first:
             Issue.record("Expected second branch")
@@ -47,7 +54,9 @@ struct `_Conditional Tests` {
 
     @Test
     func `second branch renders second content`() {
-        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.second(TestRenderable("SECOND"))
+        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.second(
+            TestRenderable("SECOND")
+        )
         let result = render(conditional)
         #expect(result == "SECOND")
     }
@@ -56,8 +65,12 @@ struct `_Conditional Tests` {
 
     @Test
     func `_Conditional can have different branch types`() {
-        let first: Rendering._Conditional<TestRenderable, OtherRenderable> = .first(TestRenderable("test"))
-        let second: Rendering._Conditional<TestRenderable, OtherRenderable> = .second(OtherRenderable())
+        let first: Rendering._Conditional<TestRenderable, OtherRenderable> = .first(
+            TestRenderable("test")
+        )
+        let second: Rendering._Conditional<TestRenderable, OtherRenderable> = .second(
+            OtherRenderable()
+        )
 
         switch first {
         case .first(let element):
@@ -76,8 +89,12 @@ struct `_Conditional Tests` {
 
     @Test
     func `renders correct branch with different types`() {
-        let first: Rendering._Conditional<TestRenderable, OtherRenderable> = .first(TestRenderable("A"))
-        let second: Rendering._Conditional<TestRenderable, OtherRenderable> = .second(OtherRenderable())
+        let first: Rendering._Conditional<TestRenderable, OtherRenderable> = .first(
+            TestRenderable("A")
+        )
+        let second: Rendering._Conditional<TestRenderable, OtherRenderable> = .second(
+            OtherRenderable()
+        )
 
         #expect(render(first) == "A")
         #expect(render(second) == "OTHER")
@@ -87,7 +104,9 @@ struct `_Conditional Tests` {
 
     @Test
     func `_Conditional conforms to Rendering.Protocol`() {
-        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable("test"))
+        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("test")
+        )
         let _: any Rendering.`Protocol` = conditional
         #expect(Bool(true))
     }
@@ -95,7 +114,9 @@ struct `_Conditional Tests` {
     @Test
     func `body property throws fatalError`() {
         // Note: We can't test fatalError directly, but we verify the type has the body property
-        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable("test"))
+        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("test")
+        )
         // Just verify the type exists - accessing body would crash
         _ = type(of: conditional).Content.self
         #expect(Bool(true))
@@ -117,10 +138,18 @@ struct `_Conditional Tests` {
 
     @Test
     func `equality compares same branch types`() {
-        let first1 = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable("a"))
-        let first2 = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable("a"))
-        let second1 = Rendering._Conditional<TestRenderable, TestRenderable>.second(TestRenderable("a"))
-        let second2 = Rendering._Conditional<TestRenderable, TestRenderable>.second(TestRenderable("a"))
+        let first1 = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("a")
+        )
+        let first2 = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("a")
+        )
+        let second1 = Rendering._Conditional<TestRenderable, TestRenderable>.second(
+            TestRenderable("a")
+        )
+        let second2 = Rendering._Conditional<TestRenderable, TestRenderable>.second(
+            TestRenderable("a")
+        )
 
         #expect(first1 == first2)
         #expect(second1 == second2)
@@ -143,8 +172,12 @@ struct `_Conditional Tests` {
 
     @Test
     func `different branches have different hashes`() {
-        let first = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable("same"))
-        let second = Rendering._Conditional<TestRenderable, TestRenderable>.second(TestRenderable("same"))
+        let first = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("same")
+        )
+        let second = Rendering._Conditional<TestRenderable, TestRenderable>.second(
+            TestRenderable("same")
+        )
 
         #expect(first.hashValue != second.hashValue)
     }
@@ -153,7 +186,9 @@ struct `_Conditional Tests` {
 
     @Test
     func `_Conditional is Sendable when both branches are Sendable`() {
-        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable("test"))
+        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("test")
+        )
         Task {
             _ = conditional
         }
@@ -164,21 +199,30 @@ struct `_Conditional Tests` {
 
     @Test
     func `_Conditional is Codable when both branches are Codable`() throws {
-        let original = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable("encoded"))
+        let original = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("encoded")
+        )
 
         let encoder = JSONEncoder()
         let data = try encoder.encode(original)
 
         let decoder = JSONDecoder()
-        let decoded = try decoder.decode(Rendering._Conditional<TestRenderable, TestRenderable>.self, from: data)
+        let decoded = try decoder.decode(
+            Rendering._Conditional<TestRenderable, TestRenderable>.self,
+            from: data
+        )
 
         #expect(original == decoded)
     }
 
     @Test
     func `Codable round-trip preserves branch`() throws {
-        let first = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable("f"))
-        let second = Rendering._Conditional<TestRenderable, TestRenderable>.second(TestRenderable("s"))
+        let first = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("f")
+        )
+        let second = Rendering._Conditional<TestRenderable, TestRenderable>.second(
+            TestRenderable("s")
+        )
 
         let encoder = JSONEncoder()
         let decoder = JSONDecoder()
@@ -186,8 +230,14 @@ struct `_Conditional Tests` {
         let firstData = try encoder.encode(first)
         let secondData = try encoder.encode(second)
 
-        let decodedFirst = try decoder.decode(Rendering._Conditional<TestRenderable, TestRenderable>.self, from: firstData)
-        let decodedSecond = try decoder.decode(Rendering._Conditional<TestRenderable, TestRenderable>.self, from: secondData)
+        let decodedFirst = try decoder.decode(
+            Rendering._Conditional<TestRenderable, TestRenderable>.self,
+            from: firstData
+        )
+        let decodedSecond = try decoder.decode(
+            Rendering._Conditional<TestRenderable, TestRenderable>.self,
+            from: secondData
+        )
 
         #expect(first == decodedFirst)
         #expect(second == decodedSecond)
@@ -197,7 +247,9 @@ struct `_Conditional Tests` {
 
     @Test
     func `_Conditional typealias works`() {
-        let conditional: _Conditional<TestRenderable, TestRenderable> = .first(TestRenderable("alias"))
+        let conditional: _Conditional<TestRenderable, TestRenderable> = .first(
+            TestRenderable("alias")
+        )
         #expect(render(conditional) == "alias")
     }
 
@@ -205,13 +257,17 @@ struct `_Conditional Tests` {
 
     @Test
     func `renders empty when first branch is empty`() {
-        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(TestRenderable(""))
+        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.first(
+            TestRenderable("")
+        )
         #expect(render(conditional) == "")
     }
 
     @Test
     func `renders empty when second branch is empty`() {
-        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.second(TestRenderable(""))
+        let conditional = Rendering._Conditional<TestRenderable, TestRenderable>.second(
+            TestRenderable("")
+        )
         #expect(render(conditional) == "")
     }
 }

@@ -5,8 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 26/11/2025.
 //
 
-import Testing
 import OrderedCollections
+import Testing
+
 @testable import Rendering
 
 @Suite
@@ -63,7 +64,7 @@ struct `Element Tests` {
         "h1", "h2", "h3", "h4", "h5", "h6",
         "ul", "ol", "li", "table", "tr", "td",
         "form", "input", "button", "select", "textarea",
-        "header", "footer", "main", "nav", "aside", "article", "section"
+        "header", "footer", "main", "nav", "aside", "article", "section",
     ])
     func `Element accepts common HTML tag names`(tagName: String) {
         let element = Rendering.Element<String>(tagName: tagName, content: nil)

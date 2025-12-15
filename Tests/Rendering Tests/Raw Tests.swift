@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import Rendering
 
 @Suite
@@ -114,7 +115,7 @@ struct `Raw Tests` {
         ("&amp; entities", "&amp; entities"),
         ("\"quotes\"", "\"quotes\""),
         ("'apostrophe'", "'apostrophe'"),
-        ("back\\slash", "back\\slash")
+        ("back\\slash", "back\\slash"),
     ])
     func `Raw preserves content exactly`(input: String, expected: String) {
         let raw = Rendering.Raw(input)
@@ -160,10 +161,10 @@ struct `Raw Tests` {
     @Test
     func `Raw handles multiline content`() {
         let multiline = """
-        Line 1
-        Line 2
-        Line 3
-        """
+            Line 1
+            Line 2
+            Line 3
+            """
         let raw = Rendering.Raw(multiline)
         #expect(String(decoding: raw.bytes, as: UTF8.self) == multiline)
     }

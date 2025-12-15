@@ -51,7 +51,8 @@ extension Rendering.Async {
     }
 }
 
-extension Rendering.Async.`Protocol` where Content: Rendering.Async.`Protocol`, Content.Context == Context {
+extension Rendering.Async.`Protocol`
+where Content: Rendering.Async.`Protocol`, Content.Context == Context {
     /// Default implementation that delegates to the content's async render method.
     @inlinable
     public static func _renderAsync<Sink: Rendering.Async.Sink.`Protocol`>(

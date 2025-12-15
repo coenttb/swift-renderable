@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import Rendering
 @testable import RenderingAsync
 
@@ -38,8 +39,10 @@ struct `_Conditional_Async Tests` {
 
     @Test
     func `context is passed to first branch during async render`() async {
-        let conditional = Rendering._Conditional<AsyncContextualRenderable, AsyncContextualRenderable>
-            .first(AsyncContextualRenderable("first-"))
+        let conditional = Rendering._Conditional<
+            AsyncContextualRenderable, AsyncContextualRenderable
+        >
+        .first(AsyncContextualRenderable("first-"))
 
         var context = AsyncTestContext()
         let result = await renderAsync(conditional, context: &context)
@@ -50,8 +53,10 @@ struct `_Conditional_Async Tests` {
 
     @Test
     func `context is passed to second branch during async render`() async {
-        let conditional = Rendering._Conditional<AsyncContextualRenderable, AsyncContextualRenderable>
-            .second(AsyncContextualRenderable("second-"))
+        let conditional = Rendering._Conditional<
+            AsyncContextualRenderable, AsyncContextualRenderable
+        >
+        .second(AsyncContextualRenderable("second-"))
 
         var context = AsyncTestContext()
         let result = await renderAsync(conditional, context: &context)

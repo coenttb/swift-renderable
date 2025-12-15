@@ -7,6 +7,7 @@
 
 import Foundation
 import Testing
+
 @testable import Rendering
 
 @Suite
@@ -145,7 +146,7 @@ struct `Empty Tests` {
         let empties: [Rendering.Empty] = [
             Rendering.Empty(),
             Rendering.Empty(),
-            Rendering.Empty()
+            Rendering.Empty(),
         ]
         #expect(empties.count == 3)
     }
