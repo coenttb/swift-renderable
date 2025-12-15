@@ -21,7 +21,9 @@ extension Rendering {
 extension Rendering._Conditional: Sendable where First: Sendable, Second: Sendable {}
 extension Rendering._Conditional: Hashable where First: Hashable, Second: Hashable {}
 extension Rendering._Conditional: Equatable where First: Equatable, Second: Equatable {}
+#if Codable
 extension Rendering._Conditional: Codable where First: Codable, Second: Codable {}
+#endif
 
 // MARK: - Rendering.Protocol Conformance
 

@@ -24,7 +24,9 @@ extension Rendering {
 extension Rendering._Array: Sendable where Element: Sendable {}
 extension Rendering._Array: Hashable where Element: Hashable {}
 extension Rendering._Array: Equatable where Element: Equatable {}
+#if Codable
 extension Rendering._Array: Codable where Element: Codable {}
+#endif
 
 // MARK: - Rendering.Protocol Conformance
 

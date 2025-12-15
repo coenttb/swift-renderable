@@ -21,7 +21,9 @@ extension Rendering {
 extension Rendering.Empty: Sendable {}
 extension Rendering.Empty: Hashable {}
 extension Rendering.Empty: Equatable {}
+#if Codable
 extension Rendering.Empty: Codable {}
+#endif
 
 /// Typealias for backwards compatibility.
 public typealias Empty = Rendering.Empty

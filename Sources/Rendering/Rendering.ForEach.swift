@@ -65,7 +65,9 @@ extension Rendering.ForEach: Rendering.`Protocol` where Content: Rendering.`Prot
 extension Rendering.ForEach: Sendable where Content: Sendable {}
 extension Rendering.ForEach: Hashable where Content: Hashable {}
 extension Rendering.ForEach: Equatable where Content: Equatable {}
+#if Codable
 extension Rendering.ForEach: Codable where Content: Codable {}
+#endif
 
 /// Typealias for backwards compatibility.
 public typealias ForEach<Content: Rendering.`Protocol`> = Rendering.ForEach<Content>

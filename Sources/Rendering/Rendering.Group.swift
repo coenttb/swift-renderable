@@ -28,7 +28,9 @@ extension Rendering {
 extension Rendering.Group: Sendable where Content: Sendable {}
 extension Rendering.Group: Hashable where Content: Hashable {}
 extension Rendering.Group: Equatable where Content: Equatable {}
+#if Codable
 extension Rendering.Group: Codable where Content: Codable {}
+#endif
 
 extension Rendering.Group: Rendering.`Protocol` where Content: Rendering.`Protocol` {
     public typealias Context = Content.Context
