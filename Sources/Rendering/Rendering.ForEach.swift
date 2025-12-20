@@ -68,4 +68,4 @@ extension Rendering.ForEach: Equatable where Content: Equatable {}
 extension Rendering.ForEach: Codable where Content: Codable {}
 
 /// Typealias for backwards compatibility.
-public typealias ForEach<Content: Rendering.`Protocol`> = Rendering.ForEach<Content>
+public typealias ForEach<Content> = Rendering.ForEach<Content>
