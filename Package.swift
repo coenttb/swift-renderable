@@ -19,7 +19,7 @@ extension Target.Dependency {
         .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing")
     }
     static var asyncAlgorithms: Self {
-        .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
+        .product(name: "AsyncAlgorithms", package: "swift-async-algorithms-fork")
     }
     static var testingPerformance: Self {
         .product(name: "TestingPerformance", package: "swift-testing-performance")
@@ -41,7 +41,7 @@ let package = Package(
         .library(name: .renderingTestSupport, targets: [.renderingTestSupport]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-async-algorithms.git", from: "1.0.0"),
+        .package(url: "https://github.com/coenttb/swift-async-algorithms-fork.git", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.0"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.3"),
         .package(url: "https://github.com/coenttb/swift-testing-performance", from: "0.1.0"),
